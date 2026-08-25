@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 type SegmentedControlOption<T extends string> = {
   value: T;
   label: string;
+  icon?: React.ReactNode;
 };
 
 export function SegmentedControl<T extends string>({
@@ -59,8 +60,9 @@ export function SegmentedControl<T extends string>({
           {options.map((option) => (
             <span
               key={option.value}
-              className="flex h-8 items-center px-3 text-xs font-medium text-foreground"
+              className="flex h-8 items-center gap-1.5 px-3 text-xs font-medium text-foreground"
             >
+              {option.icon}
               {option.label}
             </span>
           ))}
@@ -73,7 +75,7 @@ export function SegmentedControl<T extends string>({
           ref={value === option.value ? activeRef : null}
           aria-pressed={value === option.value}
           className={cn(
-            "h-8 cursor-pointer rounded-full px-3 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
+            "inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-full px-3 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
             value === option.value
               ? "text-foreground"
               : "text-muted-foreground hover:text-foreground",
@@ -81,6 +83,7 @@ export function SegmentedControl<T extends string>({
           onClick={() => onChange(option.value)}
           type="button"
         >
+          {option.icon}
           {option.label}
         </button>
       ))}

@@ -1,8 +1,10 @@
 "use client";
 
-import { DotsThreeIcon, ImageIcon } from "@phosphor-icons/react";
+import { IconCircleCheckFilled, IconCircleXFilled } from "@tabler/icons-react";
+import Image from "next/image";
 import { useState } from "react";
 
+import waterLiliesImage from "@/assets/claude-monet-water-lilies.jpg";
 import { Demo } from "@/components/app/demo";
 import { SegmentedControl } from "@/components/app/segmented-control";
 import { Slider } from "@/components/ui/slider";
@@ -11,8 +13,26 @@ import { cn } from "@/lib/utils";
 type RadiusMode = "same" | "nested";
 
 const RADIUS_OPTIONS = [
-  { value: "same", label: "Same radius" },
-  { value: "nested", label: "Nested" },
+  {
+    value: "same",
+    label: "Same radius",
+    icon: (
+      <IconCircleXFilled
+        aria-hidden="true"
+        className="size-4 text-destructive"
+      />
+    ),
+  },
+  {
+    value: "nested",
+    label: "Nested",
+    icon: (
+      <IconCircleCheckFilled
+        aria-hidden="true"
+        className="size-4 text-emerald-500"
+      />
+    ),
+  },
 ] as const;
 
 function getSliderValue(value: number | readonly number[]) {
@@ -20,51 +40,75 @@ function getSliderValue(value: number | readonly number[]) {
 }
 
 export function NestedRadiusDemo() {
-  const [mode, setMode] = useState<RadiusMode>("same");
-  const nested = mode === "nested";
   const innerRadius = 16;
   const inset = 12;
-  const outerRadius = nested ? innerRadius + inset : innerRadius;
+  const examples = [
+    {
+      label: "Wrong",
+      outerRadius: innerRadius,
+      description: "Same radius",
+    },
+    {
+      label: "Right",
+      outerRadius: innerRadius + inset,
+      description: "Radius + inset",
+    },
+  ] as const;
 
   return (
-    <Demo className="gap-7 px-4 sm:px-8">
-      <div className="flex flex-col items-center gap-3" aria-hidden="true">
-        <div
-          className="bg-primary/8 p-3 shadow-(--custom-shadow) transition-[border-radius] duration-200 ease-out motion-reduce:transition-none dark:bg-muted"
-          style={{ borderRadius: outerRadius }}
-        >
+    <Demo className="gap-7 px-4">
+      <div className="grid w-full max-w-lg grid-cols-2 gap-3 sm:gap-10">
+        {examples.map((example) => (
           <div
-            className="grid h-32 w-56 place-items-center bg-card shadow-(--custom-shadow) transition-[border-radius] duration-200 ease-out motion-reduce:transition-none"
-            style={{ borderRadius: innerRadius }}
+            className="flex min-w-0 flex-col items-center gap-5"
+            key={example.label}
           >
-            <div className="flex flex-col items-center gap-1.5">
-              <span className="font-mono text-xs text-foreground">
-                {outerRadius}px
-              </span>
-              <span className="text-[10px] text-muted-foreground">
-                outer radius
-              </span>
+            <div
+              className={cn(
+                "flex items-center gap-1.5 text-sm font-medium text-foreground",
+                example.label === "Wrong"
+                  ? "text-destructive"
+                  : "text-emerald-500"
+              )}
+            >
+              {example.label === "Wrong" ? (
+                <IconCircleXFilled className="h-4 w-4" aria-label="Wrong" />
+              ) : (
+                <IconCircleCheckFilled
+                  className="h-4 w-4"
+                  aria-label="Correct"
+                />
+              )}
+              {example.label}
+            </div>
+
+            <div
+              className="w-full bg-muted p-3 shadow-(--custom-shadow) dark:bg-muted/30"
+              style={{ borderRadius: example.outerRadius }}
+            >
+              <div
+                className="grid h-28 place-items-center bg-card dark:bg-muted/60 shadow-(--custom-shadow) sm:h-32"
+                style={{ borderRadius: innerRadius }}
+              >
+                <div className="flex flex-col items-center gap-1.5 text-center">
+                  <span className="tabular-nums text-xs text-foreground">
+                    {example.outerRadius}px{" "}
+                    <span className="mx-2 text-muted-foreground">/</span>{" "}
+                    {innerRadius}px
+                  </span>
+                  <span className="text-[10px] text-muted-foreground">
+                    outer <span className="mx-3.5"></span> inner
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-        <div className="flex items-center gap-2 font-mono text-[10px] text-muted-foreground">
-          <span>inner 16px</span>
-          <span aria-hidden="true">·</span>
-          <span>inset 12px</span>
-        </div>
+        ))}
       </div>
 
-      <SegmentedControl
-        ariaLabel="Nested radius comparison"
-        onChange={setMode}
-        options={RADIUS_OPTIONS}
-        value={mode}
-      />
-
-      <p className="max-w-sm text-center text-xs text-pretty text-muted-foreground">
-        {nested
-          ? "The outer corner adds the 12px inset, so both curves follow each other."
-          : "Both corners use 16px, so the gap gets wider around the curve."}
+      <p className="max-w-sm text-center text-xs text-pretty text-muted-foreground/70">
+        With a 12px inset, the outer radius should be 28px so both curves follow
+        each other.
       </p>
     </Demo>
   );
@@ -75,11 +119,15 @@ export function RadiusCalculatorDemo() {
   const [inset, setInset] = useState(12);
   const innerRadius = Math.max(0, outerRadius - inset);
 
+  function updateInnerRadius(value: number) {
+    setOuterRadius(value + inset);
+  }
+
   return (
-    <Demo className="gap-8 px-4 sm:px-8">
+    <Demo className="gap-12 px-4 sm:px-8">
       <div className="flex flex-col items-center gap-3" aria-hidden="true">
         <div
-          className="bg-primary/8 p-(--demo-inset) shadow-(--custom-shadow) transition-[border-radius,padding] duration-200 ease-out motion-reduce:transition-none dark:bg-muted"
+          className="bg-muted p-(--demo-inset) shadow-(--custom-shadow) transition-[border-radius,padding] duration-200 ease-out motion-reduce:transition-none dark:bg-muted/30"
           style={
             {
               "--demo-inset": `${inset}px`,
@@ -88,18 +136,24 @@ export function RadiusCalculatorDemo() {
           }
         >
           <div
-            className="grid h-28 w-52 place-items-center bg-card shadow-(--custom-shadow) transition-[border-radius] duration-200 ease-out motion-reduce:transition-none"
+            className="grid h-36 w-72 place-items-center bg-card shadow-(--custom-shadow) transition-[border-radius] duration-200 ease-out motion-reduce:transition-none dark:bg-muted/60"
             style={{ borderRadius: innerRadius }}
           >
-            <span className="rounded-full bg-muted px-2.5 py-1 font-mono text-[10px] text-muted-foreground">
-              {outerRadius} − {inset} = {innerRadius}px
-            </span>
+            <div className="flex flex-col items-center gap-1.5 text-center">
+              <span className="tabular-nums text-xs text-foreground">
+                {outerRadius}px{" "}
+                <span className="mx-2 text-muted-foreground">/</span>{" "}
+                {innerRadius}px
+              </span>
+              <span className="text-[10px] text-muted-foreground">
+                outer <span className="mx-3.5" /> inner
+              </span>
+            </div>
           </div>
         </div>
-        <span className="text-[10px] text-muted-foreground">inner radius</span>
       </div>
 
-      <div className="grid w-full max-w-xs gap-5">
+      <div className="grid w-full max-w-xs gap-5 mb-4">
         <label className="grid gap-2.5">
           <span className="flex items-center justify-between text-xs text-muted-foreground">
             Outer radius
@@ -132,6 +186,22 @@ export function RadiusCalculatorDemo() {
             value={[inset]}
           />
         </label>
+        <label className="grid gap-2.5">
+          <span className="flex items-center justify-between text-xs text-muted-foreground">
+            Inner radius
+            <span className="font-mono text-[10px] text-foreground">
+              {innerRadius}px
+            </span>
+          </span>
+          <Slider
+            aria-label="Inner radius"
+            max={Math.max(0, 48 - inset)}
+            min={0}
+            onValueChange={(value) => updateInnerRadius(getSliderValue(value))}
+            step={1}
+            value={[innerRadius]}
+          />
+        </label>
       </div>
     </Demo>
   );
@@ -142,41 +212,51 @@ export function NestedRadiusExamplesDemo() {
   const nested = mode === "nested";
 
   return (
-    <Demo className="gap-7 px-4 sm:px-8">
+    <Demo className="gap-10 px-4 sm:px-8">
       <div
         aria-hidden="true"
-        className="grid w-full max-w-md gap-4 sm:grid-cols-[1.1fr_0.9fr]"
+        className="grid w-full max-w-lg gap-8 sm:grid-cols-[1.1fr_0.9fr]"
       >
-        <div className="rounded-3xl bg-card p-2 shadow-(--custom-shadow)">
+        <div
+          className="bg-card p-2 shadow-(--custom-shadow)"
+          style={{ borderRadius: 24 }}
+        >
           <div
-            className="grid h-24 place-items-center bg-muted transition-[border-radius] duration-200 ease-out motion-reduce:transition-none"
+            className="relative h-32 overflow-hidden bg-muted transition-[border-radius] duration-200 ease-out motion-reduce:transition-none"
             style={{ borderRadius: nested ? 16 : 24 }}
           >
-            <ImageIcon className="size-5 text-muted-foreground" />
+            <Image
+              alt=""
+              className="object-cover"
+              fill
+              placeholder="blur"
+              src={waterLiliesImage}
+              style={{
+                outline: "1px solid rgba(0, 0, 0, 0.05)",
+                outlineOffset: "-1px",
+              }}
+            />
           </div>
           <div className="flex items-center justify-between px-2 pb-1 pt-3">
             <div>
-              <p className="text-xs font-medium text-foreground">Quiet lake</p>
+              <p className="text-xs text-foreground">Water Lilies</p>
               <p className="mt-0.5 text-[10px] text-muted-foreground">
-                Card · 8px inset
+                Claude Monet
               </p>
             </div>
-            <DotsThreeIcon
-              className="size-4 text-muted-foreground"
-              weight="bold"
-            />
           </div>
         </div>
 
-        <div className="self-center rounded-2xl bg-card p-1 shadow-(--custom-shadow)">
+        <div
+          className="self-center bg-card p-1 shadow-(--custom-shadow)"
+          style={{ borderRadius: 16 }}
+        >
           {["Duplicate", "Move to folder", "Archive"].map((item, index) => (
             <div
               key={item}
               className={cn(
-                "flex h-9 items-center px-3 text-xs transition-[border-radius] duration-200 ease-out motion-reduce:transition-none",
-                index === 0
-                  ? "bg-primary text-primary-foreground"
-                  : "text-muted-foreground",
+                "flex h-8 items-center px-3 text-xs transition-[border-radius] duration-200 ease-out motion-reduce:transition-none",
+                index === 0 ? "bg-muted text-primary" : "text-muted-foreground"
               )}
               style={{ borderRadius: nested ? 12 : 16 }}
             >
@@ -192,12 +272,6 @@ export function NestedRadiusExamplesDemo() {
         options={RADIUS_OPTIONS}
         value={mode}
       />
-
-      <p className="max-w-sm text-center text-xs text-pretty text-muted-foreground">
-        {nested
-          ? "The media and menu item subtract their inset from the outer radius."
-          : "Reusing the outer radius makes both inner corners look too round."}
-      </p>
     </Demo>
   );
 }

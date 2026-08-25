@@ -91,14 +91,15 @@ export function CodeBlockClient({ tabs }: { tabs: HighlightedCodeTab[] }) {
                     "relative flex h-7 cursor-pointer items-center rounded-full px-2.5 text-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
                     active
                       ? "text-foreground"
-                      : "text-muted-foreground hover:text-foreground"
+                      : "text-muted-foreground hover:text-foreground",
+                    tabIcon && "pl-2.75"
                   )}
                 >
                   {active && (
                     <motion.span
                       layoutId={pillId}
                       transition={TAB_MORPH}
-                      className="absolute inset-0 rounded-full bg-background shadow-(--custom-shadow) dark:bg-input/50"
+                      className="absolute inset-0 rounded-full bg-muted dark:bg-input/50"
                     />
                   )}
                   <span className="relative z-10 flex items-center gap-1.5">
