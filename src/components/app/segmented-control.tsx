@@ -60,7 +60,10 @@ export function SegmentedControl<T extends string>({
           {options.map((option) => (
             <span
               key={option.value}
-              className="flex h-8 items-center gap-1.5 px-3 text-xs font-medium text-foreground"
+              className={cn(
+                "flex h-8 items-center gap-1.5 px-3 text-xs font-medium text-foreground",
+                option.icon && "pl-2.5"
+              )}
             >
               {option.icon}
               {option.label}
@@ -76,9 +79,10 @@ export function SegmentedControl<T extends string>({
           aria-pressed={value === option.value}
           className={cn(
             "inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-full px-3 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
+            option.icon && "pl-2.5",
             value === option.value
               ? "text-foreground"
-              : "text-muted-foreground hover:text-foreground",
+              : "text-muted-foreground hover:text-foreground"
           )}
           onClick={() => onChange(option.value)}
           type="button"

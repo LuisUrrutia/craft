@@ -22,8 +22,8 @@ resources:
 Pull past the top of a dark page in Safari and a white strip can appear behind
 it. The app is dark, but the document canvas is still white.
 
-The canvas is the surface the browser paints behind the page. Try both modes
-below, then use the button to reveal it.
+The canvas is the surface the browser paints behind the page. Use the Scroll
+button below to reveal both versions at once.
 
 <HtmlBackgroundDemo />
 
@@ -52,18 +52,18 @@ not rely on that behavior.
 <CodeBlock
   tabs={[
     {
+      label: "Tailwind",
+      language: "html",
+      icon: "tailwind",
+      code: `<html class="bg-background">`,
+    },
+    {
       label: "CSS",
       language: "css",
       icon: "css",
       code: `html {
     background-color: var(--background);
 }`,
-    },
-    {
-      label: "Tailwind",
-      language: "html",
-      icon: "tailwind",
-      code: `<html class="bg-background">`,
     },
   ]}
 />

@@ -1,26 +1,22 @@
 "use client";
 
+import {
+  ArrowDownIcon,
+  CheckCircleIcon,
+  XCircleIcon,
+} from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
 
 import { Demo } from "@/components/app/demo";
-import { SegmentedControl } from "@/components/app/segmented-control";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Button } from "../ui/button";
-import { ArrowDownIcon } from "@phosphor-icons/react";
 
-type BackgroundTarget = "wrapper" | "root";
-
-const BACKGROUND_OPTIONS: {
-  value: BackgroundTarget;
-  label: string;
-}[] = [
-  { value: "wrapper", label: "Wrapper only" },
-  { value: "root", label: "HTML root" },
-];
+const EXAMPLES = [
+  { label: "Wrong", rootBackgroundSet: false },
+  { label: "Right", rootBackgroundSet: true },
+] as const;
 
 export function HtmlBackgroundDemo() {
-  const [backgroundTarget, setBackgroundTarget] =
-    useState<BackgroundTarget>("wrapper");
   const [banding, setBanding] = useState(false);
   const bandingTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
 
@@ -37,78 +33,99 @@ export function HtmlBackgroundDemo() {
     bandingTimer.current = setTimeout(() => setBanding(false), 550);
   }
 
-  const rootBackgroundSet = backgroundTarget === "root";
-
   return (
-    <Demo className="gap-7 px-4 sm:px-8">
-      <div className="w-full max-w-96 overflow-hidden rounded-xl bg-card shadow-xs">
-        <div
-          aria-hidden="true"
-          className="grid grid-cols-[1fr_auto_1fr] items-center bg-[#ececec] p-3 py-2 dark:bg-[#292929]"
-        >
-          <div className="flex items-center gap-1.5">
-            <span className="size-2.5 rounded-full bg-[#ff5f57] shadow-[inset_0_0_0_0.5px_rgba(0,0,0,0.16)]" />
-            <span className="size-2.5 rounded-full bg-[#febc2e] shadow-[inset_0_0_0_0.5px_rgba(0,0,0,0.16)]" />
-            <span className="size-2.5 rounded-full bg-[#28c840] shadow-[inset_0_0_0_0.5px_rgba(0,0,0,0.16)]" />
-          </div>
-          <div className="flex h-6 w-44 items-center justify-center justify-self-center rounded-full bg-black/5 px-3 dark:bg-white/6">
-            <span className="truncate text-[10px]">craft.local</span>
-          </div>
-        </div>
-
-        {/* The area behind the page is what Safari paints from the document
-            canvas during overscroll. The browser chrome stays in place. */}
-        <div
-          className="relative h-44 overflow-hidden transition-colors duration-200"
-          style={{ background: rootBackgroundSet ? "#1c1c1c" : "#ffffff" }}
-        >
-          <span
-            aria-hidden="true"
-            className={cn(
-              "absolute inset-x-0 top-4 text-center text-[11px] transition-opacity duration-150",
-              rootBackgroundSet ? "text-white/45" : "text-black/45",
-              banding ? "opacity-100" : "opacity-0"
-            )}
-          >
-            Document canvas
-          </span>
+    <Demo className="gap-7 px-0 sm:px-0">
+      <div className="grid w-full grid-cols-2 gap-3 sm:gap-8">
+        {EXAMPLES.map((example) => (
           <div
-            className="absolute inset-0 bg-[#1c1c1c] p-4 pt-6 transition-transform duration-400 ease-out motion-reduce:transition-none"
-            style={{
-              transform: banding ? "translateY(56px)" : "translateY(0)",
-            }}
+            key={example.label}
+            className="flex min-w-0 flex-col items-center gap-4"
           >
-            <span className="mb-6 inline-flex rounded-full bg-white/10 px-2 py-1 text-[11px] text-white/55">
-              App wrapper
-            </span>
-            <div className="h-2 w-24 rounded-full bg-white/30" />
-            <div className="mt-3 h-2 w-40 rounded-full bg-white/20" />
-            <div className="mt-2 h-2 w-32 rounded-full bg-white/15" />
-            <div className="mt-5 h-24 rounded-xl bg-white/10" />
+            <div
+              className={cn(
+                "flex items-center gap-1.5 text-sm font-medium",
+                example.rootBackgroundSet
+                  ? "text-emerald-500"
+                  : "text-destructive"
+              )}
+            >
+              {example.rootBackgroundSet ? (
+                <CheckCircleIcon
+                  aria-hidden="true"
+                  className="size-4"
+                  weight="fill"
+                />
+              ) : (
+                <XCircleIcon
+                  aria-hidden="true"
+                  className="size-4"
+                  weight="fill"
+                />
+              )}
+              {example.label}
+            </div>
+
+            <div className="w-full overflow-hidden rounded-xl bg-card shadow-(--custom-shadow)">
+              <div
+                aria-hidden="true"
+                className="grid grid-cols-[1fr_auto_1fr] items-center bg-[#ececec] px-2 py-2 dark:bg-[#292929] sm:px-3"
+              >
+                <div className="flex items-center gap-1 sm:gap-1.5">
+                  <span className="size-2 rounded-full bg-[#ff5f57] shadow-[inset_0_0_0_0.5px_rgba(0,0,0,0.16)] sm:size-2.5" />
+                  <span className="size-2 rounded-full bg-[#febc2e] shadow-[inset_0_0_0_0.5px_rgba(0,0,0,0.16)] sm:size-2.5" />
+                  <span className="size-2 rounded-full bg-[#28c840] shadow-[inset_0_0_0_0.5px_rgba(0,0,0,0.16)] sm:size-2.5" />
+                </div>
+                <div className="flex h-5 w-16 items-center justify-center justify-self-center rounded-full bg-black/5 px-2 dark:bg-white/6 sm:h-5 sm:w-28">
+                  <span className="truncate text-[9px] sm:text-[10px]">
+                    craft.local
+                  </span>
+                </div>
+              </div>
+
+              {/* The area behind the page is what Safari paints from the
+                  document canvas during overscroll. */}
+              <div
+                className="relative h-40 overflow-hidden"
+                style={{
+                  background: example.rootBackgroundSet ? "#1c1c1c" : "#ffffff",
+                }}
+              >
+                <span
+                  aria-hidden="true"
+                  className={cn(
+                    "absolute inset-x-0 top-3 text-center text-[9px] transition-opacity duration-150 sm:text-[10px]",
+                    example.rootBackgroundSet
+                      ? "text-white/45"
+                      : "text-black/45",
+                    banding ? "opacity-100" : "opacity-0"
+                  )}
+                >
+                  Document canvas
+                </span>
+                <div
+                  className="absolute inset-0 bg-[#1c1c1c] p-3 pt-5 transition-transform duration-400 ease-out motion-reduce:transition-none sm:p-4 sm:pt-5"
+                  style={{
+                    transform: banding ? "translateY(48px)" : "translateY(0)",
+                  }}
+                >
+                  <span className="mb-5 inline-flex rounded-full bg-white/10 px-2 py-1 text-[9px] text-white/55 sm:text-[10px]">
+                    Acme
+                  </span>
+                  <div className="h-1.5 w-1/2 rounded-full bg-white/30" />
+                  <div className="mt-2.5 h-1.5 w-4/5 rounded-full bg-white/20" />
+                  <div className="mt-2 h-1.5 w-2/3 rounded-full bg-white/15" />
+                  <div className="mt-4 h-16 rounded-lg bg-white/10" />
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
+        ))}
       </div>
 
-      <div className="flex flex-wrap items-center justify-center gap-2">
-        <SegmentedControl
-          ariaLabel="Background target"
-          onChange={setBackgroundTarget}
-          options={BACKGROUND_OPTIONS}
-          value={backgroundTarget}
-        />
-        <div className="relative flex w-fit rounded-full p-0.5">
-          <Button variant="outline" onClick={rubberBand}>
-            <ArrowDownIcon weight="bold" />
-            Scroll
-          </Button>
-        </div>
-      </div>
-
-      <p className="max-w-sm text-center text-xs text-muted-foreground text-pretty">
-        {rootBackgroundSet
-          ? "The root and the app use the same dark background."
-          : "The dark wrapper moves, revealing the white canvas behind it."}
-      </p>
+      <Button onClick={rubberBand} variant="secondary">
+        <ArrowDownIcon weight="bold" />
+        Scroll
+      </Button>
     </Demo>
   );
 }

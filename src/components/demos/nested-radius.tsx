@@ -1,6 +1,6 @@
 "use client";
 
-import { IconCircleCheckFilled, IconCircleXFilled } from "@tabler/icons-react";
+import { IconArchive, IconCopy, IconFolder } from "@tabler/icons-react";
 import Image from "next/image";
 import { useState } from "react";
 
@@ -9,6 +9,7 @@ import { Demo } from "@/components/app/demo";
 import { SegmentedControl } from "@/components/app/segmented-control";
 import { Slider } from "@/components/ui/slider";
 import { cn } from "@/lib/utils";
+import { CheckCircleIcon, XCircleIcon } from "@phosphor-icons/react";
 
 type RadiusMode = "same" | "nested";
 
@@ -17,9 +18,10 @@ const RADIUS_OPTIONS = [
     value: "same",
     label: "Same radius",
     icon: (
-      <IconCircleXFilled
+      <XCircleIcon
         aria-hidden="true"
         className="size-4 text-destructive"
+        weight="fill"
       />
     ),
   },
@@ -27,12 +29,19 @@ const RADIUS_OPTIONS = [
     value: "nested",
     label: "Nested",
     icon: (
-      <IconCircleCheckFilled
+      <CheckCircleIcon
         aria-hidden="true"
         className="size-4 text-emerald-500"
+        weight="fill"
       />
     ),
   },
+] as const;
+
+const MENU_ITEMS = [
+  { label: "Duplicate", icon: IconCopy },
+  { label: "Move to folder", icon: IconFolder },
+  { label: "Archive", icon: IconArchive },
 ] as const;
 
 function getSliderValue(value: number | readonly number[]) {
@@ -72,11 +81,16 @@ export function NestedRadiusDemo() {
               )}
             >
               {example.label === "Wrong" ? (
-                <IconCircleXFilled className="h-4 w-4" aria-label="Wrong" />
+                <XCircleIcon
+                  className="h-4 w-4"
+                  aria-label="Wrong"
+                  weight="fill"
+                />
               ) : (
-                <IconCircleCheckFilled
+                <CheckCircleIcon
                   className="h-4 w-4"
                   aria-label="Correct"
+                  weight="fill"
                 />
               )}
               {example.label}
@@ -219,11 +233,11 @@ export function NestedRadiusExamplesDemo() {
       >
         <div
           className="bg-card p-2 shadow-(--custom-shadow)"
-          style={{ borderRadius: 24 }}
+          style={{ borderRadius: 16 }}
         >
           <div
             className="relative h-32 overflow-hidden bg-muted transition-[border-radius] duration-200 ease-out motion-reduce:transition-none"
-            style={{ borderRadius: nested ? 16 : 24 }}
+            style={{ borderRadius: nested ? 8 : 16 }}
           >
             <Image
               alt=""
@@ -249,18 +263,19 @@ export function NestedRadiusExamplesDemo() {
 
         <div
           className="self-center bg-card p-1 shadow-(--custom-shadow)"
-          style={{ borderRadius: 16 }}
+          style={{ borderRadius: 12 }}
         >
-          {["Duplicate", "Move to folder", "Archive"].map((item, index) => (
+          {MENU_ITEMS.map((item, index) => (
             <div
-              key={item}
+              key={item.label}
               className={cn(
-                "flex h-8 items-center px-3 text-xs transition-[border-radius] duration-200 ease-out motion-reduce:transition-none",
+                "flex h-8 items-center gap-2.5 px-2.5 text-xs transition-[border-radius] duration-200 ease-out motion-reduce:transition-none",
                 index === 0 ? "bg-muted text-primary" : "text-muted-foreground"
               )}
-              style={{ borderRadius: nested ? 12 : 16 }}
+              style={{ borderRadius: nested ? 8 : 12 }}
             >
-              {item}
+              <item.icon aria-hidden="true" className="size-3.5 shrink-0" />
+              {item.label}
             </div>
           ))}
         </div>

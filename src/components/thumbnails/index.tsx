@@ -48,7 +48,7 @@ function OklchThumbnail() {
 
 function NestedRadiusThumbnail() {
   return (
-    <div className="rounded-[18px] border bg-muted p-2 transition-all duration-300 group-hover:rounded-[24px] group-hover:p-3.5">
+    <div className="rounded-[19px] border bg-muted p-2 transition-all duration-300 group-hover:rounded-[25px] group-hover:p-3.5">
       <div className="size-14 rounded-[10px] border bg-card" />
     </div>
   );

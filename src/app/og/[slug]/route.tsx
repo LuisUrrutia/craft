@@ -91,7 +91,7 @@ function Thumbnail({ slug }: { slug: string }) {
           style={{
             display: "flex",
             padding: 22,
-            borderRadius: 46,
+            borderRadius: 48,
             border: `2px solid ${border}`,
             background: "#f1f1f1",
           }}
