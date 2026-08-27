@@ -48,7 +48,8 @@ const GROUPS: Group[] = [
         url: "https://vayo.me/bookmarks/clublk9rh000113g5qf4tj038",
         domain: "vayo.me",
         title: "Cool Stuff",
-        description: "Interesting products, ideas, and details collected on Vayo.",
+        description:
+          "Interesting products, ideas, and details collected on Vayo.",
       },
       {
         url: "https://vayo.me/bookmarks/cltpx1nq70001jw1tc90e4ht6",
@@ -112,7 +113,8 @@ const GROUPS: Group[] = [
         url: "https://tabler.io/icons",
         domain: "tabler.io",
         title: "Tabler Icons",
-        description: "6,000+ open-source icons built on a consistent 24px grid.",
+        description:
+          "6,000+ open-source icons built on a consistent 24px grid.",
       },
       {
         url: "https://nucleoapp.com/",
@@ -124,7 +126,8 @@ const GROUPS: Group[] = [
         url: "https://www.radix-ui.com/icons",
         domain: "radix-ui.com",
         title: "Radix Icons",
-        description: "A crisp set of 15×15 icons available as React components.",
+        description:
+          "A crisp set of 15×15 icons available as React components.",
       },
       {
         url: "https://hugeicons.com/",
@@ -132,6 +135,14 @@ const GROUPS: Group[] = [
         title: "Hugeicons",
         description: "A large free and premium library across multiple styles.",
       },
+      {
+        url: "https://centralicons.com/",
+        domain: "centralicons.com",
+        title: "Central Icons",
+        description:
+          "A beautifully consistent, lovingly crafted icon collection.",
+      },
+
       {
         url: "https://svgl.app/",
         domain: "svgl.app",
@@ -153,7 +164,8 @@ const GROUPS: Group[] = [
         url: "https://cuelume-site.pages.dev/",
         domain: "cuelume-site.pages.dev",
         title: "Cuelume",
-        description: "A tiny library of interaction sounds synthesized with Web Audio.",
+        description:
+          "A tiny library of interaction sounds synthesized with Web Audio.",
       },
     ],
   },
@@ -170,7 +182,8 @@ const GROUPS: Group[] = [
         url: "https://recent.design/",
         domain: "recent.design",
         title: "Recent",
-        description: "A daily curation of exceptional design, websites, and tools.",
+        description:
+          "A daily curation of exceptional design, websites, and tools.",
       },
       {
         url: "https://www.cosmos.so",
@@ -188,7 +201,8 @@ const GROUPS: Group[] = [
         url: "https://x.com/",
         domain: "x.com",
         title: "X",
-        description: "Design work, ideas, and conversations from people I follow.",
+        description:
+          "Design work, ideas, and conversations from people I follow.",
       },
     ],
   },
