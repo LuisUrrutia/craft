@@ -38,20 +38,26 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
-  --custom-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.06),
-    0px 1px 2px -1px rgba(0, 0, 0, 0.06), 0px 2px 4px 0px rgba(0, 0, 0, 0.04);
-  --custom-shadow-primary: 0px 0px 0px 1px rgba(0, 0, 0, 0.6),
-    0px 1px 2px -1px rgba(0, 0, 0, 0.4), 0px 2px 4px 0px rgba(0, 0, 0, 0.18);
-  --custom-shadow-destructive: 0px 0px 0px 1px rgba(244, 63, 94, 0.25),
+  --custom-shadow:
+    0px 0px 0px 1px rgba(0, 0, 0, 0.06), 0px 1px 2px -1px rgba(0, 0, 0, 0.06),
+    0px 2px 4px 0px rgba(0, 0, 0, 0.04);
+  --custom-shadow-primary:
+    0px 0px 0px 1px rgba(0, 0, 0, 0.6), 0px 1px 2px -1px rgba(0, 0, 0, 0.4),
+    0px 2px 4px 0px rgba(0, 0, 0, 0.18);
+  --custom-shadow-destructive:
+    0px 0px 0px 1px rgba(244, 63, 94, 0.25),
     0px 1px 2px -1px rgba(244, 63, 94, 0.18),
     0px 2px 4px 0px rgba(244, 63, 94, 0.12);
-  --custom-shadow-secondary: 0px 0px 0px 1px rgba(0, 0, 0, 0.08),
-    0px 1px 2px -1px rgba(0, 0, 0, 0.08), 0px 2px 4px 0px rgba(0, 0, 0, 0.05);
-  --custom-shadow-green: 0px 0px 0px 0.5px rgba(34, 197, 94, 0.25),
+  --custom-shadow-secondary:
+    0px 0px 0px 1px rgba(0, 0, 0, 0.08), 0px 1px 2px -1px rgba(0, 0, 0, 0.08),
+    0px 2px 4px 0px rgba(0, 0, 0, 0.05);
+  --custom-shadow-green:
+    0px 0px 0px 0.5px rgba(34, 197, 94, 0.25),
     0px 0.5px 2px -0.5px rgba(34, 197, 94, 0.18),
     0px 2px 4px 0px rgba(34, 197, 94, 0.12);
-  --custom-outline-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.06),
-    0px 1px 2px -1px rgba(0, 0, 0, 0.06), 0px 2px 4px 0px rgba(0, 0, 0, 0.04);
+  --custom-outline-shadow:
+    0px 0px 0px 1px rgba(0, 0, 0, 0.06), 0px 1px 2px -1px rgba(0, 0, 0, 0.06),
+    0px 2px 4px 0px rgba(0, 0, 0, 0.04);
 }
 
 .dark {
@@ -86,22 +92,27 @@
   --sidebar-accent-foreground: oklch(0.945 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
-  --custom-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.03),
+  --custom-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.03),
     inset 0 0 0 1px rgba(255, 255, 255, 0.03), 0 0 0 1px rgba(0, 0, 0, 0.1),
     0 2px 2px 0 rgba(0, 0, 0, 0.1), 0 4px 4px 0 rgba(0, 0, 0, 0.1),
     0 8px 8px 0 rgba(0, 0, 0, 0.1);
-  --custom-outline-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.05),
+  --custom-outline-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.05),
     inset 0 0 0 1px rgba(255, 255, 255, 0.045), 0 0 0 1px rgba(0, 0, 0, 0.14),
     0 1px 2px -1px rgba(0, 0, 0, 0.14), 0 2px 4px 0 rgba(0, 0, 0, 0.08);
-  --custom-shadow-primary: inset 0 1px 0 0 rgba(255, 255, 255, 0.45),
+  --custom-shadow-primary:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.45),
     0 0 0 1px rgba(255, 255, 255, 0.55), 0 1px 2px 0 rgba(0, 0, 0, 0.5);
-  --custom-shadow-destructive: inset 0 1px 0 0 rgba(244, 63, 94, 0.03),
-    0 0 0 1px rgba(244, 63, 94, 0.18), 0 1px 2px 0 rgba(244, 63, 94, 0.1);
-  --custom-shadow-secondary: inset 0 1px 0 0 rgba(255, 255, 255, 0.04),
+  --custom-shadow-destructive:
+    inset 0 1px 0 0 rgba(244, 63, 94, 0.03), 0 0 0 1px rgba(244, 63, 94, 0.18),
+    0 1px 2px 0 rgba(244, 63, 94, 0.1);
+  --custom-shadow-secondary:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.04),
     0 0 0 1px rgba(255, 255, 255, 0.08), 0 1px 2px 0 rgba(0, 0, 0, 0.25);
-  --custom-shadow-green: inset 0 0.5px 0 0 rgba(34, 197, 94, 0.03),
-    0 0 0 0.5px rgba(34, 197, 94, 0.18),
-    0 0.5px 2px 0 rgba(34, 197, 94, 0.1);
+  --custom-shadow-green:
+    inset 0 0.5px 0 0 rgba(34, 197, 94, 0.03),
+    0 0 0 0.5px rgba(34, 197, 94, 0.18), 0 0.5px 2px 0 rgba(34, 197, 94, 0.1);
 }
 
 @theme inline {
@@ -185,6 +196,68 @@
     rgb(0 0 0 / 0.1) calc(100% - 0.75rem),
     transparent
   );
+}
+
+/* Nav dot: rests on --dot-to and, on a fresh mount after travelling, plays a
+   crossfade from --dot-from. Timed to the dot's flight in sidebar-nav.tsx. */
+@keyframes dot-crossfade {
+  from {
+    background-color: var(--dot-from);
+  }
+  to {
+    background-color: var(--dot-to);
+  }
+}
+
+@utility dot-crossfade {
+  /* Finish the colour change in the first half of the flight, so the dot
+     already wears its new section colour as it comes in to land. */
+  animation: dot-crossfade calc(var(--dot-flight, 350ms) * 0.5) ease-out both;
+}
+
+/* Nav name: when the dot lands (--dot-impact after mount), the section colour
+   sweeps through the letters from the left, then drains back to foreground.
+   Registered properties so the gradient edge and tint strength interpolate. */
+@property --name-sweep {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 120%;
+}
+
+@property --name-tint {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 0%;
+}
+
+@keyframes name-hit {
+  0% {
+    --name-sweep: 0%;
+    --name-tint: 100%;
+  }
+  22% {
+    --name-sweep: 120%;
+    --name-tint: 100%;
+  }
+  100% {
+    --name-sweep: 120%;
+    --name-tint: 0%;
+  }
+}
+
+@utility name-hit {
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  background-image: linear-gradient(
+    to right,
+    color-mix(in oklch, var(--dot-to) var(--name-tint), var(--foreground))
+      calc(var(--name-sweep) - 25%),
+    var(--foreground) var(--name-sweep)
+  );
+  /* `both` holds the 0% frame (all foreground) through the delay, so nothing
+     shows until the dot actually arrives. */
+  animation: name-hit 1.1s ease-out var(--dot-impact, 280ms) both;
 }
 
 @utility scrollbar-hidden {

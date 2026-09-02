@@ -1,53 +1,103 @@
 ---
 title: Noise
-description: A whisper of grain keeps flat surfaces from feeling dead.
+description: A little grain makes flat surfaces feel like material.
 section: Color
 order: 2
 publishedAt: "2026-07-15"
 resources:
   - url: https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feTurbulence
+    title: feTurbulence
+    description: The SVG filter primitive that generates the noise, on MDN.
+  - url: https://css-tricks.com/grainy-gradients/
+    title: Grainy Gradients
+    description: A deep walkthrough of the SVG noise technique on CSS-Tricks.
   - url: https://grainy-gradients.vercel.app
+    title: Grainy Gradients playground
+    description: Tweak turbulence, blend modes, and colors in the browser.
+  - url: https://developer.mozilla.org/en-US/docs/Web/CSS/mix-blend-mode
+    title: mix-blend-mode
+    description: How blend modes mix a layer with the content behind it.
 ---
 
-Large flat fills - hero gradients, cards, empty states - can feel sterile,
-and on cheap displays they band. A film of noise at single-digit opacity
-fixes both: it adds texture the eye barely registers and dithers the banding
-away.
+Large flat fills can feel sterile. A hero gradient, a card cover, or an empty
+state is often just one smooth color ramp, and on some screens that ramp also
+shows **banding**: visible steps between the colors.
 
-You don't need an image. SVG's `feTurbulence` generates the grain, and a CSS
-filter applies it:
+A thin layer of noise fixes both. The grain adds a texture the eye barely
+registers, and it breaks the color steps apart so the banding disappears.
+
+You do not need an image file for this. SVG can generate the grain with
+`feTurbulence`, and a CSS filter applies it. Move the slider to find the point
+where the surface stops feeling flat.
 
 <NoiseDemo />
 
-## The technique
+## Grain size
 
-```html
-<div class="noise" aria-hidden="true">
-  <svg>
-    <filter id="noise-fx">
-      <feTurbulence baseFrequency="0.8" />
-    </filter>
-  </svg>
+`baseFrequency` controls how fine the grain is. Higher values pack more detail
+into the same space.
+
+<NoiseFrequencyDemo />
+
+Values between 0.6 and 1 read as fine film grain, which is what most
+interfaces want. Go much lower and the pattern turns into visible static.
+
+## On real surfaces
+
+The difference is easier to judge on a real component than on a swatch. Toggle
+the cover of this card.
+
+<NoiseSurfaceDemo />
+
+The effect should be almost subliminal. If someone can point at the grain, it
+is too strong. Keep it off text and away from small UI, where it only hurts
+legibility.
+
+## Usage
+
+The filter is defined once in the document. An empty overlay element renders
+it, because an element with a turbulence filter is painted entirely by the
+filter output.
+
+<CodeBlock
+  tabs={[
+    {
+      label: "HTML",
+      language: "html",
+      code: `<div class="hero">
+    <div class="noise" aria-hidden="true"></div>
 </div>
 
-<style>
-  .noise {
+<svg width="0" height="0" aria-hidden="true">
+    <filter id="noise-filter">
+        <feTurbulence baseFrequency="0.8" />
+    </filter>
+</svg>`,
+    },
+    {
+      label: "CSS",
+      language: "css",
+      icon: "css",
+      code: `.hero {
+    position: relative;
+}
+
+.noise {
     position: absolute;
     inset: 0;
-    pointer-events: none;
-    filter: url(#noise-fx) grayscale(100%);
-    opacity: 0.1;
+    filter: url(#noise-filter) grayscale(100%);
+    opacity: 0.08;
     mix-blend-mode: overlay;
-  }
-</style>
-```
+    pointer-events: none;
+}`,
+    },
+  ]}
+/>
 
-- `baseFrequency` sets grain size - 0.6–1 is fine film grain.
-- `grayscale(100%)` kills the rainbow speckle turbulence produces.
-- A blend mode (`overlay`, `soft-light`) melts it into the surface.
+Three details make this work:
 
-## Restraint
-
-Noise is seasoning. At 5–10% opacity it reads as material; at 30% it reads
-as a broken JPEG. Keep it off text surfaces, and remember it's decorative -
-`aria-hidden`, `pointer-events: none`.
+- `grayscale(100%)` removes the colored speckle that turbulence produces.
+- A blend mode like `overlay` or `soft-light` melts the grain into the surface
+  instead of sitting on top of it.
+- The layer is decorative, so it gets `aria-hidden` and
+  `pointer-events: none`.

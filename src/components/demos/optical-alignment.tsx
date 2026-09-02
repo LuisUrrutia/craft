@@ -112,7 +112,7 @@ export function OpticalAlignmentDemo() {
               <span className="text-[10px] text-muted-foreground">
                 {example.label}
               </span>
-              <span className="rounded-full bg-muted px-2 py-0.5 font-mono text-[9px] text-muted-foreground">
+              <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] tabular-nums text-muted-foreground">
                 {optical ? example.correction : "0px"}
               </span>
             </div>
@@ -168,8 +168,8 @@ export function OpticalButtonDemo() {
                 />
                 {example.action}
               </Button>
-              <span className="font-mono text-[9px] text-muted-foreground">
-                {tuned ? example.buttonCorrection : "same CSS"}
+              <span className="text-[10px] tabular-nums text-muted-foreground">
+                {tuned ? example.buttonCorrection : "Same CSS"}
               </span>
             </div>
           );
@@ -280,7 +280,7 @@ export function HangingPunctuationDemo() {
           <br />
           should disappear.”
         </p>
-        <span className="absolute bottom-2 left-8 font-mono text-[9px] text-rose-500">
+        <span className="absolute bottom-2 left-8 text-[9px] text-rose-500">
           visible edge
         </span>
       </div>

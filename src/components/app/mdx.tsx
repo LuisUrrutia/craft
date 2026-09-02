@@ -10,7 +10,11 @@ import { EasingsDemo } from "@/components/demos/easings";
 import { ExitAnimationsDemo } from "@/components/demos/exit-animations";
 import { FontSmoothingDemo } from "@/components/demos/font-smoothing";
 import { HitAreasDemo } from "@/components/demos/hit-areas";
-import { HoverRestraintDemo } from "@/components/demos/hover-restraint";
+import {
+  HoverExitDemo,
+  HoverRestraintDemo,
+  HoverTooltipDemo,
+} from "@/components/demos/hover-restraint";
 import { HtmlBackgroundDemo } from "@/components/demos/html-background";
 import { IconMorphDemo } from "@/components/demos/icon-morph";
 import { IconWeightsDemo } from "@/components/demos/icon-weights";
@@ -25,7 +29,11 @@ import {
   NestedRadiusExamplesDemo,
   RadiusCalculatorDemo,
 } from "@/components/demos/nested-radius";
-import { NoiseDemo } from "@/components/demos/noise";
+import {
+  NoiseDemo,
+  NoiseFrequencyDemo,
+  NoiseSurfaceDemo,
+} from "@/components/demos/noise";
 import { OklchDemo } from "@/components/demos/oklch";
 import {
   HangingPunctuationDemo,
@@ -183,6 +191,8 @@ const components: MDXComponents = {
   HangingPunctuationDemo,
   IconWeightsDemo,
   NoiseDemo,
+  NoiseFrequencyDemo,
+  NoiseSurfaceDemo,
   ShadowsNotBordersDemo,
   ImageOutlineDemo,
   HtmlBackgroundDemo,
@@ -192,6 +202,8 @@ const components: MDXComponents = {
   StaggerDemo,
   InterruptibilityDemo,
   HoverRestraintDemo,
+  HoverExitDemo,
+  HoverTooltipDemo,
   LayeringSoundsDemo,
   LivingChartsDemo,
   PerceivedPerformanceDemo,

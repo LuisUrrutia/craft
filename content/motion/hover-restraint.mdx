@@ -6,32 +6,78 @@ order: 6
 publishedAt: "2026-07-15"
 resources:
   - url: https://emilkowal.ski/ui/you-dont-need-animations
+    title: You don't need animations
+    description: Emil Kowalski on when animation helps and when it gets in the way.
   - url: https://emilkowal.ski/ui/7-practical-animation-tips
+    title: 7 practical animation tips
+    description: Short, concrete rules for interface motion, including tooltips.
 ---
 
-Hover states fire constantly - a user sweeping across a nav strafes ten of
-them per second. Animate each one and the interface is permanently a few
-frames behind the cursor. It reads as *slow*, even when nothing is.
+Hover states fire constantly. Sweep the cursor across a nav and you can cross
+ten items in one second. If each item fades in, the interface is always a few
+frames behind the cursor. It reads as slow, even when nothing is.
 
-Emil Kowalski's framework: the more frequent the interaction, the less
-animation it can afford. Hover is the most frequent interaction there is.
+A useful rule from Emil Kowalski: the more often an interaction happens, the
+less animation it can afford. Hover is the most frequent interaction there is,
+so hover feedback should be instant.
 
 <HoverRestraintDemo />
 
-## The rules
+If a background or color change feels too harsh at full speed, keep any
+transition under 100ms. Past that, people start to feel the delay.
 
-- **Backgrounds and colors on hover: instant.** Or nearly - ≤100ms if you
-  must soften them. This site's nav and resource rows switch instantly.
-- **Animate the leave, not the enter.** A snappy highlight that *fades* out
-  on exit gives polish without lag. `transition: background 200ms;` plus
-  `:hover { transition: none; }` does exactly this.
-- **Tooltips: delay the first, not the rest.** Once one tooltip is open,
-  its siblings should appear immediately - Emil's tip #3.
-- **Keyboard-triggered actions: never animate.** A shortcut user is your
-  fastest user; charging them 200ms per action is a tax on expertise.
+## Animate the leave
 
-## The test
+Instant does not have to mean abrupt. Switch the highlight on with no delay,
+then let it fade out after the cursor moves away. The feedback stays
+immediate, and the fading trail behind the cursor adds the polish an enter
+animation was trying to buy.
 
-Sweep your cursor across the component fast. If the UI is still finishing
-animations after your cursor has left, you're animating things that should
-simply *be*.
+<HoverExitDemo />
+
+## Tooltips
+
+Tooltips are the exception where a delay helps. Without one, tooltips pop up
+while people are just passing through. So delay the first tooltip, but once
+one is open, its neighbors should appear at once.
+
+<HoverTooltipDemo />
+
+The same thinking applies beyond the cursor. An action triggered by a keyboard
+shortcut should not animate either. Shortcut users are your fastest users, and
+a mandatory transition charges them for speed they already have.
+
+## Usage
+
+The pattern from the second demo takes one extra line: give the element a
+normal transition, then remove it while the element is hovered.
+
+<CodeBlock
+  tabs={[
+    {
+      label: "Tailwind",
+      language: "html",
+      icon: "tailwind",
+      code: `<a class="transition-colors duration-300 hover:duration-0 hover:bg-muted">
+    Inbox
+</a>`,
+    },
+    {
+      label: "CSS",
+      language: "css",
+      icon: "css",
+      code: `.item {
+    transition: background-color 300ms;
+}
+
+.item:hover {
+    background-color: var(--muted);
+    transition-duration: 0s;
+}`,
+    },
+  ]}
+/>
+
+The test is simple. Sweep the cursor across the component as fast as you can.
+If highlights are still catching up to where the cursor is, something is
+animating in when it should simply appear.

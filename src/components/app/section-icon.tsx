@@ -33,15 +33,44 @@ const colors: Record<Section, string> = {
   Craft: "text-orange-600 dark:text-orange-400",
 };
 
-// Background equivalents of the icon colors, for the nav's active dot.
-export const sectionDotColors: Record<Section, string> = {
-  Typography: "bg-blue-600 dark:bg-blue-400",
-  Color: "bg-rose-600 dark:bg-rose-400",
-  Layout: "bg-amber-600 dark:bg-amber-400",
-  Motion: "bg-violet-600 dark:bg-violet-400",
-  Sound: "bg-emerald-600 dark:bg-emerald-400",
-  Data: "bg-cyan-600 dark:bg-cyan-400",
-  Craft: "bg-orange-600 dark:bg-orange-400",
+export type DotColor = Section | "foreground";
+
+// The nav's active dot reads its colour from CSS custom properties so it can
+// crossfade from the previous section to the next one in CSS (Motion can't
+// interpolate Tailwind's oklch palette). Two maps, since a single element
+// carries both ends of the crossfade. Same hues as the icons above.
+export const dotColorFrom: Record<DotColor, string> = {
+  foreground: "[--dot-from:var(--foreground)]",
+  Typography:
+    "[--dot-from:var(--color-blue-500)] dark:[--dot-from:var(--color-blue-400)]",
+  Color:
+    "[--dot-from:var(--color-rose-500)] dark:[--dot-from:var(--color-rose-400)]",
+  Layout:
+    "[--dot-from:var(--color-amber-500)] dark:[--dot-from:var(--color-amber-400)]",
+  Motion:
+    "[--dot-from:var(--color-violet-500)] dark:[--dot-from:var(--color-violet-400)]",
+  Sound:
+    "[--dot-from:var(--color-emerald-500)] dark:[--dot-from:var(--color-emerald-400)]",
+  Data: "[--dot-from:var(--color-cyan-500)] dark:[--dot-from:var(--color-cyan-400)]",
+  Craft:
+    "[--dot-from:var(--color-orange-500)] dark:[--dot-from:var(--color-orange-400)]",
+};
+
+export const dotColorTo: Record<DotColor, string> = {
+  foreground: "[--dot-to:var(--foreground)]",
+  Typography:
+    "[--dot-to:var(--color-blue-500)] dark:[--dot-to:var(--color-blue-400)]",
+  Color:
+    "[--dot-to:var(--color-rose-500)] dark:[--dot-to:var(--color-rose-400)]",
+  Layout:
+    "[--dot-to:var(--color-amber-500)] dark:[--dot-to:var(--color-amber-400)]",
+  Motion:
+    "[--dot-to:var(--color-violet-500)] dark:[--dot-to:var(--color-violet-400)]",
+  Sound:
+    "[--dot-to:var(--color-emerald-500)] dark:[--dot-to:var(--color-emerald-400)]",
+  Data: "[--dot-to:var(--color-cyan-500)] dark:[--dot-to:var(--color-cyan-400)]",
+  Craft:
+    "[--dot-to:var(--color-orange-500)] dark:[--dot-to:var(--color-orange-400)]",
 };
 
 export function SectionIcon({
