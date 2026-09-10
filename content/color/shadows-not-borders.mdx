@@ -1,43 +1,101 @@
 ---
 title: Shadows, Not Borders
-description: Depth reads better than outlines.
+description: A layered shadow gives a card an edge and a sense of depth, where a border only gives it an edge.
 section: Color
 order: 3
 publishedAt: "2026-07-15"
 resources:
-  - url: https://jakub.kr/writing/details-that-make-interfaces-feel-better
   - url: https://www.joshwcomeau.com/css/designing-shadows/
+    title: Designing Beautiful Shadows in CSS
+    description: The best explanation of layered shadows and why one big blur looks wrong.
+  - url: https://jakub.kr/components/details-that-make-interfaces-feel-better
+    title: Details that make interfaces feel better
+    description: Includes the ring plus shadow recipe and how it changes in dark mode.
+  - url: https://developer.mozilla.org/en-US/docs/Web/CSS/box-shadow
+    title: box-shadow
+    description: Reference for the syntax, including inset and spread, which the dark mode version leans on.
+  - url: https://shadows.brumm.af/
+    title: Smooth Shadow
+    description: A generator for layered shadows with an easing curve, useful for elevation scales.
 ---
 
-A 1px solid border says "here is a box." A composite shadow says "this
-surface floats above the page." Same silhouette, completely different
-feeling - and the shadow version scales: raise the elevation for popovers,
-lower it for cards, and the whole UI shares one lighting model.
+A 1px border is the default way to give a card an edge. It works, but every border is a line, and a screen full of lines starts to look like a spreadsheet. A **layered shadow** draws the same edge with a faint ring, then adds a hint of depth below it. Same card, two treatments.
 
 <ShadowsNotBordersDemo />
 
-## The recipe
+The shadow version is not softer or blurrier, it is still sharp at the edge. The difference is that the card now sits slightly above the page instead of being drawn on it. That is what lets you stack surfaces, like a card inside a panel inside a page, without the lines piling up.
 
-Replace the border with a hairline ring plus a stack of soft shadows that
-widen as they fall:
+## Three layers
 
-```css
-.card {
-  box-shadow:
-    0 0 0 1px rgba(0, 0, 0, 0.06),   /* hairline ring */
-    0 1px 2px rgba(0, 0, 0, 0.05),   /* contact shadow */
-    0 4px 8px rgba(0, 0, 0, 0.04),   /* ambient */
-    0 12px 24px rgba(0, 0, 0, 0.04); /* atmosphere */
+The recipe this site uses has three parts, and each does one job. Step through them.
+
+<ShadowLayersDemo />
+
+- The **ring** is a `0 0 0 1px` shadow at 6% black. This is the edge. It replaces the border, but because it is a shadow it does not take up space or change the box size.
+- The **contact** layer is a tight, 1px offset shadow at 6%. It darkens the pixels right under the bottom edge, which is where a real object would touch the surface.
+- The **ambient** layer is a wider, 4px blur at 4%. It suggests light from above without ever becoming a visible smudge.
+
+> Several faint shadows look like one real shadow. One strong shadow looks like a drop shadow filter.
+
+None of the layers is above 6% opacity. If you can consciously see the shadow, it is too strong.
+
+## Elevation
+
+Once the base is built from layers, elevation is just adding more of them. A card at rest has a ring and a contact shadow. On hover it picks up a mid blur. A popover adds a long soft one on top of that.
+
+<ShadowElevationDemo />
+
+Keep the first two layers the same across every level. That is what makes the levels read as the same material at different heights, instead of three different styles.
+
+## Dark mode
+
+Shadows are dark, and a dark shadow on a dark background is invisible. Here is the light mode shadow dropped onto a dark surface, next to the version this site actually uses in dark mode.
+
+<ShadowDarkModeDemo />
+
+In dark mode the edge comes from light, not dark. A 1px inset ring at 3% white draws the outline from the inside, and a 1px inset highlight along the top edge suggests light hitting the surface. The outer shadows stay, but they are there for separation from what is below, not for the edge.
+
+## Usage
+
+These are the real token values from this site's `globals.css`. The Tailwind tab uses the token directly, the CSS tab shows what is inside it.
+
+<CodeBlock
+  tabs={[
+    {
+      label: "Tailwind",
+      language: "html",
+      icon: "tailwind",
+      code: `<div class="rounded-xl bg-card shadow-(--custom-shadow)">
+  <!-- content -->
+</div>`,
+    },
+    {
+      label: "CSS",
+      language: "css",
+      icon: "css",
+      code: `:root {
+  --custom-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.06),
+    0 1px 2px -1px rgba(0, 0, 0, 0.06),
+    0 2px 4px 0 rgba(0, 0, 0, 0.04);
 }
-```
 
-- The `0 0 0 1px` ring replaces the border without consuming layout space.
-- Each layer roughly doubles the blur and fades - mimicking real light.
-- Keep every alpha tiny; the layers sum.
+.dark {
+  --custom-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.03),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.03),
+    0 0 0 1px rgba(0, 0, 0, 0.1),
+    0 2px 2px 0 rgba(0, 0, 0, 0.1),
+    0 4px 4px 0 rgba(0, 0, 0, 0.1),
+    0 8px 8px 0 rgba(0, 0, 0, 0.1);
+}
 
-## Dark mode caveat
+.card {
+  border-radius: 12px;
+  box-shadow: var(--custom-shadow);
+}`,
+    },
+  ]}
+/>
 
-Shadows disappear on dark backgrounds - there's nothing darker to cast onto.
-Flip the strategy: keep the hairline ring but make it *lighter* than the
-surface (`rgba(255,255,255,0.08)`), simulating an edge highlight instead of
-a shadow.
+Borders still have a place. Inputs, table rows, and dividers want a plain line, because they are not surfaces and should not look raised. Save the shadow for things that contain other things.

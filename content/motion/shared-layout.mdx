@@ -9,43 +9,80 @@ resources:
     title: How I Use Shared Layout Animations
     description: Jakub Krehel on layoutId, FLIP, and where morphs make sense.
   - url: https://motion.dev/docs/react-layout-animations
+    title: Layout animations in Motion
+    description: The official guide to layout and layoutId, including how to fix border radius distortion.
+  - url: https://aerotwist.com/blog/flip-your-animations/
+    title: FLIP Your Animations
+    description: Paul Lewis's original write-up of the First, Last, Invert, Play technique that shared layout is built on.
+  - url: https://developer.chrome.com/docs/web-platform/view-transitions
+    title: View Transitions API
+    description: The native way to morph elements between states, and between pages, without a library.
 ---
 
-When a tab indicator jumps from one tab to the next, your brain sees two
-things: a highlight disappearing and a new one appearing. When it *slides*,
-you see one thing moving - and movement carries information: where it came
-from, where it went, that these two states are the same object.
+When a tab indicator jumps from one tab to the next, your eye has to find it again. When it slides, you never lose it. A **shared layout** animation treats the indicator as one element that moves, even if in the DOM it is two elements that swap.
+
+Click the tabs below. Both rows update together.
 
 <SharedLayoutDemo />
 
-## How it works
+On the left, the highlight disappears from one tab and appears under another. On the right, it travels. The second version tells you two things at once: which tab is active now, and where it came from. That is the whole value of the technique. Continuity is information.
 
-Give the element a `layoutId` and Motion does the rest:
+Under the hood this is FLIP. Motion measures where the element was, where it is now, and animates the difference with a transform. You give two elements the same `layoutId`, and when one unmounts as the other mounts, Motion plays the move.
 
-```tsx
-{active === i && (
-  <motion.span layoutId="indicator" className="..." />
-)}
-```
+## From list to detail
 
-Under the hood this is FLIP: measure the element's old position, render it
-in the new one, then animate a transform between the two. Because it's all
-`transform`, it runs on the compositor - a `layoutId` slide is cheaper than
-animating `left` or `width` ever was.
+The same idea carries a lot further than tabs. A thumbnail in a list can become the header of a detail view. A title in a row can become the title of a page. Tap a project below, then switch to swap mode and try again.
 
-## Where it earns its keep
+<SharedLayoutDetailDemo />
 
-- **Tab and nav indicators** - the canonical case.
-- **Preview to detail** - a card that expands into a dialog reads as the
-  *same surface* growing, not a modal appearing over it.
-- **Reordering lists** - items glide to their new slots instead of
-  teleporting.
+With a shared layout, the thumbnail and title stay put in your mind while everything around them changes. With a plain swap, the whole view is replaced and you have to re-read it to confirm you landed in the right place.
 
-## Notes
+Keep the settle short. A spring with no bounce that lands in under 300ms feels responsive. Anything longer starts to look like the interface is showing off.
 
-- Keep shared elements outside `AnimatePresence` when you can - exit
-  animations and layout measurement fight each other.
-- Rounded corners distort under scale; Motion corrects `borderRadius` if
-  it's set via the `style` prop.
-- Reach for it when two states are conceptually one object. If they aren't,
-  a crossfade is honest and a morph is noise.
+## Where it goes wrong
+
+Shared layout animations scale elements to move them, and scaling distorts border radius and shadows. Motion corrects `borderRadius` when you set it through `style` rather than a class. Text can also stretch briefly when a container changes shape, which is why the title above uses `layout="position"`: it moves, but never scales.
+
+Also be careful about what you share. Two elements with the same `layoutId` should be the same thing to the user. Sharing a card's thumbnail with a detail header makes sense. Sharing a button with an unrelated panel just looks like a glitch.
+
+## Usage
+
+<CodeBlock
+  tabs={[
+    {
+      label: "Motion",
+      language: "tsx",
+      code: `import { motion } from "motion/react";
+
+{tabs.map((tab) => (
+  <button key={tab} onClick={() => setActive(tab)}>
+    {tab === active && (
+      <motion.span
+        className="absolute inset-0 rounded-md bg-card"
+        layoutId="indicator"
+        transition={{ type: "spring", duration: 0.3, bounce: 0 }}
+      />
+    )}
+    <span className="relative">{tab}</span>
+  </button>
+))}`,
+    },
+    {
+      label: "View Transitions",
+      language: "css",
+      icon: "css",
+      code: `/* Give the element the same name in both states. */
+.thumbnail,
+.detail-header {
+  view-transition-name: project-thumb;
+}
+
+::view-transition-group(project-thumb) {
+  animation-duration: 300ms;
+  animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+}`,
+    },
+  ]}
+/>
+
+The browser has a native version of this now. Wrap a state change in `document.startViewTransition()` and any element with a matching `view-transition-name` morphs on its own, across routes too. It is worth reaching for first when you do not need Motion for anything else.

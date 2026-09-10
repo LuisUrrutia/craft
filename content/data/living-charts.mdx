@@ -1,46 +1,87 @@
 ---
 title: Living Charts
-description: Interpolation makes data feel alive instead of updated.
+description: Animate live data between updates so a chart reads as a stream instead of a series of snapshots.
 section: Data
 order: 1
 publishedAt: "2026-07-15"
 resources:
   - url: https://benji.org/liveline
+    title: Liveline
+    description: Benji Taylor on building a live line chart that moves continuously, and the tricks that make it feel right.
   - url: https://shud.in/thoughts/adaptive-polynomial-curve-fitting
+    title: Adaptive Polynomial Curve Fitting
+    description: How to smooth streaming values without lagging behind them.
+  - url: https://motion.dev/docs/react-layout-animations
+    title: Layout animations in Motion
+    description: The layout prop used in the second demo, which animates elements that change position in the DOM.
+  - url: https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame
+    title: requestAnimationFrame on MDN
+    description: The loop the first demo uses to move numbers a little each frame.
 ---
 
-Real-time data arrives in steps: a new reading every second, a websocket
-message every few hundred milliseconds. Draw each snapshot as it lands and
-the chart twitches - technically accurate, emotionally dead. The ChatGPT
-voice waveform, trading charts, audio meters: everything that feels alive
-on screen is *interpolating*.
+Live data arrives in steps. A server sends a number every second or so, and the chart has to show it. If you render each value the moment it lands, the chart jumps. If you move towards each value over a few hundred milliseconds, the chart appears to breathe. A **living chart** is one that never teleports.
+
+Both cards below receive the same value at the same time, every second and a half. The left one draws it immediately. The right one tweens from where it was to where it should be.
 
 <LivingChartsDemo />
 
-## The technique
+Nothing about the data changed. The right card just spreads each change over `900ms` with an ease-out curve, so most of the movement happens early and the number settles gently. A tween that finishes before the next update arrives keeps the chart honest: at every tick, both cards agree.
 
-Keep two arrays: where the data *is* (targets) and what you *draw*
-(values). Every frame, move each drawn point a fraction toward its target:
+## The number is part of the chart
 
-```ts
-function frame() {
-  for (let i = 0; i < points.length; i++) {
-    values[i] += (targets[i] - values[i]) * 0.08;
-  }
-  draw(values);
-  requestAnimationFrame(frame);
+Notice the counter above the sparkline. A number that flips from 620 to 790 gets read as two facts. A number that counts up gets read as a change, which is what it is. Use `tabular-nums` so the digits do not shift sideways while they move.
+
+## Ranked lists
+
+When live values change order, the reorder is the interesting part. A snapped list makes rows swap places between frames, and the reader loses track of which one is which.
+
+<LivingBarsDemo />
+
+With animation on, each row slides to its new slot and its bar grows or shrinks in place. The eye can follow GitHub overtaking X without reading the labels again.
+
+## Usage
+
+The tween is a short hook. It keeps the last displayed values in a ref, and on every new target it eases from those to the new ones with `requestAnimationFrame`.
+
+<CodeBlock
+  tabs={[
+    {
+      label: "React",
+      language: "tsx",
+      code: `import { useEffect, useRef, useState } from "react";
+
+export function useTweened(target: number[], duration = 900) {
+  const [display, setDisplay] = useState(target);
+  const current = useRef(target);
+
+  useEffect(() => {
+    const from = current.current;
+    const start = performance.now();
+    let frame = 0;
+
+    const step = (now: number) => {
+      const t = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - t, 3);
+      const next = target.map((value, i) => {
+        const origin = from[i] ?? value;
+        return origin + (value - origin) * eased;
+      });
+      current.current = next;
+      setDisplay(next);
+      if (t < 1) frame = requestAnimationFrame(step);
+    };
+
+    frame = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(frame);
+  }, [target, duration]);
+
+  return display;
 }
-```
 
-That `* 0.08` is a lerp - 8% of the remaining distance per frame. New data
-doesn't jump; it *arrives*, decelerating as it lands (ease-out for free).
-Benji Taylor's Liveline charts use exactly this.
+// const smooth = useTweened(series);
+// <path d={toPath(smooth)} />`,
+    },
+  ]}
+/>
 
-## Notes
-
-- **Canvas, not React.** Sixty updates a second through the render cycle is
-  waste; draw directly and leave React out of the loop.
-- **Lerp the view, never the record.** The drawn value is presentation -
-  tooltips and axes should read the true data.
-- **Smoothing has opinions.** Higher factors track faster but jitter;
-  lower ones glide but lag. Match it to how urgent the data is.
+Two things to check. Keep the y axis fixed to a known range while data streams, or the whole chart will rescale every tick and undo the calm you just added. And respect `prefers-reduced-motion`: when it is set, skip the tween and render the target directly.

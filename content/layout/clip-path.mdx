@@ -1,45 +1,96 @@
 ---
 title: Clip-Path
-description: Reveal by drawing less, not by moving more.
+description: Reveal, hide, and slide interface elements by clipping them instead of resizing them.
 section: Layout
 order: 4
 publishedAt: "2026-07-16"
 resources:
   - url: https://emilkowal.ski/ui/the-magic-of-clip-path
+    title: The Magic of Clip Path
+    description: Emil Kowalski walks through tabs, hold-to-delete buttons, and comparison sliders built with a single property.
   - url: https://developer.mozilla.org/en-US/docs/Web/CSS/clip-path
+    title: clip-path on MDN
+    description: Every shape function clip-path accepts, with browser support and animation notes.
+  - url: https://developer.mozilla.org/en-US/docs/Web/CSS/basic-shape/inset
+    title: inset() on MDN
+    description: The one shape you will use most, including the round keyword for rounded corners.
+  - url: https://web.dev/articles/animations-guide
+    title: How to create high-performance CSS animations
+    description: Why animating width and height is expensive, and which properties the browser can animate cheaply.
 ---
 
-Most reveal effects are built by moving or resizing elements - which means
-layout shifts, stretched content, and reflow. `clip-path` sidesteps all of
-it: the element stays exactly where it is at full size, and you control
-how much of it the browser draws.
+**clip-path** cuts away part of an element without changing its layout. The element keeps its size, its position, and its text wrapping. Only the visible window changes. That one property replaces a surprising amount of work that would otherwise involve resizing boxes, duplicating layouts, or reaching for JavaScript.
 
-<ClipPathDemo />
+The demo below animates the same card two ways. On the left the width shrinks, so the text inside reflows and the icon squashes. On the right the card is clipped, so it just slides out of view.
 
-## The workhorse: inset()
+<ClipPathRevealDemo />
 
-```css
-clip-path: inset(0 50% 0 0); /* draw the left half */
-```
+Clipping does not trigger layout. The browser keeps the element painted at full size and hides part of it at composite time, which is why it stays smooth even on long lists or heavy content.
 
-Because the element never changes size, whatever is inside it never
-squishes or reflows - which is what makes the classic before/after
-comparison slider work. Two identical layers, the top one clipped; drag to
-change the inset.
+## Tabs that transition properly
 
-## Uses beyond sliders
+Picture a segmented control with a dark pill that slides between options. The pill can move with a transform, but the text has to change color too. If you transition `color` on each label, the label leaving fades out while the label arriving fades in. For a moment both are half-gray and the control looks muddy.
 
-- **Tab color inversion** - Emil's trick: render the label twice, dark on
-  light and light on dark, and clip the top copy to the moving indicator.
-  The text appears to change color as the highlight passes through it.
-- **Theme-switch reveals** - animate a `circle()` clip from the toggle
-  button outward so the new theme floods the page from the click point.
-- **Entrances** - animating `inset(0 100% 0 0)` to `inset(0)` wipes content
-  in without a wrapper div or overflow hack.
+Rather than tinting labels, render the tab list twice. The second copy sits on top with inverted colors and is clipped down to the pill. Then animate the clip.
 
-## Notes
+<ClipPathTabsDemo />
 
-- `clip-path` is animatable as long as the shape type and point count
-  match on both ends (`inset` to `inset`, same-vertex polygons).
-- It composites cheaply - no layout, no paint outside the element - making
-  it one of the few reveal tools that's both precise and fast.
+The dark copy on the right is not fading anything. It is always fully colored and only the clipped window moves. The text swaps color exactly at the pill edge, which is what a physical slider would do.
+
+## Hold to delete
+
+Destructive actions benefit from a short hold. A clipped overlay is a good way to show that time passing. The full red state is rendered underneath, clipped to zero width, and revealed with a linear transition while the pointer is down.
+
+<ClipPathHoldDemo />
+
+The trick is in the two transition timings. The reveal runs slowly and linearly so the progress feels honest. On release, the overlay snaps back in `200ms` with an ease-out curve. Nobody wants to wait for a cancel.
+
+## Comparison slider
+
+Stack two full-size layers and clip the top one. Because both images are the same size and position, moving the clip edge produces a before and after slider with no distortion. Drag the handle below.
+
+<ClipPathCompareDemo />
+
+Note that neither image ever moves or resizes. The only thing that changes is the right edge of the inset on the top layer.
+
+## Usage
+
+<CodeBlock
+  tabs={[
+    {
+      label: "Tailwind",
+      language: "html",
+      icon: "tailwind",
+      code: `<!-- Shown -->
+<div class="[clip-path:inset(0_0_0_0)] transition-[clip-path] duration-300 ease-out">
+  ...
+</div>
+
+<!-- Hidden, slides out to the right -->
+<div class="[clip-path:inset(0_100%_0_0)] transition-[clip-path] duration-300 ease-out">
+  ...
+</div>`,
+    },
+    {
+      label: "CSS",
+      language: "css",
+      icon: "css",
+      code: `.card {
+  clip-path: inset(0 0 0 0);
+  transition: clip-path 300ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.card[data-hidden] {
+  /* top right bottom left */
+  clip-path: inset(0 100% 0 0);
+}
+
+/* Rounded corners on the visible window */
+.pill {
+  clip-path: inset(2px 66% 2px 2px round 9999px);
+}`,
+    },
+  ]}
+/>
+
+A gotcha worth knowing: clip-path only interpolates between shapes of the same type with the same number of arguments. `inset(0 0 0 0)` to `inset(0 100% 0 0)` animates. `inset(0)` to `inset(0 100% 0 0)` does not, and neither does `inset()` to `circle()`. Write both ends of the transition in the same form.

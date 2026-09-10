@@ -1,67 +1,336 @@
 "use client";
 
-import { useRef, useState } from "react";
+import {
+  ArrowsClockwiseIcon,
+  CheckCircleIcon,
+  CircleIcon,
+} from "@phosphor-icons/react";
+import { useEffect, useRef, useState } from "react";
 
+import { Compare, CompareItem } from "@/components/app/compare";
 import { Demo } from "@/components/app/demo";
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
+import { cn } from "@/lib/utils";
 
 const ROWS = [
-  ["Design review", "Today"],
-  ["Ship OG images", "Yesterday"],
-  ["Fix Safari overscroll", "Monday"],
+  { title: "Design review", meta: "Today" },
+  { title: "Ship OG images", meta: "Yesterday" },
+  { title: "Fix Safari overscroll", meta: "Monday" },
 ] as const;
 
-export function PerceivedPerformanceDemo() {
-  const [skeleton, setSkeleton] = useState(true);
-  const [state, setState] = useState<"idle" | "loading" | "done">("idle");
-  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+type LoadState = "loading" | "done";
 
-  const load = () => {
-    if (timer.current) clearTimeout(timer.current);
+function useLoad(duration: number) {
+  const [state, setState] = useState<LoadState>("done");
+  const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
+
+  useEffect(() => () => clearTimeout(timer.current), []);
+
+  function load() {
+    clearTimeout(timer.current);
     setState("loading");
-    timer.current = setTimeout(() => setState("done"), 350);
-  };
+    timer.current = setTimeout(() => setState("done"), duration);
+  }
+
+  return { state, load };
+}
+
+function Spinner({
+  className,
+  duration = 0.8,
+}: {
+  className?: string;
+  duration?: number;
+}) {
+  return (
+    <span
+      aria-hidden="true"
+      className={cn(
+        "block size-4 animate-spin rounded-full border-2 border-foreground/15 border-t-foreground motion-reduce:animate-none",
+        className
+      )}
+      style={{ animationDuration: `${duration}s` }}
+    />
+  );
+}
+
+function Rows({ visible }: { visible: boolean }) {
+  return (
+    <ul
+      className={cn(
+        "flex flex-col divide-y divide-[#E7E7E7] transition-opacity duration-300 ease-out motion-reduce:transition-none dark:divide-[#1E1E1E]",
+        visible ? "opacity-100" : "opacity-0"
+      )}
+    >
+      {ROWS.map((row) => (
+        <li
+          key={row.title}
+          className="flex h-10 items-center justify-between gap-3 px-3"
+        >
+          <span className="truncate text-xs text-foreground">{row.title}</span>
+          <span className="shrink-0 text-[10px] text-muted-foreground">
+            {row.meta}
+          </span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function Skeleton({ visible }: { visible: boolean }) {
+  return (
+    <ul
+      aria-hidden="true"
+      className={cn(
+        "absolute inset-0 flex flex-col divide-y divide-[#E7E7E7] transition-opacity duration-200 ease-out motion-reduce:transition-none dark:divide-[#1E1E1E]",
+        visible ? "opacity-100" : "pointer-events-none opacity-0"
+      )}
+    >
+      {ROWS.map((row, index) => (
+        <li
+          key={row.title}
+          className="flex h-10 items-center justify-between gap-3 px-3"
+        >
+          <span
+            className="h-2.5 animate-pulse rounded-full bg-foreground/10"
+            style={{ width: `${52 + index * 14}%` }}
+          />
+          <span className="h-2 w-8 animate-pulse rounded-full bg-foreground/10" />
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function CenteredSpinner({ visible }: { visible: boolean }) {
+  return (
+    <div
+      className={cn(
+        "absolute inset-0 grid place-items-center transition-opacity duration-200 ease-out motion-reduce:transition-none",
+        visible ? "opacity-100" : "pointer-events-none opacity-0"
+      )}
+    >
+      <Spinner />
+    </div>
+  );
+}
+
+function ListCard({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="relative w-full overflow-hidden rounded-xl bg-card shadow-(--custom-shadow)">
+      {children}
+    </div>
+  );
+}
+
+function LoadButton({
+  onClick,
+  disabled,
+}: {
+  onClick: () => void;
+  disabled: boolean;
+}) {
+  return (
+    <Button disabled={disabled} onClick={onClick} variant="secondary">
+      <ArrowsClockwiseIcon weight="bold" />
+      Load
+    </Button>
+  );
+}
+
+export function PerceivedPerformanceDemo() {
+  const { state, load } = useLoad(1_200);
+  const loading = state === "loading";
 
   return (
-    <Demo>
-      <div className="flex h-40 w-full max-w-80 flex-col gap-2">
-        {state === "loading" && skeleton
-          ? ROWS.map((_, i) => (
-              <div
-                key={i}
-                className="h-11 animate-pulse rounded-xl border bg-muted"
-              />
-            ))
-          : state === "done"
-            ? ROWS.map(([title, when], i) => (
-                <div
-                  key={title}
-                  className="animate-in fade-in flex h-11 items-center justify-between rounded-xl border bg-card px-3 fill-mode-both"
-                  style={{ animationDuration: "300ms", animationDelay: `${i * 50}ms` }}
-                >
-                  <span className="text-sm">{title}</span>
-                  <span className="text-xs text-muted-foreground">{when}</span>
-                </div>
-              ))
-            : null}
-      </div>
-      <div className="flex items-center gap-4">
-        <Button variant="outline" size="sm" onClick={load}>
-          Load (350ms)
-        </Button>
-        <div className="flex items-center gap-3">
-          <span className="font-mono text-xs text-muted-foreground">
-            skeleton
-          </span>
-          <Switch checked={skeleton} onCheckedChange={setSkeleton} />
+    <Demo className="gap-7 px-4 sm:px-8">
+      <Compare>
+        <CompareItem caption="Spinner">
+          <ListCard>
+            <Rows visible={!loading} />
+            <CenteredSpinner visible={loading} />
+          </ListCard>
+        </CompareItem>
+        <CompareItem caption="Skeleton">
+          <ListCard>
+            <Rows visible={!loading} />
+            <Skeleton visible={loading} />
+          </ListCard>
+        </CompareItem>
+      </Compare>
+      <LoadButton disabled={loading} onClick={load} />
+    </Demo>
+  );
+}
+
+export function LoadingFlashDemo() {
+  const { state, load } = useLoad(300);
+  const loading = state === "loading";
+
+  return (
+    <Demo className="gap-7 px-4 sm:px-8">
+      <Compare>
+        <CompareItem verdict="wrong" caption="Skeleton for 300ms">
+          <ListCard>
+            <Rows visible={!loading} />
+            <Skeleton visible={loading} />
+          </ListCard>
+        </CompareItem>
+        <CompareItem verdict="right" caption="Nothing, then fade in">
+          <ListCard>
+            <Rows visible={!loading} />
+          </ListCard>
+        </CompareItem>
+      </Compare>
+      <LoadButton disabled={loading} onClick={load} />
+    </Demo>
+  );
+}
+
+const TASKS = [
+  "Reply to Jakub",
+  "Book the flight",
+  "Review pull request",
+] as const;
+
+const REQUEST_TIME = 700;
+
+function TaskList({ optimistic }: { optimistic: boolean }) {
+  const [done, setDone] = useState<boolean[]>(() => TASKS.map(() => false));
+  const [pending, setPending] = useState<boolean[]>(() =>
+    TASKS.map(() => false)
+  );
+  const timers = useRef<(ReturnType<typeof setTimeout> | undefined)[]>([]);
+
+  useEffect(() => {
+    const current = timers.current;
+    return () => current.forEach((timer) => clearTimeout(timer));
+  }, []);
+
+  function toggle(index: number) {
+    if (pending[index]) return;
+
+    if (optimistic) {
+      setDone((prev) => prev.map((value, i) => (i === index ? !value : value)));
+      return;
+    }
+
+    setPending((prev) => prev.map((value, i) => (i === index ? true : value)));
+    clearTimeout(timers.current[index]);
+    timers.current[index] = setTimeout(() => {
+      setDone((prev) => prev.map((value, i) => (i === index ? !value : value)));
+      setPending((prev) =>
+        prev.map((value, i) => (i === index ? false : value))
+      );
+    }, REQUEST_TIME);
+  }
+
+  return (
+    <div className="w-full rounded-xl bg-card p-1 shadow-(--custom-shadow)">
+      <ul className="flex flex-col">
+        {TASKS.map((task, index) => (
+          <li key={task}>
+            <button
+              aria-pressed={done[index]}
+              className="flex h-10 w-full cursor-pointer items-center gap-2.5 rounded-lg px-2.5 text-left text-xs hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+              onClick={() => toggle(index)}
+              type="button"
+            >
+              <span className="grid size-4 shrink-0 place-items-center">
+                {pending[index] ? (
+                  <Spinner className="size-3.5 border-[1.5px]" />
+                ) : done[index] ? (
+                  <CheckCircleIcon
+                    aria-hidden="true"
+                    className="size-4 text-emerald-500"
+                    weight="fill"
+                  />
+                ) : (
+                  <CircleIcon
+                    aria-hidden="true"
+                    className="size-4 text-muted-foreground/60"
+                  />
+                )}
+              </span>
+              <span
+                className={cn(
+                  "truncate transition-colors duration-150",
+                  done[index]
+                    ? "text-muted-foreground line-through"
+                    : "text-foreground"
+                )}
+              >
+                {task}
+              </span>
+            </button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+export function OptimisticDemo() {
+  return (
+    <Demo className="gap-7 px-4 sm:px-8">
+      <Compare>
+        <CompareItem verdict="wrong" caption="Waits for the server">
+          <TaskList optimistic={false} />
+        </CompareItem>
+        <CompareItem verdict="right" caption="Updates right away">
+          <TaskList optimistic />
+        </CompareItem>
+      </Compare>
+    </Demo>
+  );
+}
+
+function SpinnerCard({
+  loading,
+  duration,
+}: {
+  loading: boolean;
+  duration: number;
+}) {
+  return (
+    <div className="grid h-24 w-full place-items-center rounded-xl bg-card shadow-(--custom-shadow)">
+      <div className="relative grid size-6 place-items-center">
+        <div
+          className={cn(
+            "absolute inset-0 grid place-items-center transition-opacity duration-200 ease-out motion-reduce:transition-none",
+            loading ? "opacity-100" : "opacity-0"
+          )}
+        >
+          <Spinner className="size-5" duration={duration} />
         </div>
+        <CheckCircleIcon
+          aria-hidden="true"
+          className={cn(
+            "size-6 text-emerald-500 transition-opacity duration-200 ease-out motion-reduce:transition-none",
+            loading ? "opacity-0" : "opacity-100"
+          )}
+          weight="fill"
+        />
       </div>
-      <p className="max-w-sm text-center text-xs text-muted-foreground text-pretty">
-        For a 350ms load, the skeleton flashes for one blink and makes the
-        wait <em>feel</em> longer. Showing nothing, then easing the real rows
-        in, feels calmer and faster.
-      </p>
+    </div>
+  );
+}
+
+export function SpinnerSpeedDemo() {
+  const { state, load } = useLoad(1_500);
+  const loading = state === "loading";
+
+  return (
+    <Demo className="gap-7 px-4 sm:px-8">
+      <Compare>
+        <CompareItem caption="1.6s per turn">
+          <SpinnerCard duration={1.6} loading={loading} />
+        </CompareItem>
+        <CompareItem caption="0.5s per turn">
+          <SpinnerCard duration={0.5} loading={loading} />
+        </CompareItem>
+      </Compare>
+      <LoadButton disabled={loading} onClick={load} />
     </Demo>
   );
 }

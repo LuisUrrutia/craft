@@ -1,43 +1,97 @@
 ---
 title: Letter Spacing
-description: Tracking should tighten as type gets bigger.
+description: Big text wants its letters closer together. Small text wants them further apart.
 section: Typography
 order: 1
 publishedAt: "2026-07-14"
 resources:
+  - url: https://rsms.me/inter/dynmetrics/
+    title: Inter dynamic metrics
+    description: Rasmus Andersson's formula for the ideal tracking of Inter at any size.
   - url: https://developer.mozilla.org/en-US/docs/Web/CSS/letter-spacing
-  - url: https://css-tricks.com/almanac/properties/l/letter-spacing/
+    title: letter-spacing
+    description: The property reference, including why em units are the right choice.
+  - url: https://tailwindcss.com/docs/letter-spacing
+    title: Letter spacing in Tailwind
+    description: The tracking utilities and how to add your own steps.
+  - url: https://fonts.google.com/knowledge/using_type/optical_sizes
+    title: Optical sizes
+    description: Google Fonts Knowledge on why letterforms need to change with size.
 ---
 
-Fonts are drawn to be read at body sizes. When you scale text up for a
-headline, the space between letters scales up with it - and suddenly the
-headline feels loose and airy in a way the designer never intended.
+A typeface is drawn once, usually at a size close to body text. Its
+letters are spaced so that a paragraph reads well. Scale that same drawing up
+to a headline and the spaces between letters scale with it, which is more room
+than a headline needs. Scale it down to a caption and the letters start to
+touch.
 
-The fix is simple: **large text gets negative tracking, small text gets a
-little extra**. Try it below.
+**Letter spacing**, or tracking, is the fix. Drag the size slider and compare
+the untouched word with the one that tightens as it grows.
 
 <LetterSpacingDemo />
 
-## A practical scale
+The second line follows the formula Rasmus Andersson published for Inter, the
+typeface this site uses. Around body size it barely moves. Above 24px it
+settles near `-0.02em`. That number sounds tiny and it is, but the headline
+reads as one word instead of a row of letters.
 
-- Display / headlines (32px+): `-0.02em` to `-0.04em`
-- Titles (20–28px): `-0.01em` to `-0.02em`
-- Body (14–18px): `0`
-- Captions and all-caps labels (≤12px): `+0.02em` to `+0.08em`
+## Across a scale
 
-All-caps text is the big exception in the other direction: capital letters
-were never designed to sit next to each other, so uppercase labels almost
-always want generous positive tracking.
+The rule holds for every step of a type scale, not only the headline. Toggle
+the card to see all four sizes adjust at once.
+
+<TrackingScaleDemo />
+
+The display line tightens, the body copy stays put, and the caption opens up
+by a hair. If you only remember one thing: tighten as you go up, loosen as you
+go down, and leave body text alone.
+
+## Uppercase
+
+Capital letters were designed to sit next to lowercase letters. Set a whole
+word in caps and the even sidebearings of lowercase are gone, so the word
+looks cramped, especially small.
+
+<UppercaseTrackingDemo />
+
+Small uppercase labels like section headers and status pills want extra room,
+somewhere between `0.05em` and `0.1em`. The same applies to all caps buttons
+and tabs, if you use them.
 
 ## Usage
 
-```css
-h1 {
-  font-size: 3rem;
-  letter-spacing: -0.03em; /* em scales with the font size */
-}
-```
+<CodeBlock
+  tabs={[
+    {
+      label: "Tailwind",
+      language: "html",
+      icon: "tailwind",
+      code: `<h1 class="text-5xl font-semibold tracking-tight">Launch week</h1>
 
-Always use `em` units so the tracking stays proportional if the font size
-changes. Tailwind's `tracking-tight` (`-0.025em`) and `tracking-tighter`
-(`-0.05em`) cover most headline cases.
+<p class="text-base">Every day this week we release one thing.</p>
+
+<span class="text-[10px] font-semibold uppercase tracking-wider">
+    Pinned
+</span>`,
+    },
+    {
+      label: "CSS",
+      language: "css",
+      icon: "css",
+      code: `h1 {
+    font-size: 3rem;
+    letter-spacing: -0.02em;
+}
+
+.label {
+    font-size: 0.625rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}`,
+    },
+  ]}
+/>
+
+Always write tracking in `em`. It is relative to the font size, so the same
+value keeps working when the text scales, and it survives a change of
+typeface far better than a pixel value would.

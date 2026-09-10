@@ -1,36 +1,97 @@
 ---
 title: Scale Entrances
-description: Never enter from scale(0).
+description: Start close to the final size, and grow from where the element came from.
 section: Motion
 order: 9
 publishedAt: "2026-07-16"
 resources:
   - url: https://emilkowal.ski/ui/7-practical-animation-tips
+    title: 7 Practical Animation Tips
+    description: Emil Kowalski's list, including why popovers should never start from zero.
   - url: https://emilkowal.ski/ui/css-transforms
+    title: CSS Transforms
+    description: A clear walk through scale, translate, and transform-origin, with visuals.
+  - url: https://base-ui.com/react/components/popover
+    title: Base UI Popover
+    description: Exposes the resolved transform origin as a CSS variable so the menu grows from its anchor.
+  - url: https://developer.mozilla.org/en-US/docs/Web/CSS/transform-origin
+    title: transform-origin
+    description: The MDN reference for the property that decides where a scale grows from.
 ---
 
-Popovers, menus, and tooltips almost always enter with a scale animation -
-and the single number you pick as the starting scale decides whether the
-entrance feels engineered or cartoonish. From `scale(0)`, the element
-balloons out of a point like a speech bubble. From `scale(0.95)`, it
-simply arrives.
+Menus, popovers, and dialogs usually enter with a bit of scale. It reads as the element arriving rather than switching on. But the amount matters. A **scale entrance** that starts at zero looks like a cartoon zoom. One that starts at `0.95` looks like a small settle.
+
+Open the two menus below. They share the same duration and easing. Only the starting scale is different.
 
 <ScaleEntrancesDemo />
 
-## The rules
+The menu on the left spends the first part of its animation as a tiny unreadable smudge. Text scales along with the box, so every letter is squashed until the very end. The menu on the right is readable from the first frame. The scale is a hint of movement, not the movement itself.
 
-- **Start between 0.9 and 0.97.** Emil Kowalski's tip: the element should
-  already essentially *be there*, settling the last few percent. Pair it
-  with a fade - the opacity does the appearing, the scale does the feel.
-- **Set `transform-origin` toward the trigger.** A menu opening below a
-  button should grow *from the button*, not from its own center. Radix and
-  Base UI expose this as a CSS variable pointing at the anchor.
-- **Keep it short.** 150-200ms with ease-out. The scale range is so small
-  that anything longer reads as slow motion.
-- **Exits can scale less, or not at all.** Fading out at `scale(0.98)` is
-  plenty - see Exit Animations.
+Somewhere between `0.9` and `0.97` is the usual range. Combine it with an opacity fade so the element does not pop into existence at its starting size.
 
-The pattern generalizes: almost no real object enters your field of view
-by growing from nothing. Interfaces that scale from ~1 borrow the physics
-of something moving into place; interfaces that scale from 0 borrow the
-physics of a balloon.
+## Grow from the trigger
+
+Scale needs an origin. By default an element scales from its center, which is fine for a dialog in the middle of the screen. A menu that opens under a button in a corner should grow from that corner, so it looks attached to the thing you clicked.
+
+<TransformOriginDemo />
+
+On the left the menu inflates from its own middle and seems to drift away from the button. On the right it grows out of the button. Same scale, same timing. The only change is `transform-origin`.
+
+Positioning libraries know where the anchor is. Base UI and Floating UI expose it as a CSS variable, so you can write `transform-origin: var(--transform-origin)` once and get the right corner for every placement.
+
+## Find your number
+
+Drag the slider to change where the menu starts. The animation here is slowed down so the shape of it is easier to see.
+
+<StartingScaleDemo />
+
+Below `0.8` the entrance starts to feel like a zoom. Above `0.98` you may as well drop the scale and keep only the fade. The sweet spot is small enough that you would barely notice it if you were not looking for it.
+
+## Usage
+
+<CodeBlock
+  tabs={[
+    {
+      label: "Tailwind",
+      language: "html",
+      icon: "tailwind",
+      code: `<div
+  class="origin-(--transform-origin) transition duration-200 ease-out
+         data-closed:scale-95 data-closed:opacity-0"
+>
+  ...
+</div>`,
+    },
+    {
+      label: "CSS",
+      language: "css",
+      icon: "css",
+      code: `.menu {
+  transform-origin: var(--transform-origin, top center);
+  transition:
+    opacity 200ms cubic-bezier(0.23, 1, 0.32, 1),
+    transform 200ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.menu[data-closed] {
+  opacity: 0;
+  transform: scale(0.95);
+}`,
+    },
+    {
+      label: "Motion",
+      language: "tsx",
+      code: `import { motion } from "motion/react";
+
+<motion.div
+  initial={{ opacity: 0, scale: 0.95 }}
+  animate={{ opacity: 1, scale: 1 }}
+  exit={{ opacity: 0, scale: 0.95 }}
+  transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }}
+  style={{ transformOrigin: "var(--transform-origin)" }}
+/>`,
+    },
+  ]}
+/>
+
+Keep exits shorter than entrances. A menu that takes 200ms to open can close in 120ms, since the user has already decided to leave and nothing needs to be read on the way out.

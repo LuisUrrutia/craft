@@ -3,68 +3,208 @@
 import { useState } from "react";
 
 import { Demo } from "@/components/app/demo";
+import { SegmentedControl } from "@/components/app/segmented-control";
 import { Slider } from "@/components/ui/slider";
 
-const STEPS = 10;
+const HUES = Array.from({ length: 12 }, (_, index) => index * 30);
+
+function getSliderValue(value: number | readonly number[]) {
+  return Array.isArray(value) ? value[0] : value;
+}
+
+function SwatchRow({
+  label,
+  color,
+}: {
+  label: string;
+  color: (hue: number) => string;
+}) {
+  return (
+    <div className="grid w-full gap-1.5">
+      <span className="text-[10px] text-muted-foreground">{label}</span>
+      <div
+        aria-hidden="true"
+        className="flex h-10 w-full overflow-hidden rounded-lg"
+      >
+        {HUES.map((hue) => (
+          <span key={hue} className="flex-1" style={{ background: color(hue) }} />
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export function OklchDemo() {
-  const [lightness, setLightness] = useState(70);
+  const [lightness, setLightness] = useState(65);
 
   return (
-    <Demo>
-      <div className="flex w-full flex-col gap-4">
-        <Row
-          label="hsl"
-          swatch={(i) =>
-            `hsl(${(i / STEPS) * 360} 100% ${lightness}%)`
-          }
+    <Demo className="gap-10 px-4 sm:px-8">
+      <div className="grid w-full max-w-sm gap-4">
+        <SwatchRow
+          label="HSL"
+          color={(hue) => `hsl(${hue} 85% ${lightness}%)`}
         />
-        <Row
-          label="oklch"
-          swatch={(i) =>
-            `oklch(${lightness}% 0.17 ${(i / STEPS) * 360})`
-          }
+        <SwatchRow
+          label="OKLCH"
+          color={(hue) => `oklch(${lightness / 100} 0.13 ${hue})`}
         />
       </div>
-      <div className="flex w-full max-w-64 flex-col gap-2">
+
+      <label className="grid w-full max-w-xs gap-2.5">
+        <span className="flex items-center justify-between text-xs text-muted-foreground">
+          Lightness
+          <span className="tabular-nums text-foreground">{lightness}%</span>
+        </span>
         <Slider
-          value={[lightness]}
-          onValueChange={(v: number | readonly number[]) =>
-            setLightness(Array.isArray(v) ? v[0] : v)
-          }
-          min={30}
-          max={95}
+          aria-label="Lightness"
+          max={85}
+          min={40}
+          onValueChange={(value) => setLightness(getSliderValue(value))}
           step={1}
+          value={[lightness]}
         />
-        <p className="text-center font-mono text-xs text-muted-foreground">
-          lightness: {lightness}%
-        </p>
-      </div>
+      </label>
     </Demo>
   );
 }
 
-function Row({
-  label,
-  swatch,
-}: {
-  label: string;
-  swatch: (i: number) => string;
-}) {
+type PairId = "blue-yellow" | "red-teal" | "purple-green";
+
+const PAIRS = [
+  {
+    value: "blue-yellow",
+    label: "Blue to yellow",
+    from: "oklch(0.55 0.22 262)",
+    to: "oklch(0.92 0.19 100)",
+  },
+  {
+    value: "red-teal",
+    label: "Red to teal",
+    from: "oklch(0.62 0.24 25)",
+    to: "oklch(0.8 0.14 190)",
+  },
+  {
+    value: "purple-green",
+    label: "Purple to green",
+    from: "oklch(0.5 0.24 300)",
+    to: "oklch(0.85 0.2 145)",
+  },
+] as const;
+
+function GradientRow({ label, style }: { label: string; style: string }) {
   return (
-    <div className="flex items-center gap-3">
-      <span className="w-12 text-right font-mono text-xs text-muted-foreground">
-        {label}
-      </span>
-      <div className="flex flex-1 overflow-hidden rounded-lg">
-        {Array.from({ length: STEPS }, (_, i) => (
-          <div
-            key={i}
-            className="h-10 flex-1"
-            style={{ background: swatch(i) }}
-          />
-        ))}
-      </div>
+    <div className="grid w-full gap-1.5">
+      <span className="text-[10px] text-muted-foreground">{label}</span>
+      <div
+        aria-hidden="true"
+        className="h-10 w-full rounded-lg"
+        style={{ background: style }}
+      />
     </div>
+  );
+}
+
+export function OklchGradientDemo() {
+  const [pair, setPair] = useState<PairId>("blue-yellow");
+  const current = PAIRS.find((option) => option.value === pair) ?? PAIRS[0];
+
+  return (
+    <Demo className="gap-8 px-4 sm:px-8">
+      <div className="grid w-full max-w-sm gap-4">
+        <GradientRow
+          label="sRGB"
+          style={`linear-gradient(to right in srgb, ${current.from}, ${current.to})`}
+        />
+        <GradientRow
+          label="OKLCH"
+          style={`linear-gradient(to right in oklch, ${current.from}, ${current.to})`}
+        />
+      </div>
+
+      <SegmentedControl
+        ariaLabel="Gradient colors"
+        onChange={setPair}
+        options={PAIRS}
+        value={pair}
+      />
+    </Demo>
+  );
+}
+
+/** Lightness and chroma per step. Chroma tapers at both ends to stay in gamut. */
+const RAMP = [
+  { l: 0.97, c: 0.02 },
+  { l: 0.93, c: 0.05 },
+  { l: 0.87, c: 0.09 },
+  { l: 0.78, c: 0.13 },
+  { l: 0.68, c: 0.16 },
+  { l: 0.58, c: 0.17 },
+  { l: 0.48, c: 0.15 },
+  { l: 0.38, c: 0.12 },
+  { l: 0.28, c: 0.08 },
+] as const;
+
+export function OklchPaletteDemo() {
+  const [hue, setHue] = useState(250);
+  const step = (index: number) =>
+    `oklch(${RAMP[index].l} ${RAMP[index].c} ${hue})`;
+
+  return (
+    <Demo className="gap-10 px-4 sm:px-8">
+      <div className="flex w-full max-w-sm flex-col items-center gap-5">
+        <div aria-hidden="true" className="grid w-full grid-cols-9 gap-1">
+          {RAMP.map((_, index) => (
+            <div key={index} className="grid justify-items-center gap-1.5">
+              <span
+                className="aspect-square w-full rounded-md"
+                style={{ background: step(index) }}
+              />
+              <span className="text-[10px] tabular-nums text-muted-foreground">
+                {(index + 1) * 100}
+              </span>
+            </div>
+          ))}
+        </div>
+
+        <div
+          aria-hidden="true"
+          className="flex items-center gap-2.5 rounded-xl bg-card px-4 py-3 shadow-(--custom-shadow)"
+        >
+          <span
+            className="rounded-full px-2.5 py-1 text-xs font-medium dark:hidden"
+            style={{ background: step(1), color: step(6) }}
+          >
+            Shipped
+          </span>
+          <span
+            className="hidden rounded-full px-2.5 py-1 text-xs font-medium dark:inline"
+            style={{ background: step(7), color: step(2) }}
+          >
+            Shipped
+          </span>
+          <span
+            className="rounded-full px-3 py-1.5 text-xs font-medium text-white"
+            style={{ background: step(5) }}
+          >
+            Continue
+          </span>
+        </div>
+      </div>
+
+      <label className="grid w-full max-w-xs gap-2.5">
+        <span className="flex items-center justify-between text-xs text-muted-foreground">
+          Hue
+          <span className="tabular-nums text-foreground">{hue}°</span>
+        </span>
+        <Slider
+          aria-label="Hue"
+          max={360}
+          min={0}
+          onValueChange={(value) => setHue(getSliderValue(value))}
+          step={1}
+          value={[hue]}
+        />
+      </label>
+    </Demo>
   );
 }

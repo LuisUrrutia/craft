@@ -1,43 +1,98 @@
 ---
 title: OKLCH
-description: A color space where lightness actually means lightness.
+description: A color space where two colors with the same lightness value actually look equally light.
 section: Color
 order: 1
 publishedAt: "2026-07-14"
 resources:
-  - url: https://oklch.com
-    title: oklch.com
-    description: An OKLCH color picker and converter.
   - url: https://evilmartians.com/chronicles/oklch-in-css-why-quit-rgb-hsl
+    title: OKLCH in CSS, why we moved from RGB and HSL
+    description: The case for OKLCH, with side by side palettes that make the HSL problem obvious.
+  - url: https://oklch.com/
+    title: OKLCH color picker
+    description: Pick colors by lightness, chroma, and hue, and see exactly where the sRGB gamut ends.
+  - url: https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/oklch
+    title: oklch()
+    description: Syntax, ranges, and browser support for the CSS function.
+  - url: https://bottosson.github.io/posts/oklab/
+    title: A perceptual color space for image processing
+    description: The original post that introduced Oklab, the space OKLCH is built on.
 ---
 
-In HSL, two colors with the same "lightness" can look wildly different:
-yellow at 50% lightness glows, blue at 50% looks almost dark. HSL treats the
-RGB cube geometrically and ignores how human eyes weigh different hues.
-
-OKLCH is a **perceptually uniform** color space: equal lightness values look
-equally light, across every hue. Drag the slider - the HSL row shifts in
-apparent brightness from hue to hue, while the OKLCH row stays even.
+In HSL, lightness is a number the math is happy with and your eyes are not. A yellow at 50% lightness looks bright. A blue at 50% lightness looks dark. Same number, very different result. **OKLCH** fixes this by defining lightness the way people perceive it, so the same value looks equally light no matter the hue. Both rows below use one lightness value across twelve hues. Move the slider.
 
 <OklchDemo />
 
-## Why it matters
+The HSL row bounces. Yellow and cyan glow, blue and purple sink. The OKLCH row stays flat. That is the whole reason to switch, and it shows up everywhere: text that passes contrast on one hue and fails on the next, badges that look louder in some colors, dark mode palettes that need a hand tuned lightness for every single hue.
 
-- **Palettes**: generate ten hues at the same `L` and `C` and they genuinely
-  read as one family - same weight, same contrast against text.
-- **Dark mode**: adjusting only the lightness channel keeps hue and
-  saturation intact, so colors don't drift as they dim.
-- **Contrast**: because `L` tracks perceived lightness, it's a usable proxy
-  when reasoning about text contrast.
+## The three numbers
+
+`oklch(L C H)` reads as lightness, chroma, and hue. Lightness runs from `0` (black) to `1` (white). Chroma is how colorful it is, from `0` (gray) up to around `0.37` for the most saturated colors a screen can show. Hue is an angle, so `0` is pinkish red, `145` is green, `250` is blue, and `360` wraps back around.
+
+> Change one number, and only that thing changes.
+
+Turn the chroma to zero and any hue becomes a neutral gray at the same lightness. Nudge the hue and the color shifts without getting darker. That predictability is what makes it usable as a system.
+
+## Gradients
+
+Color spaces also decide what happens between two colors. A gradient in sRGB takes the straight line through RGB values, and for many pairs that line goes through mud. Compare the same two endpoints interpolated in each space.
+
+<OklchGradientDemo />
+
+Blue to yellow in sRGB passes through a gray dead zone in the middle. In OKLCH it stays colorful the whole way, because the path keeps chroma up and only rotates the hue. You get this with one keyword: `linear-gradient(in oklch, ...)`.
+
+## Building a palette
+
+Since lightness is trustworthy, a tonal scale is just a list of lightness values. Fix the chroma curve, pick a hue, and you have a full ramp. Drag the hue and watch the scale keep its shape.
+
+<OklchPaletteDemo />
+
+Every step keeps the same relationship to its neighbors no matter which hue you land on. That means a badge built from steps 200 and 700 has the same contrast in green as it does in purple. No per-color tuning, and dark mode is just the same scale flipped.
+
+Chroma tapers toward both ends of the ramp on purpose. Very light and very dark colors cannot hold much chroma inside the sRGB gamut, and if you ask for more, the browser clips it and the ramp stops looking smooth.
 
 ## Usage
 
-```css
-:root {
-  --accent: oklch(0.7 0.17 250);       /* L 0–1, chroma, hue */
-  --accent-hover: oklch(0.65 0.17 250); /* darker, same color */
-}
-```
+Tailwind v4 already generates its palette in OKLCH, and arbitrary values work anywhere a color does.
 
-Every design token on this site is defined in OKLCH - the neutral grays are
-just `oklch(L 0 0)` with chroma zeroed out.
+<CodeBlock
+  tabs={[
+    {
+      label: "Tailwind",
+      language: "html",
+      icon: "tailwind",
+      code: `<button class="bg-[oklch(0.58_0.17_250)] text-white hover:bg-[oklch(0.52_0.17_250)]">
+  Continue
+</button>
+
+<span class="bg-[oklch(0.93_0.05_145)] text-[oklch(0.42_0.13_145)]">
+  Shipped
+</span>`,
+    },
+    {
+      label: "CSS",
+      language: "css",
+      icon: "css",
+      code: `:root {
+  --brand-hue: 250;
+  --brand-200: oklch(0.93 0.05 var(--brand-hue));
+  --brand-600: oklch(0.58 0.17 var(--brand-hue));
+  --brand-700: oklch(0.48 0.15 var(--brand-hue));
+}
+
+.button {
+  background: var(--brand-600);
+}
+
+.button:hover {
+  background: var(--brand-700);
+}
+
+.hero {
+  background: linear-gradient(in oklch, oklch(0.55 0.22 262), oklch(0.92 0.19 100));
+}`,
+    },
+  ]}
+/>
+
+Every color token on this site is an OKLCH value, and the grays are written as `oklch(L 0 0)`. If you need to check whether a color is inside the sRGB gamut before you ship it, paste it into [oklch.com](https://oklch.com/) and look for the warning.

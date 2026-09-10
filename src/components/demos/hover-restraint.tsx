@@ -6,6 +6,7 @@ import {
   CheckCircleIcon,
   FoldersIcon,
   LinkSimpleIcon,
+  SidebarSimpleIcon,
   SunIcon,
   TextBIcon,
   TextItalicIcon,
@@ -15,8 +16,12 @@ import {
   XCircleIcon,
 } from "@phosphor-icons/react";
 
+import { useEffect, useState } from "react";
+
+import { Compare, CompareItem } from "@/components/app/compare";
 import { Demo } from "@/components/app/demo";
 import { Button } from "@/components/ui/button";
+import { Kbd } from "@/components/ui/kbd";
 import {
   Tooltip,
   TooltipContent,
@@ -107,52 +112,6 @@ export function HoverRestraintDemo() {
   );
 }
 
-export function HoverExitDemo() {
-  const examples = [
-    { label: "Instant both ways", fadeOut: false },
-    { label: "Instant in, fade out", fadeOut: true },
-  ] as const;
-
-  return (
-    <Demo className="gap-7 px-4 sm:px-8">
-      <div className="grid w-full max-w-lg grid-cols-2 gap-3 sm:gap-10">
-        {examples.map((example) => (
-          <div
-            key={example.label}
-            className="flex min-w-0 flex-col items-center gap-4"
-          >
-            <div className="w-full rounded-xl bg-card p-1.5 shadow-(--custom-shadow)">
-              <ul className="flex flex-col gap-0.5">
-                {NAV_ITEMS.map((item) => (
-                  <li
-                    key={item.label}
-                    className={cn(
-                      "cursor-default rounded-md px-2.5 py-1.5 text-xs text-muted-foreground hover:bg-muted hover:text-foreground",
-                      example.fadeOut &&
-                        "transition-colors duration-300 hover:duration-0"
-                    )}
-                  >
-                    {item.label}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <span className="text-[10px] text-muted-foreground">
-              {example.label}
-            </span>
-          </div>
-        ))}
-      </div>
-
-      <p className="max-w-sm text-center text-xs text-pretty text-muted-foreground">
-        Both highlights appear with no delay. On the right, the old highlight
-        fades out behind the cursor, which reads as polish instead of lag.
-      </p>
-    </Demo>
-  );
-}
-
 function ToolbarButton({
   label,
   Icon,
@@ -181,7 +140,7 @@ function ToolbarButton({
 
 export function HoverTooltipDemo() {
   return (
-    <Demo className="gap-0 px-26">
+    <Demo className="gap-7 px-4 sm:px-8">
       <div className="grid w-full max-w-lg grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-10">
         <div className="flex min-w-0 flex-col items-center gap-4">
           <div className="flex items-center gap-0.5 rounded-full bg-card p-0.5 shadow-(--custom-shadow)">
@@ -213,6 +172,83 @@ export function HoverTooltipDemo() {
           </span>
         </div>
       </div>
+    </Demo>
+  );
+}
+
+function SidebarWindow({ open, animated }: { open: boolean; animated: boolean }) {
+  return (
+    <div className="flex h-36 w-full overflow-hidden rounded-xl bg-card shadow-(--custom-shadow)">
+      <div
+        className={cn(
+          "w-24 shrink-0 border-r border-[#E7E7E7] p-1.5 dark:border-[#1E1E1E]",
+          animated &&
+            "transition-[margin,opacity] duration-250 ease-out motion-reduce:transition-none",
+          !open && "-ml-24 opacity-0"
+        )}
+      >
+        <ul className="flex flex-col gap-0.5">
+          {NAV_ITEMS.map((item, index) => (
+            <li
+              key={item.label}
+              className={cn(
+                "flex items-center gap-1.5 rounded-md px-1.5 py-1 text-[10px]",
+                index === 0
+                  ? "bg-muted text-foreground"
+                  : "text-muted-foreground"
+              )}
+            >
+              <item.Icon aria-hidden="true" className="size-3" />
+              {item.label}
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div className="min-w-0 flex-1 p-3">
+        <div className="mb-3 h-2.5 w-14 rounded-full bg-foreground/15" />
+        <div className="flex flex-col gap-2">
+          <div className="h-2 w-full rounded-full bg-foreground/8" />
+          <div className="h-2 w-5/6 rounded-full bg-foreground/8" />
+          <div className="h-2 w-2/3 rounded-full bg-foreground/8" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function KeyboardActionDemo() {
+  const [open, setOpen] = useState(true);
+
+  useEffect(() => {
+    function onKeyDown(event: KeyboardEvent) {
+      if (!(event.metaKey || event.ctrlKey) || event.key.toLowerCase() !== "b") {
+        return;
+      }
+      const target = event.target as HTMLElement | null;
+      if (target?.closest("input, textarea, [contenteditable]")) return;
+      event.preventDefault();
+      setOpen((value) => !value);
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
+
+  return (
+    <Demo className="gap-7 px-4 sm:px-8">
+      <Compare>
+        <CompareItem verdict="wrong" label="Animated">
+          <SidebarWindow animated open={open} />
+        </CompareItem>
+        <CompareItem verdict="right" label="Instant">
+          <SidebarWindow animated={false} open={open} />
+        </CompareItem>
+      </Compare>
+
+      <Button onClick={() => setOpen((value) => !value)} variant="secondary">
+        <SidebarSimpleIcon aria-hidden="true" className="size-4" />
+        Toggle sidebar
+        <Kbd className="ml-1">⌘B</Kbd>
+      </Button>
     </Demo>
   );
 }

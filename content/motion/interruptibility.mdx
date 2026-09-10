@@ -6,40 +6,91 @@ order: 5
 publishedAt: "2026-07-15"
 resources:
   - url: https://emilkowal.ski/ui/building-a-toast-component
+    title: Building a Toast Component
+    description: Emil Kowalski on Sonner, where every toast has to stay interruptible while others arrive.
   - url: https://rauno.me/craft/interaction-design
+    title: Invisible Details of Interaction Design
+    description: Rauno Freiberg on why interfaces should never lock the user out while something moves.
+  - url: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_transitions/Using_CSS_transitions
+    title: Using CSS transitions
+    description: The MDN reference, including how a transition behaves when its target changes mid-flight.
+  - url: https://motion.dev/docs/react-transitions
+    title: Transitions in Motion
+    description: How Motion springs keep velocity when an animation is retargeted before it finishes.
 ---
 
-Great interfaces never make you wait for a decision you've already
-reversed. Hover something, leave before the animation finishes - what
-happens next tells you how the UI was built. A CSS *transition* turns
-around mid-flight, from its current position, at its current velocity. A
-*keyframe animation* is a recorded clip: it can only snap and replay.
+Users change their mind. They open a sheet and close it before it lands. They hover, leave, and hover again. **Interruptibility** is what happens to your animation in that moment: does it pick up from where it is, or does it start over?
+
+Click Open, then click Close before the sheet arrives. Do it a few times in a row. The travel here is slowed down on purpose so you can catch it mid-flight.
 
 <InterruptibilityDemo />
 
-## Why transitions win for interaction
+The left sheet runs on CSS keyframes. A keyframe animation has a fixed start and end, so each click restarts it from the first frame. The sheet teleports to the bottom and climbs again. The right sheet runs on a CSS transition. A transition animates from the current value to the new target, wherever the element happens to be. Nothing jumps.
 
-A transition animates *toward a state*, so when the state changes mid-way
-the browser retargets smoothly. Keyframes describe *a timeline*, so a state
-change mid-way has nowhere to resume from. That's why Sonner's toasts and
-iOS gestures feel responsive: everything is a spring or transition toward
-wherever the state currently points.
+This is the whole rule. Keyframes describe a fixed clip. Transitions describe a destination. Anything a user can toggle wants a destination.
 
-```css
-/* interruptible */
-.panel { transition: transform 300ms ease-out; }
-.panel[data-open] { transform: translateY(0); }
+## Springs keep their momentum
 
-/* not interruptible */
-.panel[data-open] { animation: slide-up 300ms ease-out; }
-```
+A transition fixes the jump, but a tween still stops dead and restarts its easing curve when you change the target. It goes from full speed to a fresh ease-in. A spring carries its velocity into the new target, so the reversal reads as one motion instead of two.
 
-## The rule
+Toggle twice quickly and watch how each dot turns around.
 
-- **State responds to the user → transition or spring.** Hover, open/close,
-  drag, expand.
-- **A fixed performance → keyframes.** Entrances, celebrations, loaders -
-  sequences with no state to interrupt.
+<SpringVelocityDemo />
 
-If a fast user can make your interface animate against them, it's the wrong
-tool.
+The difference is subtle at slow speeds and large at fast ones. For anything a user can flick back and forth, a switch, a sidebar, a drag handle, a spring is the safer default.
+
+## Layout that keeps moving
+
+Interruptibility is not only about reversing. When new elements arrive while others are still animating, every element in flight needs a new target. A toast stack is the classic case: hit the button quickly and each toast slides up to make room while the previous one is still settling.
+
+<ToastStackDemo />
+
+Motion's `layout` prop retargets each toast as siblings enter and leave, so a click that lands mid-animation joins the motion instead of resetting it.
+
+## Usage
+
+A transition is enough for most toggles. Reach for keyframes only when the animation is a one-shot that nothing can interrupt, like a loading spinner.
+
+<CodeBlock
+  tabs={[
+    {
+      label: "Transition",
+      language: "css",
+      icon: "css",
+      code: `.sheet {
+  transform: translateY(100%);
+  transition: transform 300ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.sheet[data-open] {
+  transform: translateY(0);
+}`,
+    },
+    {
+      label: "Keyframes",
+      language: "css",
+      icon: "css",
+      code: `/* Restarts from the first frame every time it is applied. */
+@keyframes slide-up {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.sheet[data-open] {
+  animation: slide-up 300ms cubic-bezier(0.23, 1, 0.32, 1) both;
+}`,
+    },
+    {
+      label: "Spring",
+      language: "tsx",
+      code: `import { motion } from "motion/react";
+
+<motion.div
+  animate={{ y: open ? 0 : "100%" }}
+  transition={{ type: "spring", stiffness: 300, damping: 30 }}
+/>`,
+    },
+  ]}
+/>
+
+A quick test for any component you ship: open it and close it as fast as you can, ten times. If anything flashes, jumps, or finishes the old animation before starting the new one, it is not interruptible yet.

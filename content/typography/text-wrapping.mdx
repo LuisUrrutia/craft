@@ -1,47 +1,90 @@
 ---
 title: Text Wrapping
-description: text-balance for headings, text-pretty for paragraphs.
+description: Two CSS values that stop headings from leaving one word alone on the last line.
 section: Typography
 order: 2
 publishedAt: "2026-07-14"
 resources:
   - url: https://developer.chrome.com/docs/css-ui/css-text-wrap-balance
+    title: CSS text-wrap balance
+    description: Chrome's write up of how balancing works and where it stops.
   - url: https://developer.chrome.com/blog/css-text-wrap-pretty
-    title: "CSS text-wrap: pretty"
+    title: CSS text-wrap pretty
+    description: What pretty fixes beyond orphans, with examples.
+  - url: https://developer.mozilla.org/en-US/docs/Web/CSS/text-wrap
+    title: text-wrap
+    description: The property reference and current browser support.
+  - url: https://tailwindcss.com/docs/text-wrap
+    title: Text wrap in Tailwind
+    description: The text-balance and text-pretty utilities.
 ---
 
-Browsers wrap text greedily: fill a line, break, repeat. That's fast, but it
-produces two classic eyesores - headlines where the last line holds a single
-short word, and paragraphs ending in a lonely orphan.
+Browsers wrap text one line at a time. Each line takes as many words as fit,
+then breaks. That is fast, and it produces a lot of headings that read
+"Introducing the new dashboard for" and then "teams" on its own line.
 
-CSS now has two purpose-built fixes. Resize the container below and compare.
+**text-wrap: balance** looks at the whole block and picks breaks that make
+every line about the same length. Drag the width and watch the left heading
+strand a word while the right one stays even.
 
-<TextWrappingDemo />
+<TextBalanceDemo />
 
-## text-balance
+Balance is for short things: headings, card titles, toast messages, empty
+state copy. Chromium only balances blocks of up to six lines, and the extra
+layout work would not be worth it on long text anyway.
 
-`text-wrap: balance` makes all lines of a block roughly the same length. It's
-designed for **short runs of text** - headings, blurbs, toasts. Browsers only
-balance blocks up to a handful of lines (Chromium: 6), so don't reach for it
-on body copy.
+## Paragraphs
 
-```css
-h1, h2, h3, blockquote {
-  text-wrap: balance;
+For body copy you want something gentler. **text-wrap: pretty** keeps the
+lines roughly as they were and only intervenes at the end, so the last line
+never holds a single word.
+
+<TextPrettyDemo />
+
+Newer versions of Chrome also let pretty fix short last lines and rivers of
+whitespace in the middle of a paragraph. Firefox and Safari both support the
+value, so it is safe to set on every paragraph.
+
+## Together
+
+Most small pieces of UI carry a title and a line of description. Give the
+title balance and the description pretty.
+
+<TextWrapToastDemo />
+
+This one is a small change and it is worth being honest about that. Nobody
+will thank you for it. They will just find the toast slightly easier to read
+and never know why.
+
+## Usage
+
+<CodeBlock
+  tabs={[
+    {
+      label: "Tailwind",
+      language: "html",
+      icon: "tailwind",
+      code: `<h2 class="text-balance">Introducing the new dashboard for teams</h2>
+
+<p class="text-pretty">
+    Exports now run in the background, so you can keep working.
+</p>`,
+    },
+    {
+      label: "CSS",
+      language: "css",
+      icon: "css",
+      code: `h1, h2, h3, blockquote {
+    text-wrap: balance;
 }
-```
 
-## text-pretty
+p, li {
+    text-wrap: pretty;
+}`,
+    },
+  ]}
+/>
 
-`text-wrap: pretty` keeps greedy wrapping but looks ahead to avoid bad
-endings - most visibly the single-word last line. It's cheap enough to apply
-to **paragraphs by default**.
-
-```css
-p {
-  text-wrap: pretty;
-}
-```
-
-In Tailwind these are `text-balance` and `text-pretty`. This site applies
-`text-balance` to titles and `text-pretty` to descriptions and body text.
+Both values are progressive enhancement. A browser that does not understand
+them falls back to normal wrapping, so there is no reason to wait. Set them
+once in your base styles and forget about them.

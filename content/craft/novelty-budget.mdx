@@ -1,38 +1,75 @@
 ---
 title: Novelty Budget
-description: Delight is a currency. Spend it where it counts.
+description: Delight wears off with repetition, so spend it on rare moments.
 section: Craft
 order: 3
 publishedAt: "2026-07-15"
 resources:
   - url: https://rauno.me/craft/novelty
+    title: Novelty
+    description: Rauno Freiberg's original framing of delight as a budget with a rough ten percent cap.
   - url: https://benji.org/family-values
+    title: Family Values
+    description: Benji Taylor on how Family decided where its most expressive moments should live.
+  - url: https://emilkowal.ski/ui/you-dont-need-animations
+    title: You don't need animations
+    description: The frequency rule for motion, explained with real interface examples.
+  - url: https://jakub.kr/writing/details-that-make-interfaces-feel-better
+    title: Details that make interfaces feel better
+    description: Includes the arithmetic on what a repeated animation costs over a year.
+  - url: https://en.wikipedia.org/wiki/Semantic_satiation
+    title: Semantic satiation
+    description: The effect where repetition drains meaning from a word. It applies to interfaces too.
 ---
 
-Say a word twenty times and it stops meaning anything - semantic satiation.
-Interfaces work the same way: the confetti that delighted on first launch
-is invisible by the tenth and irritating by the hundredth. Novelty doesn't
-just fade; it converts into friction.
+Say a word twenty times in a row and it turns into noise. Interfaces do the
+same thing. The confetti that made you smile the first time is invisible by the
+tenth and annoying by the hundredth.
 
-Rauno Freiberg's framing: treat novelty as a budget of roughly 10% of the
-experience. Cinematographers ration color the same way - the 60/30/10 rule
-exists because emphasis only works against a calm background.
+Rauno Freiberg's answer is to treat novelty like money. You have a small
+**novelty budget**, somewhere around ten percent of the experience, and the
+question is not whether to spend it but where.
 
-## Spending it well
+Try the little task app below in both modes. Finish a few tasks and clear a
+list.
 
-- **Weight by frequency.** The inverse rule of all polish: the rarer the
-  moment, the more expressive it can be. Onboarding, first success, yearly
-  review - spend there. Navigation, hover, keystrokes - spend nothing.
-- **Some moments should only happen once.** First-visit-only animations
-  (a cookie is enough) keep an entrance special without taxing every
-  return. Benji Taylor's Family put its most delightful flourishes on
-  low-frequency moments by design - the delight-impact curve.
-- **Account the costs.** Jakub Krehel's arithmetic: a 300ms animation on an
-  action used 200 times a day costs each user six hours a year. Delight
-  with a denominator.
-- **Novelty also taxes learning.** Every unfamiliar pattern makes users
-  learn *your* interface instead of using what they already know. Spend
-  novel interactions even more carefully than novel visuals.
+<NoveltyBudgetDemo />
 
-The discipline isn't "no delight" - it's contrast. A calm interface is what
-makes the one delightful moment land.
+When everything animates, nothing stands out and the whole thing feels a bit
+slow. When only one moment animates, that moment lands.
+
+## Spend by frequency
+
+The rule is simple: the rarer the moment, the more expressive it can be.
+
+- Hovering, switching tabs, checking a box. These happen constantly. Spend nothing here, or close to it.
+- Opening a dialog, sending a message. Occasional. A short, quiet transition is plenty.
+- Finishing onboarding, clearing your inbox, a yearly recap. Rare. This is where the budget goes.
+
+Some moments should only ever happen once. A first-visit intro that plays
+again on every reload is a bill the user keeps paying.
+
+## Count the cost
+
+Small delays add up in a way that is easy to underestimate. Drag the sliders
+and watch the number.
+
+<AnimationCostDemo />
+
+Jakub Krehel did this math for a real product and it changed how the team
+thought about a 300ms animation. Delight needs a denominator.
+
+## Novelty also taxes learning
+
+Every unfamiliar pattern asks people to learn your interface instead of using
+what they already know. A custom scroll, a gesture nobody expects, a menu that
+opens sideways. These spend the budget too, and they keep spending it every
+time someone new shows up.
+
+Spend novel interactions even more carefully than novel visuals.
+
+## Contrast is the point
+
+None of this means "no delight". It means a calm baseline, so the one
+expressive moment has something to stand against. The quiet parts of an
+interface are what make the loud part work.

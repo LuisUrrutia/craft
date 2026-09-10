@@ -1,40 +1,95 @@
 ---
 title: Icons
-description: Pick one voice and let every glyph speak it.
+description: Treat icons as a typeface. One set, one weight, sized to the text beside them.
 section: Typography
 order: 5
 publishedAt: "2026-07-15"
 resources:
   - url: https://phosphoricons.com
     title: Phosphor Icons
-    description: A flexible icon family with six weights per glyph.
+    description: A large family with six weights per glyph, all drawn on the same grid.
+  - url: https://tabler.io/icons
+    title: Tabler Icons
+    description: Another consistent set, drawn on a 24px grid with a 2px stroke.
   - url: https://benji.org/morphing-icons-with-claude
-  - url: https://lucide.dev
+    title: Morphing icons
+    description: Benji Taylor on drawing a custom icon system where every icon shares three lines.
+  - url: https://developer.apple.com/design/human-interface-guidelines/sf-symbols
+    title: SF Symbols
+    description: How Apple ties icon weight and optical size to the text they sit next to.
 ---
 
-Icons are typography: a set of small glyphs that need a shared voice -
-consistent stroke width, corner radius, optical size, and density. Mixing two
-libraries in one screen reads exactly like mixing two typefaces mid-sentence.
+Icons are typography. A set of icons is a small alphabet, and like an
+alphabet it has a voice: the stroke width, the corner radius, the grid it was
+drawn on, how much detail fits in a glyph.
+
+The first job is to pick one voice and use it everywhere. Toggle the demo to
+see how much the same icons change between weights.
 
 <IconWeightsDemo />
 
-## Choosing a library
+Notice how the weight also has to agree with the text. Thin icons next to
+medium labels look like they belong to a different product. Bold icons shout.
+Regular pairs with regular and medium text, which is why it is the default in
+most sets.
 
-- **Weights/styles per glyph.** Phosphor has six weights; families with one
-  style lock you in when you need emphasis states.
-- **Grid and optical size.** A set drawn on a 16px grid stays crisp small;
-  24px-grid icons get muddy when scaled down.
-- **Coverage that matches your domain.** Count the icons you'll actually
-  need, not the total.
-- **License and format.** Tree-shakable components beat icon fonts.
+This site uses **duotone** everywhere. The filled second layer sits at low
+opacity, which adds a little depth without adding color.
 
-This site uses Phosphor duotone throughout - the filled second layer at low
-opacity gives a little depth without adding color.
+## One set
 
-## Designing your own
+Mixing icon libraries reads exactly like mixing typefaces mid-sentence. The
+grids do not match, the strokes do not match, and the eye picks it up even
+when it cannot say why.
 
-Rauno Freiberg had bespoke 16px icons drawn for Devouring Details; Benji
-Taylor built an icon system where every icon is three lines so any icon can
-morph into any other. Custom sets are expensive, but they make an interface
-feel like it belongs to nobody else. If you go there: pick a grid, a stroke,
-one corner radius - and draw every glyph with the same pen.
+<IconMixDemo />
+
+The wrong toolbar has icons from two libraries, three stroke widths, and two
+sizes. The right one has one library, one weight, one size. Nothing else
+changed.
+
+When you choose a library, count the icons your product actually needs and
+check that the set covers them. Running out halfway through and reaching for a
+second library is how the wrong toolbar happens.
+
+## Size
+
+Icons are drawn with a little padding inside their box, so an icon at the
+same pixel size as the text looks smaller than the capitals next to it.
+
+<IconTextSizeDemo />
+
+A size between `1.1em` and `1.25em` usually balances. Then check the vertical
+position. Flexbox centers the icon's box, not its shape, so a one pixel nudge
+is often needed. Expressing the size in `em` keeps the ratio when the text
+size changes.
+
+## Usage
+
+<CodeBlock
+  tabs={[
+    {
+      label: "React",
+      language: "tsx",
+      code: `import { TrayIcon } from "@phosphor-icons/react";
+
+<a className="flex items-center gap-2 text-sm font-medium">
+    <TrayIcon weight="duotone" className="mb-px size-[1.15em]" />
+    Inbox
+</a>`,
+    },
+    {
+      label: "CSS",
+      language: "css",
+      icon: "css",
+      code: `.nav-item svg {
+    width: 1.15em;
+    height: 1.15em;
+    margin-bottom: 1px;
+}`,
+    },
+  ]}
+/>
+
+A quick check for any screen: line up every icon on it in one row. If one of
+them looks like it was drawn by someone else, it probably was.

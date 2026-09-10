@@ -1,46 +1,87 @@
 ---
 title: Hit Areas
-description: Targets should be bigger than they look.
+description: Make small controls easy to hit by separating the clickable box from the visible icon.
 section: Layout
 order: 2
 publishedAt: "2026-07-15"
 resources:
-  - url: https://devouringdetails.com/prototypes/nextjs-dev-tools
-  - url: https://rauno.me/craft/interaction-design
   - url: https://en.wikipedia.org/wiki/Fitts%27s_law
+    title: Fitts's law
+    description: The model behind all of this. Time to reach a target grows as the target shrinks or moves further away.
+  - url: https://rauno.me/craft/interaction-design
+    title: Invisible Details of Interaction Design
+    description: Rauno Freiberg on hit targets, gaps between adjacent items, and other details you only notice when they are wrong.
+  - url: https://devouringdetails.com/prototypes/nextjs-dev-tools
+    title: Next.js Dev Tools prototype
+    description: A worked example where the visible badge is tiny but the target around it is generous.
+  - url: https://developer.apple.com/design/human-interface-guidelines/accessibility#Buttons-and-controls
+    title: Apple Human Interface Guidelines on buttons and controls
+    description: The source of the 44 by 44 point minimum that most touch guidance descends from.
 ---
 
-Fitts's Law: the time to hit a target is a function of its size and
-distance. A 16px icon button is fast to *see* but slow to *hit* - visually
-right, ergonomically wrong.
+A **hit area** is the region that responds to a click or tap. It does not have to match what you can see. A 16px icon can sit inside a 32px button, and the reader will never know unless they miss and hit it anyway.
 
-The trick is to decouple the two: draw 16px, accept clicks on 40px.
+The two toolbars below use the same icons. On the left each button is exactly the size of its icon. On the right the buttons are 32px with the icon centered inside. Hover across both, then switch the control to reveal the actual clickable boxes.
 
-<HitAreasDemo />
+<HitAreasToolbarDemo />
 
-## The technique
+Fitts's law says the time to reach a target depends on its size and distance. Halving a target's width makes it noticeably slower to hit with a mouse, and with a thumb it becomes a guess. Apple asks for at least 44 points on touch. On desktop, 32px is a comfortable floor for icon buttons and 24px is the minimum you should ever ship.
 
-Extend the target with a pseudo-element - the glyph stays small, the
-clickable area doesn't:
+## Extend the target, not the icon
 
-```css
-.icon-button {
+Sometimes there is no room for a bigger button. The close control on a chip is a good example: a bigger circle would look clumsy. The fix is a pseudo-element that extends the clickable area past the visible edges.
+
+<HitAreasExpandDemo />
+
+On the right, each close button has an invisible `::after` box that reaches 8px beyond the circle. Hover near the icon and it lights up before you are on it. The chip looks identical, it is just easier to use.
+
+## Gaps are dead zones
+
+Adjacent targets have a second problem: the space between them. If items in a menu are separated with margin, the pointer passes through a strip that belongs to nothing. Hover states flicker and clicks land on the background.
+
+<HitAreasGapDemo />
+
+Move down the left menu slowly and watch the highlight drop out between items. On the right, the items touch. Visual breathing room comes from padding inside each item, so every pixel of the menu belongs to something.
+
+## Usage
+
+<CodeBlock
+  tabs={[
+    {
+      label: "Tailwind",
+      language: "html",
+      icon: "tailwind",
+      code: `<!-- A 16px icon inside a 32px button -->
+<button class="grid size-8 place-items-center rounded-md" aria-label="Bold">
+  <svg class="size-4">...</svg>
+</button>
+
+<!-- Extend a tiny button by 8px on every side -->
+<button
+  class="relative size-3.5 after:absolute after:-inset-2 after:content-['']"
+  aria-label="Remove"
+>
+  <svg class="size-2.5">...</svg>
+</button>`,
+    },
+    {
+      label: "CSS",
+      language: "css",
+      icon: "css",
+      code: `.close {
   position: relative;
+  width: 14px;
+  height: 14px;
 }
-.icon-button::before {
+
+/* Invisible, but it receives the click */
+.close::after {
   content: "";
   position: absolute;
-  inset: -12px; /* 16px glyph, 40px target */
-}
-```
+  inset: -8px;
+}`,
+    },
+  ]}
+/>
 
-Apple's guideline is 44pt minimum; Android says 48dp. On the web we
-routinely ship 20px targets and blame users for missing them.
-
-## Concentric, not nested
-
-When two adjacent controls both need extended areas, keep the extensions as
-siblings rather than nesting buttons (invalid HTML) - the Next.js DevTools
-team calls these concentric hit areas. And where the layout gives you free
-room - a screen edge, a corner - let the target run all the way into it:
-edges are infinitely wide targets.
+To audit your own interface, drop `* { outline: 1px dashed rgb(244 63 94 / 0.6) }` into the dev tools for a minute. Every element gets an outline, so the small ones stand out. Anything interactive that is under 24px is worth a second look.

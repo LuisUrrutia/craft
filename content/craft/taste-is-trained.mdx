@@ -1,42 +1,74 @@
 ---
 title: Taste Is Trained
-description: Nobody is born knowing 200ms from 300ms.
+description: Nobody is born knowing 200ms from 300ms. You learn it by looking.
 section: Craft
 order: 4
 publishedAt: "2026-07-16"
 resources:
   - url: https://emilkowal.ski/ui/developing-taste
+    title: Developing taste
+    description: Emil Kowalski on why you cannot produce quality you cannot yet perceive.
   - url: https://emilkowal.ski/ui/train-your-judgement
+    title: Train your judgement
+    description: Side by side exercises for calibrating your sense of motion.
   - url: https://www.raphaelsalaja.com/library/the-concept-of-taste
+    title: The concept of taste
+    description: Raphael Salaja on taste as learned discrimination rather than a gift.
+  - url: https://paulgraham.com/taste.html
+    title: Taste for Makers
+    description: Paul Graham's essay on what good work has in common across fields.
+  - url: https://rauno.me/craft/interaction-design
+    title: Invisible details of interaction design
+    description: A long, patient look at the small decisions that make interfaces feel right.
 ---
 
-Taste gets talked about like a gift: some designers have the eye, the rest
-of us install component libraries. It's a comforting story because it
-excuses not practicing. But nobody's instinct for whether an easing is
-right came pre-installed - the people we call tasteful have simply run more
-reps of noticing.
+Taste gets talked about like a gift. Some people have the eye, the rest of us
+install a component library. It is a comfortable story because it excuses not
+practicing.
+
+But nobody's sense of whether an easing is right came pre-installed. The people
+we call tasteful have simply noticed more things, more carefully, for longer.
+**Taste is trained.** It is a skill with reps.
+
+Here are two cards. One of them has three things wrong with it. Take your time,
+then reveal.
+
+<SpotTheDifferenceDemo />
+
+If you found all three, good. If you found none, also good. The point is that
+you can only fix what you can see, and seeing gets better with practice.
 
 ## The training loop
 
-- **Consume deliberately.** Emil Kowalski's starting point: you can't
-  produce quality you can't perceive. Use good software slowly. Open the
-  menu again. Why does this feel solid? What is that shadow doing?
-- **Articulate what you notice.** Vague admiration trains nothing. "The
-  exit is faster than the entrance" is a rep; "this feels nice" is not.
-  Raphael Salaja's essay frames taste as exactly this - learned
-  discrimination, sharpened by naming the differences.
-- **Recreate, then compare.** Build the interaction you admired, put it
-  side by side with the original, and study the gap. The gap *is* the
-  curriculum.
-- **Change one variable at a time.** Emil's judgement exercises are
-  A/B comparisons: same component, 150ms vs 250ms, `ease-out` vs
-  `ease-in-out`. Judging pairs is how you calibrate faster than judging
-  singles.
+**Use good software slowly.** Open the same menu three times. Ask what the
+shadow is doing, why the exit is faster than the entrance, what the hover
+state is not doing. Linear, Raycast, and the Family wallet are all worth an
+afternoon of this.
+
+**Say what you notice, out loud or in writing.** "This feels nice" trains
+nothing. "The popover scales from the trigger, not the center" is a rep.
+Vague admiration does not stick. Named differences do.
+
+**Rebuild it, then compare.** Put your copy next to the original and study the
+gap. The gap is the curriculum. Paco Coursey and Rauno Freiberg both learned
+this way, and both say so.
+
+## Change one thing at a time
+
+Judging two options side by side is far easier than judging one on its own.
+Keep the component fixed and change a single variable. Press play a few times
+for each pair.
+
+<PairJudgementDemo />
+
+Once you can tell 150ms from 400ms without thinking, you have a reference point
+you did not have before. Do this for easing, for origin, for shadow, for
+spacing. Each pair adds a notch to the scale.
 
 ## Why it matters more now
 
-When AI can generate a plausible interface in seconds, execution stops
-being the bottleneck - discrimination becomes the job. The skill of
-*telling which of five plausible options is right* is taste, and it only
-comes from the reps above. The tools got faster; the eye still has to be
-earned.
+When a tool can generate a plausible interface in seconds, execution stops
+being the bottleneck. Picking the right one out of five plausible options is
+the job, and that is taste.
+
+The tools got faster. The eye still has to be earned.

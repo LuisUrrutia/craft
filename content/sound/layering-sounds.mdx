@@ -1,47 +1,112 @@
 ---
 title: Layering Sounds
-description: Notes stacked with tiny delays become an instrument.
+description: Stack a few short sources to turn a thin beep into a full cue.
 section: Sound
 order: 2
 publishedAt: "2026-07-15"
 resources:
   - url: https://audio.raphaelsalaja.com/library/retro
-    title: "Retro - @web-kits/audio"
+    title: Retro, @web-kits/audio
     description: The 8-bit patch this site's success sound comes from.
   - url: https://audio.raphaelsalaja.com
+    title: "@web-kits/audio"
+    description: Layers, envelopes, and delays in one small library.
+  - url: https://developer.mozilla.org/en-US/docs/Web/API/OscillatorNode
+    title: OscillatorNode
+    description: The four wave shapes every layer here is built from.
+  - url: https://en.wikipedia.org/wiki/Chorus_(audio_effect)
+    title: Chorus effect
+    description: Why slightly detuned copies of one sound feel wider than the original.
+  - url: https://learningsynths.ableton.com
+    title: Learning Synths
+    description: Ableton's hands-on intro to oscillators, envelopes, and detuning.
 ---
 
-A single beep is a notification. Four notes, each 60ms after the last, each
-a little quieter, is a *phrase* - it has direction, and direction carries
-meaning. Rising phrases read as success; falling ones as dismissal or
-deletion.
+One sine wave is the thinnest sound a speaker can make. It is fine for a
+tick, and not much else.
 
-Here's this site's copy-link sound, taken apart:
+A **layer** is a second source that plays with the first: a different
+wave shape, a few cents off pitch, a little quieter, and a few
+milliseconds late. Stack three or four and the same note stops sounding
+like a test tone. Play the note below, then add layers.
 
-<LayeringSoundsDemo />
+<SoundLayersDemo />
 
-## The anatomy
+Each bar is one layer on a timeline. Two things make the stack feel like
+one sound instead of several. The layers start within about `30ms` to
+`60ms` of each other, and each one is quieter than the one before it.
+Push the spacing to `80ms` and you start to hear the seams.
 
-```ts
-success: {
-  layers: [
-    { source: { type: "square", frequency: 523 },  gain: 0.06 },              // C5
-    { source: { type: "square", frequency: 659 },  gain: 0.05, delay: 0.06 }, // E5
-    { source: { type: "square", frequency: 784 },  gain: 0.045, delay: 0.12 }, // G5
-    { source: { type: "square", frequency: 1047 }, gain: 0.04, delay: 0.18 }, // C6
-  ],
-}
-```
+The small detune matters as much as the delay. Two copies of the exact
+same frequency just get louder. Copies that are `5` to `8` cents apart
+drift against each other, and that drift is what reads as width.
 
-Three decisions do the work:
+## From chord to arpeggio
 
-- **Real intervals.** C–E–G–C is a major arpeggio - the ear recognizes the
-  chord even at 6% volume and 60ms notes.
-- **A decaying envelope per note.** Each note is ~80ms of decay, no
-  sustain - a pluck, not a tone.
-- **Falling gain.** Each layer slightly quieter, so the phrase tapers
-  instead of ending abruptly.
+Layers do not have to share a pitch. This site's success sound is four
+square waves on C, E, G, and C, each starting `60ms` after the last.
+Drag the spacing to hear where a chord turns into an arpeggio.
 
-Same technique, different mood: two sine notes a fifth apart for a toggle,
-a downward pair for delete. Synthesized, not sampled - the whole palette
-weighs nothing.
+<ArpeggioSpacingDemo />
+
+At `0ms` all four notes land together, which is heavier than a
+confirmation needs to be. Between `40ms` and `80ms` the ear hears one
+rising gesture. Past `120ms` it becomes a melody, and a cue that takes
+half a second is asking for more attention than a copy button deserves.
+
+## Mixing textures
+
+Not every layer is a note. A short burst of filtered noise has no pitch,
+but it has an attack, and that is what makes a sound feel like something
+was pressed. Flip the switch with each texture selected.
+
+<TextureLayersDemo />
+
+The tone on its own is a beep. The noise on its own is a tap. Together
+they are a click with a pitch, which is what most physical switches
+sound like. The noise layer is under `30ms` long and sits behind a
+bandpass filter, so it adds edge without hiss.
+
+## Usage
+
+<CodeBlock
+  tabs={[
+    {
+      label: "React",
+      language: "ts",
+      code: `import { definePatch } from "@web-kits/audio";
+
+export const patch = definePatch({
+  name: "Minimal",
+  sounds: {
+    // one note, three layers
+    note: {
+      layers: [
+        {
+          source: { type: "sine", frequency: 523 },
+          envelope: { attack: 0.002, decay: 0.09, sustain: 0, release: 0.03 },
+          gain: 0.08,
+        },
+        {
+          source: { type: "triangle", frequency: 523, detune: 8 },
+          envelope: { attack: 0.002, decay: 0.09, sustain: 0, release: 0.03 },
+          gain: 0.05,
+          delay: 0.04,
+        },
+        {
+          source: { type: "noise", color: "white" },
+          filter: { type: "bandpass", frequency: 2600 },
+          envelope: { attack: 0, decay: 0.018, sustain: 0, release: 0.01 },
+          gain: 0.06,
+        },
+      ],
+    },
+  },
+});`,
+    },
+  ]}
+/>
+
+Build one layer at a time. Get the first layer right on its own, then
+add the next at a lower gain and only keep it if you can hear what it
+adds. If muting a layer changes nothing, delete it.

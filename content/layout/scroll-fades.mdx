@@ -1,49 +1,115 @@
 ---
 title: Scroll Fades
-description: Edges should dissolve, not decapitate.
+description: Fade the edges of a scroll container so the reader can tell there is more content without a scrollbar.
 section: Layout
 order: 5
 publishedAt: "2026-07-16"
 resources:
-  - url: https://rauno.me/craft/nextjs
   - url: https://developer.mozilla.org/en-US/docs/Web/CSS/mask-image
+    title: mask-image on MDN
+    description: The property that does the fading, with the gradient and image forms it accepts.
+  - url: https://rauno.me/craft/nextjs
+    title: Building the Next.js website
+    description: Rauno Freiberg on the small layout details of a real site, including faded scroll edges.
+  - url: https://developer.mozilla.org/en-US/docs/Web/CSS/@property
+    title: "@property on MDN"
+    description: How to register a custom property so its value can be transitioned, which the edge aware demo relies on.
+  - url: https://developer.mozilla.org/en-US/docs/Web/API/CSS/registerProperty_static
+    title: CSS.registerProperty()
+    description: The JavaScript version of @property, handy when the CSS lives inside a component.
 ---
 
-Every scroll container has the same ugly problem: content gets cut off
-mid-row at the edge, a clean guillotine that looks like a rendering bug.
-A CSS mask turns that hard cut into a dissolve - and doubles as an
-affordance, because a fading edge visibly *continues*.
+A scroll container with a hard edge looks like a list that ends. A **scroll fade** softens that edge so the last visible row dissolves into the background, and the reader understands there is more below without a scrollbar telling them.
+
+The two lists below share their scroll position. On the left the rows are cut off flat. On the right a mask fades them out over the last few pixels. Scroll either one.
 
 <ScrollFadesDemo />
 
-## The technique
+The fade comes from `mask-image` with a linear gradient. Where the gradient is transparent the content is hidden, where it is black the content shows. Because it is a mask and not an overlay, it works over any background, including images and gradients, and it never blocks clicks.
 
-```css
-mask-image: linear-gradient(
-  to bottom,
-  transparent,
-  black 15%,
-  black 85%,
-  transparent
-);
-```
+## Only fade the side that can scroll
 
-Where the gradient is black the element is visible; where it's transparent
-it isn't. No overlay divs, no matching the background color - the mask
-works over images, gradients, anything behind it.
+A static mask has one flaw: it fades the top row even when you are at the top, and the last row even when you are at the bottom. At the bottom this is actively misleading. The final item looks half hidden, as if something is still below it.
 
-This site's sidebar uses exactly this: the concept list fades at both ends
-instead of clipping against the viewport.
+Scroll both lists all the way down.
 
-## Notes
+<ScrollFadesEdgeDemo />
 
-- **Fade the scrolling element, not a cover.** The old trick - an absolutely
-  positioned gradient matching the background - breaks the moment the
-  background isn't flat.
-- **Fade the trailing edge conditionally if you can.** The affordance lies
-  when there's nothing more to scroll; at the very bottom, the fade should
-  go. Rauno's Next.js site drives the mask from scroll position for this.
-- **Horizontal works the same** - `to right`, and it's the standard fix for
-  logo carousels and overflowing tab strips.
-- The same gradient in `mask-image` on a *wrapper* also clips its children,
-  so apply it to the element that owns the scrollbar.
+The right list measures its scroll position and switches each fade on only when there is content in that direction. The fade sizes live in two custom properties registered with `@property`, so the change animates over `200ms` instead of popping.
+
+## Horizontal rows
+
+The same idea applies sideways. A row of chips or tabs that overflows should fade at the edge that can still scroll, which also hints at the gesture.
+
+<ScrollFadesHorizontalDemo />
+
+Hide the scrollbar on rows like this. The fade is doing the scrollbar's job, and a horizontal bar under a row of chips is visual noise.
+
+## Usage
+
+<CodeBlock
+  tabs={[
+    {
+      label: "Tailwind",
+      language: "html",
+      icon: "tailwind",
+      code: `<!-- Vertical, static fade of 2.5rem on both ends -->
+<div
+  class="h-44 overflow-y-auto [mask-image:linear-gradient(to_bottom,transparent,black_2.5rem,black_calc(100%-2.5rem),transparent)]"
+>
+  ...
+</div>
+
+<!-- Horizontal, and hide the scrollbar -->
+<div
+  class="flex overflow-x-auto [scrollbar-width:none] [mask-image:linear-gradient(to_right,transparent,black_2rem,black_calc(100%-2rem),transparent)]"
+>
+  ...
+</div>`,
+    },
+    {
+      label: "CSS",
+      language: "css",
+      icon: "css",
+      code: `/* Static fade */
+.list {
+  overflow-y: auto;
+  mask-image: linear-gradient(
+    to bottom,
+    transparent,
+    black 2.5rem,
+    black calc(100% - 2.5rem),
+    transparent
+  );
+}
+
+/* Edge aware fade. Update the two properties from a scroll listener. */
+@property --fade-start {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --fade-end {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+.list {
+  --fade-start: 0px;
+  --fade-end: 2.5rem;
+  mask-image: linear-gradient(
+    to bottom,
+    transparent,
+    black var(--fade-start),
+    black calc(100% - var(--fade-end)),
+    transparent
+  );
+  transition: --fade-start 200ms ease-out, --fade-end 200ms ease-out;
+}`,
+    },
+  ]}
+/>
+
+This site ships a `fade-mask-y` utility in the global stylesheet. It uses a few extra color stops so the fade eases in rather than running linearly, which reads a little more naturally. For the edge aware version, listen to `scroll` and compare `scrollTop + clientHeight` with `scrollHeight`. Leave a pixel of tolerance, because those values are rounded differently on zoomed pages.

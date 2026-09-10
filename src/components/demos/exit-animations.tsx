@@ -1,70 +1,217 @@
 "use client";
 
-import { AnimatePresence, motion } from "motion/react";
+import { CheckCircleIcon, XIcon } from "@phosphor-icons/react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useState } from "react";
 
+import { Compare, CompareItem } from "@/components/app/compare";
 import { Demo } from "@/components/app/demo";
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
 
-export function ExitAnimationsDemo() {
-  const [open, setOpen] = useState(true);
-  const [cheap, setCheap] = useState(true);
+const EASE_OUT = [0.23, 1, 0.32, 1] as const;
+const EASE_IN = [0.42, 0, 1, 1] as const;
+
+function Toast() {
+  return (
+    <div className="flex items-center gap-2 rounded-lg bg-foreground px-3 py-2 text-xs text-background shadow-md">
+      <CheckCircleIcon
+        aria-hidden="true"
+        className="size-4 text-emerald-500"
+        weight="fill"
+      />
+      <span className="font-medium">Changes saved</span>
+      <span className="ml-1 text-background/60">Undo</span>
+    </div>
+  );
+}
+
+function ToastWindow({
+  open,
+  reversed,
+  reduceMotion,
+}: {
+  open: boolean;
+  reversed: boolean;
+  reduceMotion: boolean;
+}) {
+  const enter = reduceMotion ? 0 : 0.24;
+  const exit = reduceMotion ? 0 : reversed ? 0.24 : 0.12;
 
   return (
-    <Demo>
-      <div className="flex h-24 w-full max-w-96 items-center justify-center">
-        <AnimatePresence mode="wait">
+    <div className="relative h-36 w-full overflow-hidden rounded-xl bg-card shadow-(--custom-shadow)">
+      <div className="flex h-7 items-center gap-1.5 px-3">
+        <span className="size-2 rounded-full bg-foreground/10" />
+        <span className="size-2 rounded-full bg-foreground/10" />
+        <span className="size-2 rounded-full bg-foreground/10" />
+      </div>
+      <div className="absolute inset-x-0 bottom-4 flex justify-center px-3">
+        <AnimatePresence initial={false}>
           {open && (
             <motion.div
-              key={cheap ? "cheap" : "mirror"}
-              initial={{ opacity: 0, y: 16 }}
-              animate={{
-                opacity: 1,
-                y: 0,
-                filter: "blur(0px)",
-                transition: { duration: 0.35, ease: "easeOut" },
-              }}
+              key="toast"
+              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
               exit={
-                cheap
+                reversed
                   ? {
                       opacity: 0,
-                      filter: "blur(4px)",
-                      transition: { duration: 0.15, ease: "easeIn" },
+                      y: 12,
+                      transition: { duration: exit, ease: EASE_OUT },
                     }
                   : {
                       opacity: 0,
-                      y: 16,
-                      transition: { duration: 0.35, ease: "easeOut" },
+                      scale: 0.98,
+                      filter: "blur(2px)",
+                      transition: { duration: exit, ease: EASE_IN },
                     }
               }
-              className="rounded-xl border bg-card px-5 py-3 text-sm shadow-xs"
+              initial={{ opacity: 0, y: 12 }}
+              transition={{ duration: enter, ease: EASE_OUT }}
             >
-              Changes saved
+              <Toast />
             </motion.div>
           )}
         </AnimatePresence>
       </div>
-      <div className="flex items-center gap-6">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setOpen((o) => !o)}
-        >
-          {open ? "Dismiss" : "Show"}
-        </Button>
-        <div className="flex items-center gap-3">
-          <span className="font-mono text-xs text-muted-foreground">
-            fade + blur exit
-          </span>
-          <Switch checked={cheap} onCheckedChange={setCheap} />
-        </div>
-      </div>
-      <p className="max-w-sm text-center text-xs text-muted-foreground text-pretty">
-        The entrance is identical either way. Off, the exit replays the
-        entrance backwards and the toast lingers; on, it dissolves in 150ms
-        and the interface gets out of your way.
-      </p>
+    </div>
+  );
+}
+
+export function ExitAnimationsDemo() {
+  const [open, setOpen] = useState(true);
+  const reduceMotion = useReducedMotion() ?? false;
+
+  return (
+    <Demo className="gap-7 px-4 sm:px-8">
+      <Compare>
+        <CompareItem verdict="wrong" label="Enter, reversed">
+          <ToastWindow open={open} reduceMotion={reduceMotion} reversed />
+        </CompareItem>
+        <CompareItem verdict="right" label="Quick fade">
+          <ToastWindow
+            open={open}
+            reduceMotion={reduceMotion}
+            reversed={false}
+          />
+        </CompareItem>
+      </Compare>
+
+      <Button onClick={() => setOpen((value) => !value)} variant="secondary">
+        {open ? "Dismiss" : "Show"}
+      </Button>
+    </Demo>
+  );
+}
+
+const TASKS = [
+  "Reply to Sarah",
+  "Book flights to Lisbon",
+  "Review pull request",
+  "Send the invoice",
+] as const;
+
+function DeleteButton({ onClick }: { onClick: () => void }) {
+  return (
+    <Button
+      aria-label="Remove"
+      className="shrink-0 text-muted-foreground"
+      onClick={onClick}
+      size="icon-xs"
+      variant="ghost"
+    >
+      <XIcon aria-hidden="true" className="size-3.5" weight="bold" />
+    </Button>
+  );
+}
+
+function TaskList({
+  tasks,
+  onRemove,
+  animated,
+  reduceMotion,
+}: {
+  tasks: readonly string[];
+  onRemove: (task: string) => void;
+  animated: boolean;
+  reduceMotion: boolean;
+}) {
+  const duration = reduceMotion ? 0 : 0.16;
+
+  return (
+    <ul className="h-44 w-full overflow-hidden rounded-xl bg-card p-1.5 shadow-(--custom-shadow)">
+      {animated ? (
+        <AnimatePresence initial={false}>
+          {tasks.map((task) => (
+            <motion.li
+              key={task}
+              animate={{ opacity: 1, height: "auto" }}
+              className="overflow-hidden"
+              exit={{ opacity: 0, height: 0 }}
+              initial={{ opacity: 0, height: 0 }}
+              layout
+              transition={{ duration, ease: EASE_OUT }}
+            >
+              <TaskRow onRemove={() => onRemove(task)} task={task} />
+            </motion.li>
+          ))}
+        </AnimatePresence>
+      ) : (
+        tasks.map((task) => (
+          <li key={task}>
+            <TaskRow onRemove={() => onRemove(task)} task={task} />
+          </li>
+        ))
+      )}
+    </ul>
+  );
+}
+
+function TaskRow({ task, onRemove }: { task: string; onRemove: () => void }) {
+  return (
+    <div className="flex h-9 items-center gap-2 rounded-lg px-2 text-xs text-foreground">
+      <span className="size-3.5 shrink-0 rounded-full border border-foreground/25" />
+      <span className="min-w-0 flex-1 truncate">{task}</span>
+      <DeleteButton onClick={onRemove} />
+    </div>
+  );
+}
+
+export function ExitListDemo() {
+  const [left, setLeft] = useState<readonly string[]>(TASKS);
+  const [right, setRight] = useState<readonly string[]>(TASKS);
+  const reduceMotion = useReducedMotion() ?? false;
+  const canReset = left.length < TASKS.length || right.length < TASKS.length;
+
+  return (
+    <Demo className="gap-7 px-4 sm:px-8">
+      <Compare>
+        <CompareItem verdict="wrong" label="No exit">
+          <TaskList
+            animated={false}
+            onRemove={(task) => setLeft((list) => list.filter((t) => t !== task))}
+            reduceMotion={reduceMotion}
+            tasks={left}
+          />
+        </CompareItem>
+        <CompareItem verdict="right" label="Collapse">
+          <TaskList
+            animated
+            onRemove={(task) => setRight((list) => list.filter((t) => t !== task))}
+            reduceMotion={reduceMotion}
+            tasks={right}
+          />
+        </CompareItem>
+      </Compare>
+
+      <Button
+        disabled={!canReset}
+        onClick={() => {
+          setLeft(TASKS);
+          setRight(TASKS);
+        }}
+        variant="secondary"
+      >
+        Reset
+      </Button>
     </Demo>
   );
 }

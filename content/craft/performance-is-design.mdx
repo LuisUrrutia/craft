@@ -1,42 +1,89 @@
 ---
 title: Performance Is Design
-description: Speed is a feature; pretending to be fast is not.
+description: How fast something feels is a design decision, not just a metric.
 section: Craft
 order: 1
 publishedAt: "2026-07-15"
 resources:
   - url: https://shud.in/thoughts/performance-is-not-a-technical-problem
+    title: Performance is not a technical problem
+    description: Shu Ding on why slow products are the sum of small decisions nobody owned.
+  - url: https://www.nngroup.com/articles/response-times-3-important-limits/
+    title: Response times, the three important limits
+    description: The classic 100ms, 1s, and 10s thresholds and what each one means for feedback.
+  - url: https://www.nngroup.com/articles/progress-indicators/
+    title: Progress indicators make a slow system less insufferable
+    description: When a spinner is enough, when you need a bar, and when to show nothing.
   - url: https://emilkowal.ski/ui/you-dont-need-animations
+    title: You don't need animations
+    description: Emil Kowalski on how motion can make a fast interface feel slow.
+  - url: https://jakub.kr/writing/details-that-make-interfaces-feel-better
+    title: Details that make interfaces feel better
+    description: A collection of small decisions, several of them about waiting.
 ---
 
-We treat performance as an engineering metric and loading states as a design
-problem. They're the same problem. Every skeleton, spinner, and shimmer is
-the design team decorating a failure the engineering team measured.
+Speed is something people feel before they measure it. Two apps can fetch the
+same data in the same time and one will feel quick while the other feels like
+it is thinking about it. The difference is what you show while the wait
+happens.
 
-Consider a 350ms load - a fast API on a normal connection:
+That makes waiting a design problem. **Perceived performance** is the part of
+speed you control with pixels, and it is usually the cheaper part to improve.
+
+Press the button below. Both cards take the same 1.2 seconds to load.
 
 <PerceivedPerformanceDemo />
 
-The skeleton version renders placeholder bars for a single blink, then
-violently swaps them for real content. Two visual events. The quiet version
-shows one: content, easing in. The skeleton made the app *feel* slower than
-doing nothing at all.
+The spinner says "please wait". The skeleton says "here is the shape of what is
+coming". Same wait, and the second one feels shorter because your eye already
+has somewhere to go.
 
-## Rules of thumb
+## Short waits want silence
 
-- **Under ~300ms: show nothing.** A beat of stillness reads as
-  responsiveness. A flash of skeleton reads as churn.
-- **300ms–1s: hold layout, fade content in.** Reserve the space so nothing
-  jumps, but don't animate placeholders.
-- **Over 1s: now you owe the user an explanation.** This is where skeletons
-  and progress belong - for genuinely slow things.
-- **Never let the loading state outlive the load.** Artificially holding a
-  spinner for "smoothness" is lying in the wrong direction.
+Loading states have a cost of their own. Every placeholder is a thing that
+appears and then disappears, and quick flashes of UI read as churn.
+
+For a wait that ends in a blink, the calmest thing you can do is hold the
+layout and show nothing. Then fade the real content in.
+
+<LoadingFlashDemo />
+
+A rough guide that has held up well:
+
+- Under about 300ms, show nothing. Reserve the space so nothing jumps.
+- Between 300ms and a second, hold layout and fade content in. A skeleton is fine if the wait is reliably in the upper half of that range.
+- Over a second, you owe people an explanation. This is where skeletons, progress, and honest copy belong.
+
+Never stretch a loading state to make it "smooth". If the data is ready, show
+it.
+
+## Do not wait for permission
+
+Most actions succeed. When you already know what the result will look like, show
+it immediately and let the request catch up. If it fails, you can roll back
+and say so.
+
+<OptimisticDemo />
+
+This is what makes Linear and Things feel instant. Nothing about their network
+is special. They just stopped making you watch the round trip.
+
+## Even the spinner has a speed
+
+When you really do need a spinner, how fast it turns changes how long the wait
+feels. Same load, two spinners.
+
+<SpinnerSpeedDemo />
+
+The faster one is not lying. It is just not adding its own slowness on top of
+the real one.
 
 ## The real fix
 
-Shu Ding's point: performance isn't a technical problem - it's entropy,
-hundreds of small decisions nobody owned. Design is deciding. The best
-loading state is the one you deleted by making the thing fast: cache it,
-render it on the server, prefetch it on hover. Then the interface can do
-the most confident thing an interface can do - just show the data.
+Shu Ding's point is that slow products rarely have one cause. They are
+hundreds of small decisions, each defensible, that nobody looked at together.
+Design is the act of looking at them together.
+
+So the best loading state is often the one you deleted. Cache the data. Render
+it on the server. Prefetch on hover. Then the interface gets to do the most
+confident thing it can do, which is to just show the thing.

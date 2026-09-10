@@ -1,36 +1,121 @@
 ---
 title: Exit Animations
-description: Things leaving deserve less ceremony than things arriving.
+description: Make things leave faster and with less movement than they arrived.
 section: Motion
 order: 8
 publishedAt: "2026-07-16"
 resources:
-  - url: https://jakub.kr/writing/details-that-make-interfaces-feel-better
   - url: https://emilkowal.ski/ui/you-dont-need-animations
+    title: You don't need animations
+    description: Emil Kowalski on which animations earn their place, with exits as a recurring example.
+  - url: https://jakub.kr/writing/details-that-make-interfaces-feel-better
+    title: Details that make interfaces feel better
+    description: Jakub Krehel's collection of small motion decisions, including how things should leave.
+  - url: https://motion.dev/docs/react-animate-presence
+    title: AnimatePresence
+    description: How to animate a React element out after it has been removed from the tree.
+  - url: https://developer.mozilla.org/en-US/docs/Web/CSS/@starting-style
+    title: "@starting-style"
+    description: The CSS rule that, together with transition-behavior, lets you animate to and from display none.
 ---
 
-The lazy exit is the entrance played backwards: slide up on enter, slide
-down on leave, same duration. It feels symmetric, so it feels right. But
-the two moments are nothing alike. An entrance introduces something you
-need to notice; an exit removes something you're already done with.
+The lazy exit is the entrance played backwards. Slide up and fade in, then
+slide down and fade out, same duration, same curve. It is symmetrical, and
+that is the problem. **Something leaving deserves less ceremony than
+something arriving.**
+
+Dismiss the toasts below and watch how each one goes.
 
 <ExitAnimationsDemo />
 
-## The asymmetry
+Both enter the same way, in 240ms with an ease-out. The left one exits by
+running that in reverse, so you sit through another 240ms while it slides
+away. The right one fades out in half the time, with a touch of blur and
+no travel at all.
 
-- **Enter deliberately, leave quickly.** An exit at half the entrance
-  duration (or less) respects that the user has moved on. Dismissing a
-  toast that takes 350ms to slide away is 350ms of watching furniture.
-- **Exit via opacity and blur, not position.** Jakub Krehel's rule: motion
-  on exit drags the eye toward something that's disappearing - the one
-  place attention shouldn't go. A fade with a touch of blur dissolves
-  instead of traveling.
-- **User-initiated exits should be near-instant.** Closing a menu, pressing
-  Escape, dismissing a dialog: the user already decided it's gone. Anything
-  over ~150ms is the interface disagreeing.
+The reason is attention. An entrance asks for it: something new is here,
+and the motion tells you where it came from. An exit is the user saying
+they are done. Anything that keeps them watching after that point is in
+the way.
 
-## The test
+A good rule of thumb: exits run at half the duration of the entrance, and
+they can use an ease-in, since the thing is accelerating away and nobody
+needs to see it settle.
 
-Dismiss the same element ten times in a row. The exit that felt polished
-once should feel like nothing at all - if you're waiting on it by the third
-repetition, it's too long.
+## Exits that keep layout honest
+
+Removing an item from a list is the exit people forget most. Without one,
+the item vanishes and everything below it jumps up in a single frame.
+Delete a few tasks on each side.
+
+<ExitListDemo />
+
+On the right the row collapses its height while it fades, so the rows
+beneath slide up to fill the gap instead of teleporting. It is still fast,
+160ms, and it never draws attention to itself. It just stops the layout
+from jumping.
+
+## Usage
+
+<CodeBlock
+  tabs={[
+    {
+      label: "React",
+      language: "tsx",
+      code: `import { AnimatePresence, motion } from "motion/react";
+
+<AnimatePresence initial={false}>
+    {open && (
+        <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{
+                opacity: 0,
+                filter: "blur(2px)",
+                transition: { duration: 0.12, ease: "easeIn" },
+            }}
+            transition={{ duration: 0.24, ease: [0.23, 1, 0.32, 1] }}
+        >
+            Changes saved
+        </motion.div>
+    )}
+</AnimatePresence>`,
+    },
+    {
+      label: "CSS",
+      language: "css",
+      icon: "css",
+      code: `.toast {
+    display: block;
+    opacity: 1;
+    translate: 0 0;
+    transition:
+        opacity 240ms var(--ease-out),
+        translate 240ms var(--ease-out),
+        display 240ms allow-discrete;
+}
+
+@starting-style {
+    .toast {
+        opacity: 0;
+        translate: 0 12px;
+    }
+}
+
+.toast[hidden] {
+    display: none;
+    opacity: 0;
+    filter: blur(2px);
+    transition:
+        opacity 120ms ease-in,
+        filter 120ms ease-in,
+        display 120ms allow-discrete;
+}`,
+    },
+  ]}
+/>
+
+In CSS, the transition that runs is the one declared on the state you are
+moving to. So the enter timing lives on `.toast` and the exit timing on
+`.toast[hidden]`, and `allow-discrete` is what lets the fade finish before
+`display: none` takes the element out.

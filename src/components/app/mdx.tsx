@@ -3,56 +3,159 @@ import type { MDXComponents } from "mdx/types";
 
 import { CodeBlock } from "@/components/app/code-block";
 import { Demo } from "@/components/app/demo";
-import { ButtonPressDemo } from "@/components/demos/button-press";
-import { ClipPathDemo } from "@/components/demos/clip-path";
-import { CurveSmoothingDemo } from "@/components/demos/curve-smoothing";
-import { EasingsDemo } from "@/components/demos/easings";
-import { ExitAnimationsDemo } from "@/components/demos/exit-animations";
-import { FontSmoothingDemo } from "@/components/demos/font-smoothing";
-import { HitAreasDemo } from "@/components/demos/hit-areas";
 import {
-  HoverExitDemo,
+  ButtonPressDemo,
+  PressAmountDemo,
+  PressEverywhereDemo,
+} from "@/components/demos/button-press";
+import {
+  ClipPathCompareDemo,
+  ClipPathHoldDemo,
+  ClipPathRevealDemo,
+  ClipPathTabsDemo,
+} from "@/components/demos/clip-path";
+import {
+  CurveOvershootDemo,
+  CurveSmoothingDemo,
+} from "@/components/demos/curve-smoothing";
+import {
+  EasingCurveDemo,
+  EasingsDemo,
+  StrongEasingDemo,
+} from "@/components/demos/easings";
+import {
+  ExitAnimationsDemo,
+  ExitListDemo,
+} from "@/components/demos/exit-animations";
+import {
+  FontSmoothingContrastDemo,
+  FontSmoothingDemo,
+  FontSmoothingWeightsDemo,
+} from "@/components/demos/font-smoothing";
+import {
+  HitAreasExpandDemo,
+  HitAreasGapDemo,
+  HitAreasToolbarDemo,
+} from "@/components/demos/hit-areas";
+import {
   HoverRestraintDemo,
   HoverTooltipDemo,
+  KeyboardActionDemo,
 } from "@/components/demos/hover-restraint";
 import { HtmlBackgroundDemo } from "@/components/demos/html-background";
-import { IconMorphDemo } from "@/components/demos/icon-morph";
-import { IconWeightsDemo } from "@/components/demos/icon-weights";
-import { ImageOutlineDemo } from "@/components/demos/image-outline";
-import { InterfaceSfxDemo } from "@/components/demos/interface-sfx";
-import { InterruptibilityDemo } from "@/components/demos/interruptibility";
-import { LayeringSoundsDemo } from "@/components/demos/layering-sounds";
-import { LetterSpacingDemo } from "@/components/demos/letter-spacing";
-import { LivingChartsDemo } from "@/components/demos/living-charts";
+import {
+  HamburgerMorphDemo,
+  IconMorphDemo,
+  IconMorphTuningDemo,
+} from "@/components/demos/icon-morph";
+import {
+  IconMixDemo,
+  IconTextSizeDemo,
+  IconWeightsDemo,
+} from "@/components/demos/icon-weights";
+import {
+  ImageOutlineAvatarDemo,
+  ImageOutlineDemo,
+  ImageOutlineStrengthDemo,
+} from "@/components/demos/image-outline";
+import {
+  HoverSoundDemo,
+  SoundCuesDemo,
+  SoundLevelDemo,
+} from "@/components/demos/interface-sfx";
+import {
+  InterruptibilityDemo,
+  SpringVelocityDemo,
+  ToastStackDemo,
+} from "@/components/demos/interruptibility";
+import {
+  ArpeggioSpacingDemo,
+  SoundLayersDemo,
+  TextureLayersDemo,
+} from "@/components/demos/layering-sounds";
+import {
+  LetterSpacingDemo,
+  TrackingScaleDemo,
+  UppercaseTrackingDemo,
+} from "@/components/demos/letter-spacing";
+import {
+  LivingBarsDemo,
+  LivingChartsDemo,
+} from "@/components/demos/living-charts";
 import {
   NestedRadiusDemo,
   NestedRadiusExamplesDemo,
   RadiusCalculatorDemo,
 } from "@/components/demos/nested-radius";
 import {
+  NoiseBandingDemo,
   NoiseDemo,
   NoiseFrequencyDemo,
   NoiseSurfaceDemo,
 } from "@/components/demos/noise";
-import { OklchDemo } from "@/components/demos/oklch";
+import {
+  AnimationCostDemo,
+  NoveltyBudgetDemo,
+} from "@/components/demos/novelty-budget";
+import {
+  OklchDemo,
+  OklchGradientDemo,
+  OklchPaletteDemo,
+} from "@/components/demos/oklch";
 import {
   HangingPunctuationDemo,
   OpticalAlignmentDemo,
   OpticalButtonDemo,
   OpticalSizingDemo,
+  OpticalWeightDemo,
 } from "@/components/demos/optical-alignment";
-import { PerceivedPerformanceDemo } from "@/components/demos/perceived-performance";
-import { ScaleEntrancesDemo } from "@/components/demos/scale-entrances";
-import { ScrollFadesDemo } from "@/components/demos/scroll-fades";
-import { ShadowsNotBordersDemo } from "@/components/demos/shadows-not-borders";
-import { SharedLayoutDemo } from "@/components/demos/shared-layout";
-import { StaggerDemo } from "@/components/demos/stagger";
+import {
+  LoadingFlashDemo,
+  OptimisticDemo,
+  PerceivedPerformanceDemo,
+  SpinnerSpeedDemo,
+} from "@/components/demos/perceived-performance";
+import { DepthOfFieldDemo } from "@/components/demos/references";
+import {
+  ScaleEntrancesDemo,
+  StartingScaleDemo,
+  TransformOriginDemo,
+} from "@/components/demos/scale-entrances";
+import {
+  ScrollFadesDemo,
+  ScrollFadesEdgeDemo,
+  ScrollFadesHorizontalDemo,
+} from "@/components/demos/scroll-fades";
+import {
+  ShadowDarkModeDemo,
+  ShadowElevationDemo,
+  ShadowLayersDemo,
+  ShadowsNotBordersDemo,
+} from "@/components/demos/shadows-not-borders";
+import {
+  SharedLayoutDemo,
+  SharedLayoutDetailDemo,
+} from "@/components/demos/shared-layout";
+import {
+  StaggerCapDemo,
+  StaggerCompareDemo,
+  StaggerDemo,
+} from "@/components/demos/stagger";
 import {
   TabularNumsDemo,
   TabularTableDemo,
   TabularTimerDemo,
 } from "@/components/demos/tabular-nums";
-import { TextWrappingDemo } from "@/components/demos/text-wrapping";
+import {
+  PairJudgementDemo,
+  SpotTheDifferenceDemo,
+} from "@/components/demos/taste";
+import {
+  TextBalanceDemo,
+  TextPrettyDemo,
+  TextWrapToastDemo,
+} from "@/components/demos/text-wrapping";
+import { SurfaceErasDemo } from "@/components/demos/timelessness";
 import { cn } from "@/lib/utils";
 
 function getFaviconUrl(href?: string) {
@@ -174,46 +277,99 @@ const components: MDXComponents = {
     <hr className={cn("my-10", className)} {...props} />
   ),
   Demo,
+  AnimationCostDemo,
+  ArpeggioSpacingDemo,
+  ButtonPressDemo,
+  ClipPathCompareDemo,
+  ClipPathHoldDemo,
+  ClipPathRevealDemo,
+  ClipPathTabsDemo,
+  CurveOvershootDemo,
+  CurveSmoothingDemo,
+  DepthOfFieldDemo,
+  EasingCurveDemo,
+  EasingsDemo,
+  ExitAnimationsDemo,
+  ExitListDemo,
+  FontSmoothingContrastDemo,
+  FontSmoothingDemo,
+  FontSmoothingWeightsDemo,
+  HamburgerMorphDemo,
+  HangingPunctuationDemo,
+  HitAreasExpandDemo,
+  HitAreasGapDemo,
+  HitAreasToolbarDemo,
+  HoverRestraintDemo,
+  HoverSoundDemo,
+  HoverTooltipDemo,
+  HtmlBackgroundDemo,
+  IconMixDemo,
+  IconMorphDemo,
+  IconMorphTuningDemo,
+  IconTextSizeDemo,
+  IconWeightsDemo,
+  ImageOutlineAvatarDemo,
+  ImageOutlineDemo,
+  ImageOutlineStrengthDemo,
+  InterruptibilityDemo,
+  KeyboardActionDemo,
   LetterSpacingDemo,
-  TextWrappingDemo,
-  OklchDemo,
+  LivingBarsDemo,
+  LivingChartsDemo,
+  LoadingFlashDemo,
   NestedRadiusDemo,
   NestedRadiusExamplesDemo,
-  RadiusCalculatorDemo,
-  IconMorphDemo,
-  InterfaceSfxDemo,
-  TabularNumsDemo,
-  TabularTimerDemo,
-  TabularTableDemo,
-  OpticalAlignmentDemo,
-  OpticalButtonDemo,
-  OpticalSizingDemo,
-  HangingPunctuationDemo,
-  IconWeightsDemo,
+  NoiseBandingDemo,
   NoiseDemo,
   NoiseFrequencyDemo,
   NoiseSurfaceDemo,
-  ShadowsNotBordersDemo,
-  ImageOutlineDemo,
-  HtmlBackgroundDemo,
-  HitAreasDemo,
-  ButtonPressDemo,
-  EasingsDemo,
-  StaggerDemo,
-  InterruptibilityDemo,
-  HoverRestraintDemo,
-  HoverExitDemo,
-  HoverTooltipDemo,
-  LayeringSoundsDemo,
-  LivingChartsDemo,
+  NoveltyBudgetDemo,
+  OklchDemo,
+  OklchGradientDemo,
+  OklchPaletteDemo,
+  OpticalAlignmentDemo,
+  OpticalButtonDemo,
+  OpticalSizingDemo,
+  OpticalWeightDemo,
+  OptimisticDemo,
+  PairJudgementDemo,
   PerceivedPerformanceDemo,
-  SharedLayoutDemo,
-  ExitAnimationsDemo,
+  PressAmountDemo,
+  PressEverywhereDemo,
+  RadiusCalculatorDemo,
   ScaleEntrancesDemo,
-  ClipPathDemo,
   ScrollFadesDemo,
-  FontSmoothingDemo,
-  CurveSmoothingDemo,
+  ScrollFadesEdgeDemo,
+  ScrollFadesHorizontalDemo,
+  ShadowDarkModeDemo,
+  ShadowElevationDemo,
+  ShadowLayersDemo,
+  ShadowsNotBordersDemo,
+  SharedLayoutDemo,
+  SharedLayoutDetailDemo,
+  SoundCuesDemo,
+  SoundLayersDemo,
+  SoundLevelDemo,
+  SpinnerSpeedDemo,
+  SpotTheDifferenceDemo,
+  SpringVelocityDemo,
+  StaggerCapDemo,
+  StaggerCompareDemo,
+  StaggerDemo,
+  StartingScaleDemo,
+  StrongEasingDemo,
+  SurfaceErasDemo,
+  TabularNumsDemo,
+  TabularTableDemo,
+  TabularTimerDemo,
+  TextBalanceDemo,
+  TextPrettyDemo,
+  TextWrapToastDemo,
+  TextureLayersDemo,
+  ToastStackDemo,
+  TrackingScaleDemo,
+  TransformOriginDemo,
+  UppercaseTrackingDemo,
   CodeBlock,
 };
 

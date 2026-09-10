@@ -1,41 +1,89 @@
 ---
 title: Button Press
-description: A 3% dip that makes clicks feel physical.
+description: Scale a button down a little while it is pressed so the click feels physical.
 section: Motion
 order: 2
 publishedAt: "2026-07-15"
 resources:
   - url: https://emilkowal.ski/ui/7-practical-animation-tips
+    title: 7 practical animation tips
+    description: Emil Kowalski's short list of rules for interface motion, including the press scale.
   - url: https://emilkowal.ski/ui/great-animations
+    title: Great animations
+    description: What separates motion that feels right from motion that just moves.
+  - url: https://developer.mozilla.org/en-US/docs/Web/CSS/:active
+    title: The :active pseudo-class
+    description: When the browser considers an element pressed, on mouse and on keyboard.
+  - url: https://web.dev/articles/animations-guide
+    title: Animations guide
+    description: Why transform and opacity are the properties you can animate for free.
 ---
 
-Real buttons depress. Digital ones can borrow the effect with one line:
-scale down slightly while pressed. It's the cheapest haptic feedback the
-web has.
+A real button moves when you push it. A button on screen can borrow that with
+one rule: **scale it down a little while it is pressed**. It is the cheapest
+feedback the web has, and it makes an interface feel like it heard you.
+
+Press and hold both buttons below.
 
 <ButtonPressDemo />
 
-## The recipe
+The one on the right is not doing much. It shrinks to 97% for as long as your
+finger is down, then springs back to full size. The difference is easy to feel
+and hard to see, which is exactly what you want from press feedback.
 
-```css
-.button {
-  transition: transform 100ms ease-out;
+## Finding the amount
+
+Two numbers matter: how far the button shrinks and how quickly it gets there.
+Drag the sliders and keep pressing.
+
+<PressAmountDemo />
+
+Around `0.97` the press reads as tactile. Past `0.92` it starts to look like
+an effect, and the reader notices the animation instead of the click. Keep the
+duration around `100ms`. Longer than that and the button lags behind your
+finger, which feels worse than no feedback at all.
+
+Scale runs on the compositor, so this costs nothing at runtime. Because
+`scale()` also scales the children, the label and icon move with the button
+and nothing needs a second rule.
+
+## Not just buttons
+
+Anything you can press deserves the same treatment: cards, list rows, tiles,
+chips. Toggle the feedback on and press the tiles.
+
+<PressEverywhereDemo />
+
+Larger surfaces can take a smaller amount. A full-width card at `0.97` moves
+several pixels at the edges, which is more than a button does at the same
+scale. Try `0.98` and judge by eye.
+
+## Usage
+
+<CodeBlock
+  tabs={[
+    {
+      label: "Tailwind",
+      language: "html",
+      icon: "tailwind",
+      code: `<button class="transition-transform duration-100 ease-out active:scale-[0.97]">
+    Save changes
+</button>`,
+    },
+    {
+      label: "CSS",
+      language: "css",
+      icon: "css",
+      code: `.button {
+    transition: transform 100ms ease-out;
 }
+
 .button:active {
-  transform: scale(0.97);
-}
-```
+    transform: scale(0.97);
+}`,
+    },
+  ]}
+/>
 
-- **0.97 is the sweet spot.** Enough to feel, not enough to see as an
-  effect. Emil Kowalski's rule of thumb: if the user notices the animation
-  itself, it's too much.
-- **Keep it fast.** ~100ms down. The release can ride the same transition.
-- **Scale the whole button**, not the label - `transform` runs on the
-  compositor, so it's free.
-
-## Two warnings
-
-Never animate *entrances* from `scale(0)` - elements growing from nothing
-look cartoonish; start at 0.95 and fade. And skip the effect on controls
-triggered from the keyboard: a button that dips when nobody's finger is on
-it feels haunted.
+Transition `transform` only, not `all`. A button usually also changes color on
+hover, and you do not want the press timing to leak into that.

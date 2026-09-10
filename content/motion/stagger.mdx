@@ -1,39 +1,98 @@
 ---
 title: Stagger
-description: Eighty milliseconds between siblings turns a blob into choreography.
+description: A small delay between siblings turns one block into a sequence.
 section: Motion
 order: 4
 publishedAt: "2026-07-15"
 resources:
   - url: https://jakub.kr/writing/details-that-make-interfaces-feel-better
+    title: Details That Make Interfaces Feel Better
+    description: Jakub Krehel on the small timing choices, stagger included, that separate polished UI from the rest.
   - url: https://rauno.me/craft/depth
+    title: Depth
+    description: Rauno Freiberg on how sequence and timing create a sense of layers on a flat screen.
+  - url: https://motion.dev/docs/react-transitions#orchestration
+    title: Orchestration in Motion
+    description: The staggerChildren and delayChildren options for staggering variants across a tree.
+  - url: https://developer.mozilla.org/en-US/docs/Web/CSS/animation-delay
+    title: animation-delay
+    description: The MDN reference for the property that makes a CSS stagger possible.
 ---
 
-When a group of elements appears at once, the eye gets one event: *stuff
-happened*. Delay each sibling slightly and the same content becomes a
-sequence the eye can follow - first this, then this. Film editors stagger
-cuts for the same reason.
+When a list appears all at once, it reads as one block. When each row arrives a few milliseconds after the one before, it reads as a list. **Stagger** is that small offset between siblings, and it is one of the cheapest ways to make an interface feel put together.
+
+Drag the slider and replay. The rows here fade and rise, and the only thing that changes is the gap between them.
 
 <StaggerDemo />
 
-## The recipe
+Around `30ms` to `60ms` the list feels alive without feeling slow. Push past `100ms` and the last row is still arriving after the user has started reading the first. The effect stops being a detail and becomes a wait.
 
-```css
-.item {
-  animation: enter 400ms ease-out both;
-  animation-delay: calc(var(--i) * 80ms);
+## Block vs sequence
+
+Here is the same list with and without a stagger. The per-row animation is identical.
+
+<StaggerCompareDemo />
+
+The staggered version is not faster, and it is not more useful. It is just easier to parse. Your eye gets a starting point and a direction, top to bottom, and it follows along. The block version gives you five things at once.
+
+## Long lists
+
+Stagger is multiplicative. A `60ms` gap looks fine on five rows and terrible on twenty, because the last row shows up more than a second late. For lists that can grow, cap the total instead of fixing the step.
+
+<StaggerCapDemo />
+
+A useful rule: the last item should start within about `300ms` of the first. Divide that by the number of items and you have your step. For very long lists, stagger only the rows that are visible and let the rest render instantly.
+
+## Never block interaction
+
+A stagger is decoration on top of content that is already there. The rows should be clickable while they are still fading in, and a user who scrolls past the animation should not be punished for it. Use `opacity` and `transform` so the elements take up their space from the first frame, and never gate interaction on the animation ending.
+
+## Usage
+
+<CodeBlock
+  tabs={[
+    {
+      label: "CSS",
+      language: "css",
+      icon: "css",
+      code: `@keyframes rise-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
-```
 
-- **80–100ms per step** is the pocket. Below 50ms it collapses back into a
-  blob; above 200ms the tail feels like lag.
-- **`both` fill mode matters** - items must be invisible before their turn.
-- **Cap the total.** Stagger the first five or six; land everything after
-  together. Nobody wants to watch row 30 arrive.
+.list > li {
+  animation: rise-in 360ms cubic-bezier(0.23, 1, 0.32, 1) both;
+  animation-delay: calc(var(--index) * 40ms);
+}
 
-## Restraint
+/* Or without a variable, for a fixed number of rows. */
+.list > li:nth-child(2) { animation-delay: 40ms; }
+.list > li:nth-child(3) { animation-delay: 80ms; }
+.list > li:nth-child(4) { animation-delay: 120ms; }`,
+    },
+    {
+      label: "Motion",
+      language: "tsx",
+      code: `import { motion } from "motion/react";
 
-Stagger is an entrance effect - reserve it for moments that deserve one:
-first load, opening a panel, a completed search. Re-running it on every
-interaction (Rauno Freiberg would say you're spending your novelty budget)
-turns choreography into a wait.
+const list = {
+  visible: { transition: { staggerChildren: 0.04 } },
+};
+
+const item = {
+  hidden: { opacity: 0, y: 8 },
+  visible: { opacity: 1, y: 0 },
+};
+
+<motion.ul animate="visible" initial="hidden" variants={list}>
+  {rows.map((row) => (
+    <motion.li key={row.id} variants={item}>
+      {row.title}
+    </motion.li>
+  ))}
+</motion.ul>`,
+    },
+  ]}
+/>
+
+Set `animation-fill-mode: both` (the `both` keyword in the shorthand above) or the rows will flash at full opacity during their delay, before the animation starts. It is the most common stagger bug and it is invisible until you set a long delay.

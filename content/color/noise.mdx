@@ -1,103 +1,97 @@
 ---
 title: Noise
-description: A little grain makes flat surfaces feel like material.
+description: A little grain hides gradient banding and makes flat color feel like a surface.
 section: Color
 order: 2
 publishedAt: "2026-07-15"
 resources:
-  - url: https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feTurbulence
+  - url: https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feTurbulence
     title: feTurbulence
-    description: The SVG filter primitive that generates the noise, on MDN.
+    description: The SVG filter primitive that generates the noise. Everything here is built on it.
   - url: https://css-tricks.com/grainy-gradients/
     title: Grainy Gradients
-    description: A deep walkthrough of the SVG noise technique on CSS-Tricks.
-  - url: https://grainy-gradients.vercel.app
+    description: A thorough walkthrough of noise on gradients, with the color matrix tricks explained.
+  - url: https://grainy-gradients.vercel.app/
     title: Grainy Gradients playground
-    description: Tweak turbulence, blend modes, and colors in the browser.
+    description: Dial in frequency, octaves, and blend modes live, then copy the SVG.
   - url: https://developer.mozilla.org/en-US/docs/Web/CSS/mix-blend-mode
     title: mix-blend-mode
-    description: How blend modes mix a layer with the content behind it.
+    description: How the grain layer combines with the color underneath it.
 ---
 
-Large flat fills can feel sterile. A hero gradient, a card cover, or an empty
-state is often just one smooth color ramp, and on some screens that ramp also
-shows **banding**: visible steps between the colors.
-
-A thin layer of noise fixes both. The grain adds a texture the eye barely
-registers, and it breaks the color steps apart so the banding disappears.
-
-You do not need an image file for this. SVG can generate the grain with
-`feTurbulence`, and a CSS filter applies it. Move the slider to find the point
-where the surface stops feeling flat.
+Screens are too clean. A gradient rendered in 8 bits per channel has visible steps where one shade turns into the next, and a large block of one color looks like a plastic sheet. **Noise** is a layer of random light and dark pixels laid over the surface. It breaks the steps up and gives the color some texture. Drag the slider to add grain to this card.
 
 <NoiseDemo />
 
+Around 6% to 10% is where it usually lands. You should have to lean in to notice the grain. Any more and the card starts to look dirty.
+
+## Banding
+
+This is the problem noise was made for. Both boxes below use the exact same radial gradient, from a light center into near black. The left one shows rings where the browser runs out of shades. The right one has grain on top.
+
+<NoiseBandingDemo />
+
+The grain does not add shades. It scatters the boundary between each pair of shades so your eye cannot find the line. Dark gradients band the most because there are fewer distinct dark values to work with, so they benefit the most.
+
 ## Grain size
 
-`baseFrequency` controls how fine the grain is. Higher values pack more detail
-into the same space.
+The `baseFrequency` attribute controls how fine the noise is. Low values give big soft blobs. High values give the tight speckle of film grain. This demo runs the grain at a high opacity so you can see the shape change.
 
 <NoiseFrequencyDemo />
 
-Values between 0.6 and 1 read as fine film grain, which is what most
-interfaces want. Go much lower and the pattern turns into visible static.
+For UI, stay between `0.6` and `1`. Below that the noise looks like clouds and starts to compete with the content. Above `1` it turns into a flat gray haze and the texture is gone.
 
 ## On real surfaces
 
-The difference is easier to judge on a real component than on a swatch. Toggle
-the cover of this card.
+Grain reads best on dark and saturated surfaces, where the light and dark specks both have room to show. Switch this card between flat and grain.
 
 <NoiseSurfaceDemo />
 
-The effect should be almost subliminal. If someone can point at the grain, it
-is too strong. Keep it off text and away from small UI, where it only hurts
-legibility.
+On a white card the same grain does almost nothing, because half the specks are lighter than white and get clipped. If you want texture on a light surface, use a lower opacity and a slightly tinted background so the grain has something to push against.
 
 ## Usage
 
-The filter is defined once in the document. An empty overlay element renders
-it, because an element with a turbulence filter is painted entirely by the
-filter output.
+Put the filter in one SVG anywhere on the page, then reference it from an overlay. The overlay is an empty element, so it costs nothing in markup and can be dropped onto any positioned container.
 
 <CodeBlock
   tabs={[
     {
-      label: "HTML",
+      label: "Tailwind",
       language: "html",
-      code: `<div class="hero">
-    <div class="noise" aria-hidden="true"></div>
-</div>
+      icon: "tailwind",
+      code: `<svg class="absolute size-0" aria-hidden="true">
+  <filter id="grain">
+    <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch" />
+    <feColorMatrix type="saturate" values="0" />
+  </filter>
+</svg>
 
-<svg width="0" height="0" aria-hidden="true">
-    <filter id="noise-filter">
-        <feTurbulence baseFrequency="0.8" />
-    </filter>
-</svg>`,
+<div class="relative isolate overflow-hidden rounded-2xl bg-violet-600">
+  <div class="pointer-events-none absolute inset-0 opacity-[0.08] mix-blend-overlay [filter:url(#grain)]" aria-hidden="true"></div>
+  <!-- content -->
+</div>`,
     },
     {
       label: "CSS",
       language: "css",
       icon: "css",
-      code: `.hero {
-    position: relative;
+      code: `.surface {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
 }
 
-.noise {
-    position: absolute;
-    inset: 0;
-    filter: url(#noise-filter) grayscale(100%);
-    opacity: 0.08;
-    mix-blend-mode: overlay;
-    pointer-events: none;
+.surface::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  filter: url(#grain);
+  opacity: 0.08;
+  mix-blend-mode: overlay;
+  pointer-events: none;
 }`,
     },
   ]}
 />
 
-Three details make this work:
-
-- `grayscale(100%)` removes the colored speckle that turbulence produces.
-- A blend mode like `overlay` or `soft-light` melts the grain into the surface
-  instead of sitting on top of it.
-- The layer is decorative, so it gets `aria-hidden` and
-  `pointer-events: none`.
+The `isolate` on the container matters. Without it, `mix-blend-mode` blends the grain with everything behind the card, including the page background, and the effect changes depending on where the card sits. With it, the grain only ever blends with the surface it belongs to.

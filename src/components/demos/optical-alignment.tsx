@@ -1,302 +1,262 @@
 "use client";
 
 import {
-  DownloadIcon,
+  ArrowRightIcon,
+  DownloadSimpleIcon,
   PlayIcon,
   StarIcon,
-  type Icon,
-  type IconWeight,
 } from "@phosphor-icons/react";
 import { useState } from "react";
 
+import { Compare, CompareItem } from "@/components/app/compare";
 import { Demo } from "@/components/app/demo";
 import { SegmentedControl } from "@/components/app/segmented-control";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-type CenterMode = "geometric" | "optical";
-type ButtonMode = "shared" | "tuned";
-type SizeMode = "same" | "balanced";
-type EdgeMode = "box" | "letters";
+type Alignment = "geometric" | "optical";
 
-type IconAlignmentExample = {
-  label: string;
-  action: string;
-  Icon: Icon;
-  weight: IconWeight;
-  largeTransform: string;
-  buttonTransform: string;
-  buttonCorrection: string;
-  correction: string;
-};
-
-const CENTER_OPTIONS = [
-  { value: "geometric", label: "Geometric" },
-  { value: "optical", label: "Optical" },
+const ALIGNMENT_OPTIONS = [
+  { value: "geometric", label: "Centered" },
+  { value: "optical", label: "Optically centered" },
 ] as const;
 
-const BUTTON_OPTIONS = [
-  { value: "shared", label: "Shared style" },
-  { value: "tuned", label: "Per icon" },
-] as const;
-
-const SIZE_OPTIONS = [
-  { value: "same", label: "Same size" },
-  { value: "balanced", label: "Balanced" },
-] as const;
-
-const EDGE_OPTIONS = [
-  { value: "box", label: "Box edge" },
-  { value: "letters", label: "Letter edge" },
-] as const;
-
-const ICON_ALIGNMENT_EXAMPLES: IconAlignmentExample[] = [
-  {
-    label: "Play",
-    action: "Play",
-    Icon: PlayIcon,
-    weight: "fill",
-    largeTransform: "translateX(3px)",
-    buttonTransform: "translateX(1px)",
-    buttonCorrection: "1px right",
-    correction: "3px right",
-  },
-  {
-    label: "Star",
-    action: "Favorite",
-    Icon: StarIcon,
-    weight: "fill",
-    largeTransform: "translateY(-2px)",
-    buttonTransform: "translateY(-0.5px)",
-    buttonCorrection: "0.5px up",
-    correction: "2px up",
-  },
+const ICONS = [
+  { label: "Play", Icon: PlayIcon, weight: "fill", shift: "translateX(2px)" },
+  { label: "Favorite", Icon: StarIcon, weight: "fill", shift: "translateY(-1px)" },
   {
     label: "Download",
-    action: "Save",
-    Icon: DownloadIcon,
+    Icon: DownloadSimpleIcon,
     weight: "bold",
-    largeTransform: "translateY(-1px)",
-    buttonTransform: "translateY(-0.5px)",
-    buttonCorrection: "0.5px up",
-    correction: "1px up",
+    shift: "translateY(-1px)",
   },
-];
+] as const;
+
+function CenterGuides() {
+  return (
+    <span
+      aria-hidden="true"
+      className="pointer-events-none absolute inset-0 rounded-full"
+    >
+      <span className="absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-rose-500/40" />
+      <span className="absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-rose-500/40" />
+    </span>
+  );
+}
 
 export function OpticalAlignmentDemo() {
-  const [mode, setMode] = useState<CenterMode>("geometric");
-  const optical = mode === "optical";
+  const [mode, setMode] = useState<Alignment>("geometric");
 
   return (
-    <Demo className="gap-7 px-4 sm:px-8">
-      <div className="grid grid-cols-3 gap-3" aria-hidden="true">
-        {ICON_ALIGNMENT_EXAMPLES.map((example) => {
-          const ExampleIcon = example.Icon;
-
-          return (
-            <div
-              key={example.label}
-              className="flex flex-col items-center gap-2"
-            >
-              <div className="relative grid aspect-square w-full place-items-center rounded-2xl bg-card shadow-(--custom-shadow)">
-                <span className="absolute inset-x-4 top-1/2 h-px bg-rose-500/35" />
-                <span className="absolute inset-y-4 left-1/2 w-px bg-rose-500/35" />
-                <ExampleIcon
-                  className="relative size-10 text-foreground transition-transform duration-200 ease-out motion-reduce:transition-none"
-                  style={{
-                    transform: optical ? example.largeTransform : "none",
-                  }}
-                  weight={example.weight}
-                />
-              </div>
-              <span className="text-[10px] text-muted-foreground">
-                {example.label}
-              </span>
-              <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] tabular-nums text-muted-foreground">
-                {optical ? example.correction : "0px"}
-              </span>
-            </div>
-          );
-        })}
+    <Demo className="gap-8">
+      <div className="flex items-center gap-5 sm:gap-8">
+        {ICONS.map(({ label, Icon, weight, shift }) => (
+          <span
+            key={label}
+            aria-label={label}
+            className="relative grid size-14 place-items-center rounded-full bg-card text-foreground shadow-(--custom-shadow)"
+            role="img"
+          >
+            <CenterGuides />
+            <Icon
+              aria-hidden="true"
+              className="relative size-6 transition-transform duration-200 ease-out motion-reduce:transition-none"
+              style={{ transform: mode === "optical" ? shift : "none" }}
+              weight={weight}
+            />
+          </span>
+        ))}
       </div>
-
       <SegmentedControl
         ariaLabel="Icon alignment"
         onChange={setMode}
-        options={CENTER_OPTIONS}
+        options={ALIGNMENT_OPTIONS}
         value={mode}
       />
-
-      <p className="max-w-sm text-center text-xs text-pretty text-muted-foreground">
-        {optical
-          ? "Each icon moves in a different direction by a different amount."
-          : "Every SVG box is centered at 0px, but the shapes still feel uneven."}
-      </p>
     </Demo>
+  );
+}
+
+function PaddedButton({
+  paddingLeft,
+  paddingRight,
+}: {
+  paddingLeft: number;
+  paddingRight: number;
+}) {
+  return (
+    <span className="relative inline-flex h-9 items-center gap-1.5 rounded-lg bg-foreground text-sm font-medium text-background">
+      <span
+        aria-hidden="true"
+        className="absolute inset-y-0 left-0 rounded-l-lg bg-rose-500/25"
+        style={{ width: paddingLeft }}
+      />
+      <span
+        aria-hidden="true"
+        className="absolute inset-y-0 right-0 rounded-r-lg bg-rose-500/25"
+        style={{ width: paddingRight }}
+      />
+      <span
+        className="relative inline-flex items-center gap-1.5"
+        style={{ paddingLeft, paddingRight }}
+      >
+        Next
+        <ArrowRightIcon aria-hidden="true" className="size-4" weight="bold" />
+      </span>
+    </span>
   );
 }
 
 export function OpticalButtonDemo() {
-  const [mode, setMode] = useState<ButtonMode>("shared");
-  const tuned = mode === "tuned";
-
   return (
     <Demo className="gap-7 px-4 sm:px-8">
-      <div
-        aria-hidden="true"
-        className="grid w-full max-w-md grid-cols-3 gap-2 sm:gap-3"
-      >
-        {ICON_ALIGNMENT_EXAMPLES.map((example) => {
-          const ExampleIcon = example.Icon;
+      <Compare>
+        <CompareItem verdict="wrong">
+          <PaddedButton paddingLeft={14} paddingRight={14} />
+        </CompareItem>
+        <CompareItem verdict="right">
+          <PaddedButton paddingLeft={14} paddingRight={10} />
+        </CompareItem>
+      </Compare>
+    </Demo>
+  );
+}
+
+type Sizing = "equal" | "balanced";
+
+const SIZING_OPTIONS = [
+  { value: "equal", label: "Same box" },
+  { value: "balanced", label: "Balanced" },
+] as const;
+
+const SHAPES = [
+  { name: "square", equal: 26, balanced: 24 },
+  { name: "circle", equal: 26, balanced: 27 },
+  { name: "triangle", equal: 26, balanced: 30 },
+] as const;
+
+export function OpticalWeightDemo() {
+  const [mode, setMode] = useState<Sizing>("equal");
+
+  return (
+    <Demo className="gap-8">
+      <div className="flex items-center gap-5 sm:gap-8">
+        {SHAPES.map((shape) => {
+          const size = shape[mode];
 
           return (
-            <div
-              key={example.label}
-              className="flex min-w-0 flex-col items-center gap-2"
+            <span
+              key={shape.name}
+              className="grid size-14 place-items-center rounded-xl bg-card shadow-(--custom-shadow)"
             >
-              <Button
-                className="pointer-events-none max-w-full"
-                tabIndex={-1}
-                variant="outline"
-              >
-                <ExampleIcon
-                  className="transition-transform duration-200 ease-out motion-reduce:transition-none"
-                  style={{
-                    transform: tuned ? example.buttonTransform : "none",
-                  }}
-                  weight={example.weight}
-                />
-                {example.action}
-              </Button>
-              <span className="text-[10px] tabular-nums text-muted-foreground">
-                {tuned ? example.buttonCorrection : "Same CSS"}
-              </span>
-            </div>
+              <span
+                aria-hidden="true"
+                className={cn(
+                  "block bg-foreground transition-[width,height] duration-200 ease-out motion-reduce:transition-none",
+                  shape.name === "square" && "rounded-[3px]",
+                  shape.name === "circle" && "rounded-full"
+                )}
+                style={{
+                  width: size,
+                  height: size,
+                  clipPath:
+                    shape.name === "triangle"
+                      ? "polygon(50% 0, 100% 100%, 0 100%)"
+                      : undefined,
+                }}
+              />
+            </span>
           );
         })}
       </div>
-
-      <SegmentedControl
-        ariaLabel="Button icon alignment"
-        onChange={setMode}
-        options={BUTTON_OPTIONS}
-        value={mode}
-      />
-
-      <p className="max-w-sm text-center text-xs text-pretty text-muted-foreground">
-        {tuned
-          ? "The Button stays the same. Only the icon gets the correction it needs at this size."
-          : "The Button gives every icon the same size, gap, and padding, but it only centers their SVG boxes."}
-      </p>
-    </Demo>
-  );
-}
-
-export function OpticalSizingDemo() {
-  const [mode, setMode] = useState<SizeMode>("same");
-  const balanced = mode === "balanced";
-
-  const shapes = [
-    {
-      label: "Square",
-      size: balanced ? 24 : 28,
-      className: "rounded-[4px]",
-    },
-    {
-      label: "Circle",
-      size: balanced ? 27 : 28,
-      className: "rounded-full",
-    },
-    {
-      label: "Triangle",
-      size: balanced ? 32 : 28,
-      className: "[clip-path:polygon(50%_0,100%_100%,0_100%)]",
-    },
-  ];
-
-  return (
-    <Demo className="gap-7 px-4 sm:px-8">
-      <div
-        className="grid w-full max-w-sm grid-cols-3 gap-3"
-        aria-hidden="true"
-      >
-        {shapes.map((shape) => (
-          <div key={shape.label} className="flex flex-col items-center gap-2">
-            <div className="grid h-24 w-full place-items-center rounded-xl bg-card shadow-(--custom-shadow)">
-              <span
-                className={cn(
-                  "block bg-foreground transition-[width,height,transform] duration-200 ease-out motion-reduce:transition-none",
-                  shape.className
-                )}
-                style={{
-                  width: shape.size,
-                  height: shape.size,
-                  transform:
-                    balanced && shape.label === "Triangle"
-                      ? "translateY(-1px)"
-                      : "none",
-                }}
-              />
-            </div>
-            <span className="text-[10px] text-muted-foreground">
-              {shape.label}
-            </span>
-          </div>
-        ))}
-      </div>
-
       <SegmentedControl
         ariaLabel="Shape sizing"
         onChange={setMode}
-        options={SIZE_OPTIONS}
+        options={SIZING_OPTIONS}
         value={mode}
       />
-
-      <p className="max-w-sm text-center text-xs text-pretty text-muted-foreground">
-        {balanced
-          ? "The square gets smaller and the triangle gets larger, so their weight feels even."
-          : "All three boxes are 28px, but the filled shapes do not look equally large."}
-      </p>
     </Demo>
   );
 }
 
-export function HangingPunctuationDemo() {
-  const [mode, setMode] = useState<EdgeMode>("box");
-  const alignedToLetters = mode === "letters";
+type OpticalSize = "text" | "display";
+
+const OPSZ_OPTIONS = [
+  { value: "text", label: "Text design" },
+  { value: "display", label: "Display design" },
+] as const;
+
+export function OpticalSizingDemo() {
+  const [mode, setMode] = useState<OpticalSize>("text");
 
   return (
-    <Demo className="gap-7">
-      <div
-        aria-hidden="true"
-        className="relative w-full max-w-xs rounded-xl bg-card px-8 py-9 shadow-(--custom-shadow)"
-      >
-        <span className="absolute inset-y-6 left-8 w-px bg-rose-500/55" />
-        <p
-          className="relative text-2xl leading-[1.25] tracking-tight text-foreground transition-[text-indent] duration-200 ease-out motion-reduce:transition-none"
-          style={{ textIndent: alignedToLetters ? "-0.42em" : "0" }}
+    <Demo className="gap-8">
+      <div className="grid w-full max-w-sm gap-3 rounded-xl bg-card px-6 py-6 shadow-(--custom-shadow)">
+        <span
+          className="text-[40px] leading-none font-semibold tracking-tight text-foreground"
+          style={{
+            fontOpticalSizing: "none",
+            fontVariationSettings: mode === "text" ? '"opsz" 14' : '"opsz" 32',
+          }}
         >
-          “Good alignment
-          <br />
-          should disappear.”
-        </p>
-        <span className="absolute bottom-2 left-8 text-[9px] text-rose-500">
-          visible edge
+          Quarterly
+        </span>
+        <span
+          className="text-[40px] leading-none font-semibold tracking-tight text-foreground"
+          style={{
+            fontOpticalSizing: "none",
+            fontVariationSettings: mode === "text" ? '"opsz" 14' : '"opsz" 32',
+          }}
+        >
+          revenue
         </span>
       </div>
+      <SegmentedControl
+        ariaLabel="Optical size"
+        onChange={setMode}
+        options={OPSZ_OPTIONS}
+        value={mode}
+      />
+    </Demo>
+  );
+}
 
+type Hanging = "box" | "glyph";
+
+const HANGING_OPTIONS = [
+  { value: "box", label: "Box edge" },
+  { value: "glyph", label: "Letter edge" },
+] as const;
+
+export function HangingPunctuationDemo() {
+  const [mode, setMode] = useState<Hanging>("box");
+
+  return (
+    <Demo className="gap-8">
+      <div className="relative w-full max-w-sm rounded-xl bg-card px-8 py-6 shadow-(--custom-shadow)">
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-y-4 left-8 w-px bg-rose-500"
+        />
+        <span
+          aria-hidden="true"
+          className="absolute top-1.5 left-8 -translate-x-1/2 text-[9px] text-rose-500"
+        >
+          Edge
+        </span>
+        <p
+          className="text-lg leading-snug font-medium text-foreground transition-[text-indent] duration-200 ease-out motion-reduce:transition-none"
+          style={{ textIndent: mode === "glyph" ? "-0.42em" : "0" }}
+        >
+          “Good design is as little design as possible.”
+        </p>
+        <p className="mt-2 text-xs text-muted-foreground">Dieter Rams</p>
+      </div>
       <SegmentedControl
         ariaLabel="Quote alignment"
         onChange={setMode}
-        options={EDGE_OPTIONS}
+        options={HANGING_OPTIONS}
         value={mode}
       />
-
-      <p className="max-w-sm text-center text-xs text-pretty text-muted-foreground">
-        {alignedToLetters
-          ? "The quote hangs in the margin, so both lines begin at the same visible edge."
-          : "The quote begins on the guide, which pushes the first word inward."}
-      </p>
     </Demo>
   );
 }
