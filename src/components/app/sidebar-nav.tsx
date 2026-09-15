@@ -106,7 +106,7 @@ function ActiveDot({
           dotColorTo[to],
           // The dot mounts fresh on each row, so the CSS keyframe plays once
           // per landing and crossfades the previous section colour into the new.
-          travelling && "dot-crossfade",
+          travelling && "dot-crossfade"
         )}
       />
     </motion.span>
@@ -131,7 +131,7 @@ export function SidebarNav({
   const rows: { href: string; color: DotColor }[] = [
     ...PAGES.map((page) => ({ href: page.href, color: "foreground" as const })),
     ...sections.flatMap(({ section, concepts }) =>
-      concepts.map((concept) => ({ href: `/${concept.slug}`, color: section })),
+      concepts.map((concept) => ({ href: `/${concept.slug}`, color: section }))
     ),
   ];
   const activeIndex = rows.findIndex((row) => row.href === pathname);
@@ -183,7 +183,7 @@ export function SidebarNav({
       // room for its widest arc without shifting anything visually.
       className={cn(
         "fade-mask-y scrollbar-hidden -ml-10 overflow-y-auto py-12 pl-10",
-        className,
+        className
       )}
       // Shared with the CSS keyframes (dot-crossfade, name-hit) so every part
       // of the landing is timed from the same two numbers.
@@ -208,7 +208,7 @@ export function SidebarNav({
                   linkClass,
                   active
                     ? "text-foreground"
-                    : "text-muted-foreground hover:text-foreground",
+                    : "text-muted-foreground hover:text-foreground"
                 )}
               >
                 <motion.span
@@ -247,7 +247,7 @@ export function SidebarNav({
                           linkClass,
                           active
                             ? "text-foreground"
-                            : "text-muted-foreground hover:text-foreground",
+                            : "text-muted-foreground hover:text-foreground"
                         )}
                       >
                         <motion.span
@@ -261,7 +261,7 @@ export function SidebarNav({
                               dotColorTo[section],
                               // Class is added when the row becomes active,
                               // which is what starts the CSS sweep.
-                              active && travelling && "name-hit",
+                              active && travelling && "name-hit"
                             )}
                           >
                             {concept.title}

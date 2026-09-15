@@ -55,7 +55,7 @@ export function SiteShell({
                   aria-label="Open navigation"
                   className="lg:hidden"
                 >
-                  <ListIcon weight="duotone" className="size-4 mb-0.75" />
+                  <ListIcon className="size-4 mb-0.75" />
                 </Button>
               }
             />
