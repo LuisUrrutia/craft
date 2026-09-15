@@ -37,7 +37,7 @@ export function GuidesToggle({
     >
       <CrosshairSimpleIcon
         className={cn(
-          "transition-transform duration-300 ease-out motion-reduce:transition-none"
+          "transition-transform duration-300 ease-out motion-reduce:transition-none size-3.25"
           // pressed ? "rotate-0" : "rotate-45"
         )}
         weight="bold"

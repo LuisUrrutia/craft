@@ -5,6 +5,7 @@ const LAUNCH_CONCEPT_SLUGS = new Set([
   "nested-border-radius",
   "html-background",
   "hover-restraint",
+  "image-outlines",
 ]);
 
 /** True only for concepts that are live in production. */

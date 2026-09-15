@@ -83,9 +83,12 @@ export function TabularTimerDemo() {
         >
           {seconds}
         </span>
-        <span className="ml-2 h-11 w-px bg-rose-500/65" aria-hidden="true" />
         <span
-          className="absolute -right-2.5 -bottom-5 text-[9px] text-rose-500"
+          className="ml-2 h-11 border-l border-dashed border-sky-300 dark:border-sky-900"
+          aria-hidden="true"
+        />
+        <span
+          className="absolute -right-2.5 -bottom-5 text-[9px] text-sky-400 dark:text-sky-500"
           aria-hidden="true"
         >
           Edge

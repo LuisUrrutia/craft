@@ -1,8 +1,10 @@
 "use client";
 
 import { LightningIcon } from "@phosphor-icons/react";
+import Image from "next/image";
 import { useState } from "react";
 
+import violet from "@/assets/gradient-violet.jpg";
 import { Compare, CompareItem } from "@/components/app/compare";
 import { Demo } from "@/components/app/demo";
 import { SegmentedControl } from "@/components/app/segmented-control";
@@ -156,15 +158,25 @@ export function NoiseFrequencyDemo() {
     <Demo className="gap-10 px-4 sm:px-8">
       <GrainFilter id="grain-frequency" baseFrequency={frequency} />
 
-      <div
-        className="relative isolate h-40 w-full max-w-sm overflow-hidden rounded-2xl bg-linear-to-br from-sky-600 to-cyan-700 shadow-(--custom-shadow) dark:from-olive-600 dark:to-lime-950 [--edge:0_0_0/0.1]"
-        // Same inset 1px edge as the first demo.
-        style={{
-          outline: "1px solid rgb(var(--edge))",
-          outlineOffset: -1,
-        }}
-      >
+      <div className="relative isolate h-40 w-full max-w-sm overflow-hidden rounded-2xl shadow-(--custom-shadow)">
+        {/* A soft photographic gradient instead of a CSS one: its smooth
+            ramps make the change in grain size easy to read. */}
+        <Image
+          alt=""
+          aria-hidden="true"
+          className="object-cover"
+          fill
+          placeholder="blur"
+          sizes="384px"
+          src={violet}
+        />
         <Grain id="grain-frequency" opacity={0.6} />
+        {/* Same inset 1px edge as the first demo, on its own layer so the
+            positioned image cannot paint over it. */}
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 rounded-[inherit] outline-1 -outline-offset-1 outline-black/10"
+        />
       </div>
 
       <label className="grid w-full max-w-xs gap-2.5">

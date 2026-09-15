@@ -63,8 +63,8 @@ function DimensionLine({
     <span
       aria-hidden="true"
       className={cn(
-        "pointer-events-none absolute bg-muted-foreground transition-[width,height] duration-200 ease-out motion-reduce:transition-none",
-        "before:absolute before:bg-muted-foreground after:absolute after:bg-muted-foreground",
+        "pointer-events-none absolute bg-sky-400 transition-[width,height] duration-200 ease-out motion-reduce:transition-none dark:bg-sky-500",
+        "before:absolute before:bg-sky-400 after:absolute after:bg-sky-400 dark:before:bg-sky-500 dark:after:bg-sky-500",
         axis === "y"
           ? "h-(--len) w-px before:top-0 before:left-1/2 before:h-px before:w-1.5 before:-translate-x-1/2 after:bottom-0 after:left-1/2 after:h-px after:w-1.5 after:-translate-x-1/2"
           : "h-px w-(--len) before:top-1/2 before:left-0 before:h-1.5 before:w-px before:-translate-y-1/2 after:top-1/2 after:right-0 after:h-1.5 after:w-px after:-translate-y-1/2",
@@ -87,7 +87,7 @@ function DimensionLabel({
   return (
     <span
       className={cn(
-        "pointer-events-none absolute whitespace-nowrap text-[10px] text-muted-foreground",
+        "pointer-events-none absolute whitespace-nowrap text-[10px] text-sky-400 dark:text-sky-500",
         className
       )}
     >
@@ -210,33 +210,33 @@ export function RadiusCalculatorDemo() {
           />
 
           {/* Outer radius: the straight run the corner replaces, drawn on the
-              bottom-left edge, label below the box. */}
+              bottom-right edge, label below the box. */}
           <DimensionLine
             axis="x"
             length={`${outerRadius}px`}
-            className="bottom-0 left-0 translate-y-1/2"
+            className="right-0 bottom-0 translate-y-1/2"
           />
           <DimensionLabel
             name="outer"
             value={outerRadius}
-            className="top-full left-0 mt-1.5"
+            className="top-full right-0 mt-1.5"
           />
 
           <div
             className="relative h-36 w-72 bg-card shadow-(--custom-shadow) transition-[border-radius] duration-200 ease-out motion-reduce:transition-none dark:bg-muted"
             style={{ borderRadius: innerRadius }}
           >
-            {/* Inner radius: same idea on the card's bottom-right edge, label
+            {/* Inner radius: same idea on the card's bottom-left edge, label
                 tucked inside the card above it. */}
             <DimensionLine
               axis="x"
               length={`${innerRadius}px`}
-              className="right-0 bottom-0 translate-y-1/2"
+              className="bottom-0 left-0 translate-y-1/2"
             />
             <DimensionLabel
               name="inner"
               value={innerRadius}
-              className="right-3 bottom-2.5"
+              className="bottom-2.5 left-3"
             />
           </div>
         </div>

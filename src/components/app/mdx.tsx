@@ -205,7 +205,7 @@ const components: MDXComponents = {
     return (
       <a
         className={cn(
-          "text-foreground underline decoration-border dark:decoration-muted-foreground/50 mx-0.5 ml-0.75 underline-offset-4 transition-colors hover:decoration-foreground",
+          "text-foreground underline  hover:dark:bg-neutral-800 hover:bg-neutral-200 px-0.75 py-0.75 rounded-sm hover:decoration-neutral-200 hover:dark:decoration-neutral-800 decoration-neutral-300 dark:decoration-neutral-700 underline-offset-4 transition-all [transition-property:color,background-color,border-color,text-decoration-color,fill,stroke,text-decoration-thickness,text-underline-offset,text-decoration-style]",
           className
         )}
         href={href}
@@ -218,7 +218,7 @@ const components: MDXComponents = {
           <img
             aria-hidden="true"
             alt=""
-            className="mr-1.5 inline-block size-3.25 rounded-[3px] align-[-1px]"
+            className="mr-1.25 inline-block size-3 rounded-[3px] align-[-1px]"
             decoding="async"
             height={14}
             loading="lazy"

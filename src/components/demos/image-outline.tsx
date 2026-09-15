@@ -1,9 +1,17 @@
 "use client";
 
-import Image from "next/image";
-import { type CSSProperties, useState } from "react";
+import Image, { type StaticImageData } from "next/image";
+import { useState } from "react";
 
-import waterLiliesImage from "@/assets/claude-monet-water-lilies.jpg";
+import beach from "@/assets/claude-monet-beach-sainte-adresse.jpg";
+import cliffWalk from "@/assets/claude-monet-cliff-walk-pourville.jpg";
+import regatta from "@/assets/claude-monet-regatta-sainte-adresse.jpg";
+import clouds from "@/assets/cumulus-clouds.jpg";
+import lime from "@/assets/gradient-lime.jpg";
+import mint from "@/assets/gradient-mint.jpg";
+import peach from "@/assets/gradient-peach.jpg";
+import reeded from "@/assets/gradient-reeded.jpg";
+import gustavo from "@/assets/gustavo.jpg";
 import { RIGHT_ICON, WRONG_ICON } from "@/components/app/compare";
 import { Demo } from "@/components/app/demo";
 import { SegmentedControl } from "@/components/app/segmented-control";
@@ -22,82 +30,93 @@ function getSliderValue(value: number | readonly number[]) {
 }
 
 /**
- * A 1px line painted over the outermost pixels of the image. Black in light
+ * An image with a 1px line painted over its outermost pixels. Black in light
  * mode, white in dark mode; `--edge` carries the RGB triplet per theme.
+ *
+ * The line lives on its own overlay rather than on the wrapper: Chrome
+ * paints positioned children (next/image with `fill`) over the parent's
+ * outline, so an outline on the wrapper would vanish under the photo. A
+ * plain <img> has no such children, which is why the article's CSS works
+ * as written.
  */
-function edgeStyle(opacity: number): CSSProperties {
-  return {
-    outline: `1px solid rgb(var(--edge) / ${opacity})`,
-    outlineOffset: -1,
-  };
-}
-
-const EDGE_CLASS =
-  "[--edge:0_0_0] dark:[--edge:255_255_255] transition-[outline-color] duration-200 ease-out motion-reduce:transition-none";
-
-type TileKind = "screenshot" | "photo" | "night";
-
-function Tile({
-  kind,
+function Picture({
+  src,
   opacity,
+  sizes,
+  quality,
   className,
 }: {
-  kind: TileKind;
+  src: StaticImageData;
   opacity: number;
+  sizes: string;
+  quality?: number;
   className?: string;
 }) {
   return (
-    <div
+    <span
       aria-hidden="true"
-      className={cn(
-        "relative overflow-hidden rounded-lg",
-        kind === "screenshot" && "bg-card",
-        kind === "night" &&
-          "bg-[radial-gradient(circle_at_30%_20%,#3a3a3a,#111111_65%)]",
-        EDGE_CLASS,
-        className
-      )}
-      style={edgeStyle(opacity)}
+      className={cn("relative block overflow-hidden", className)}
     >
-      {kind === "photo" ? (
-        <Image
-          alt=""
-          className="object-cover"
-          fill
-          placeholder="blur"
-          sizes="200px"
-          src={waterLiliesImage}
-        />
-      ) : null}
-      {kind === "screenshot" ? (
-        <div className="flex h-full flex-col gap-1.5 p-2.5">
-          <div className="mb-0.5 flex gap-1">
-            <span className="size-1.5 rounded-full bg-foreground/15" />
-            <span className="size-1.5 rounded-full bg-foreground/15" />
-            <span className="size-1.5 rounded-full bg-foreground/15" />
-          </div>
-          <span className="h-1.5 w-3/5 rounded-full bg-foreground/20" />
-          <span className="h-1.5 w-4/5 rounded-full bg-foreground/10" />
-          <span className="h-1.5 w-2/3 rounded-full bg-foreground/10" />
-          <span className="mt-auto h-5 w-2/5 rounded-md bg-foreground/10" />
-        </div>
-      ) : null}
-    </div>
+      <Image
+        alt=""
+        className="object-cover object-top"
+        fill
+        placeholder="blur"
+        quality={quality}
+        sizes={sizes}
+        src={src}
+      />
+      <Edge opacity={opacity} />
+    </span>
   );
 }
+
+function Edge({ opacity }: { opacity: number }) {
+  return (
+    <span
+      className="pointer-events-none absolute inset-0 rounded-[inherit] [--edge:0_0_0] dark:[--edge:255_255_255] transition-[outline-color] duration-200 ease-out motion-reduce:transition-none"
+      style={{
+        outline: `1px solid rgb(var(--edge) / ${opacity})`,
+        outlineOffset: -1,
+      }}
+    />
+  );
+}
+
+// The classic fallback avatar: a letter on a pale fill that is almost the
+// same color as the card, so without the edge the circle has no boundary.
+function Initials({ label, opacity }: { label: string; opacity: number }) {
+  return (
+    <span
+      aria-hidden="true"
+      className="relative grid size-10 place-items-center rounded-full bg-neutral-100 text-xs font-medium text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400"
+    >
+      {label}
+      <Edge opacity={opacity} />
+    </span>
+  );
+}
+
+// Paintings with pale skies along the top edge, so the bleed into a light
+// card is obvious before the outline goes on.
+const TILES = [beach, cliffWalk, clouds];
 
 export function ImageOutlineDemo() {
   const [mode, setMode] = useState<EdgeMode>("none");
   const opacity = mode === "outline" ? 0.1 : 0;
 
   return (
-    <Demo className="gap-8 px-4 sm:px-8">
-      <div className="w-full max-w-sm rounded-[20px] bg-card p-3 shadow-(--custom-shadow)">
-        <div className="grid grid-cols-3 gap-3">
-          <Tile kind="screenshot" opacity={opacity} className="aspect-square" />
-          <Tile kind="photo" opacity={opacity} className="aspect-square" />
-          <Tile kind="night" opacity={opacity} className="aspect-square" />
-        </div>
+    <Demo className="gap-8 sm:px-0">
+      <div className="grid w-full max-w-lg grid-cols-3 gap-6 rounded-[24px] bg-muted p-4 shadow-(--custom-shadow)">
+        {TILES.map((src) => (
+          <Picture
+            key={src.src}
+            className="aspect-square rounded-lg"
+            opacity={opacity}
+            sizes="120px"
+            src={src}
+          />
+        ))}
       </div>
 
       <SegmentedControl
@@ -116,14 +135,12 @@ export function ImageOutlineStrengthDemo() {
   return (
     <Demo className="gap-10 px-4 sm:px-8">
       <div className="w-full max-w-sm rounded-[20px] bg-card p-3 shadow-(--custom-shadow)">
-        <div className="grid grid-cols-2 gap-3">
-          <Tile
-            kind="screenshot"
-            opacity={percent / 100}
-            className="aspect-[4/3]"
-          />
-          <Tile kind="photo" opacity={percent / 100} className="aspect-[4/3]" />
-        </div>
+        <Picture
+          className="aspect-[3/2] rounded-lg"
+          opacity={percent / 100}
+          sizes="360px"
+          src={regatta}
+        />
       </div>
 
       <label className="grid w-full max-w-xs gap-2.5">
@@ -144,44 +161,20 @@ export function ImageOutlineStrengthDemo() {
   );
 }
 
-const PEOPLE = [
-  { name: "Acme Design", role: "Workspace", avatar: "initial" },
-  { name: "Claude Monet", role: "Guest", avatar: "photo" },
-  { name: "Sunrise Studio", role: "Client", avatar: "pale" },
-] as const;
+// Soft gradients read as the generated placeholder avatars most apps ship.
+// The pale ones (mint, lime, peach) are where the edge goes missing.
+type Avatar =
+  | { kind: "image"; src: StaticImageData }
+  | { kind: "initials"; label: string };
 
-function Avatar({
-  kind,
-  opacity,
-}: {
-  kind: (typeof PEOPLE)[number]["avatar"];
-  opacity: number;
-}) {
-  return (
-    <span
-      aria-hidden="true"
-      className={cn(
-        "relative flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-full",
-        kind === "initial" && "bg-card text-xs font-medium text-foreground",
-        kind === "pale" && "bg-gradient-to-br from-amber-50 to-orange-100",
-        EDGE_CLASS
-      )}
-      style={edgeStyle(opacity)}
-    >
-      {kind === "photo" ? (
-        <Image
-          alt=""
-          className="object-cover"
-          fill
-          placeholder="blur"
-          sizes="32px"
-          src={waterLiliesImage}
-        />
-      ) : null}
-      {kind === "initial" ? "A" : null}
-    </span>
-  );
-}
+const AVATARS: Avatar[] = [
+  { kind: "image", src: mint },
+  { kind: "image", src: gustavo },
+  { kind: "image", src: peach },
+  { kind: "initials", label: "G" },
+  { kind: "image", src: reeded },
+  { kind: "image", src: lime },
+];
 
 export function ImageOutlineAvatarDemo() {
   const [mode, setMode] = useState<EdgeMode>("none");
@@ -189,25 +182,25 @@ export function ImageOutlineAvatarDemo() {
 
   return (
     <Demo className="gap-8 px-4 sm:px-8">
-      <div className="w-full max-w-xs rounded-xl bg-card p-1.5 shadow-(--custom-shadow)">
-        <ul className="flex flex-col">
-          {PEOPLE.map((person) => (
-            <li
-              key={person.name}
-              className="flex items-center gap-3 rounded-lg px-2.5 py-2"
-            >
-              <Avatar kind={person.avatar} opacity={opacity} />
-              <span className="flex min-w-0 flex-col">
-                <span className="truncate text-xs font-medium text-foreground">
-                  {person.name}
-                </span>
-                <span className="truncate text-[10px] text-muted-foreground">
-                  {person.role}
-                </span>
-              </span>
-            </li>
-          ))}
-        </ul>
+      <div className="flex flex-wrap items-center justify-center gap-4 rounded-xl bg-card px-5 py-4 shadow-(--custom-shadow)">
+        {AVATARS.map((avatar) =>
+          avatar.kind === "initials" ? (
+            <Initials
+              key={avatar.label}
+              label={avatar.label}
+              opacity={opacity}
+            />
+          ) : (
+            <Picture
+              key={avatar.src.src}
+              className="size-10 rounded-full"
+              opacity={opacity}
+              quality={90}
+              sizes="80px"
+              src={avatar.src}
+            />
+          )
+        )}
       </div>
 
       <SegmentedControl
