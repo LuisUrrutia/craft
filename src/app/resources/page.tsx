@@ -220,14 +220,14 @@ export default function ResourcesPage() {
         {GROUPS.map((group) => (
           <section key={group.heading}>
             <h2 className="text-sm font-medium">{group.heading}</h2>
-            <ul className="mt-2 flex flex-col gap-1">
+            <ul className="mt-2 flex flex-col">
               {group.resources.map((resource) => (
                 <li key={resource.url}>
                   <a
                     href={resource.url}
                     target="_blank"
                     rel="noreferrer"
-                    className="-mx-2.5 flex items-center gap-3 rounded-md px-2.5 py-2 hover:bg-muted"
+                    className="-mx-2.5 flex items-center gap-3 rounded-md px-2.5 py-2.5 hover:bg-muted"
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img

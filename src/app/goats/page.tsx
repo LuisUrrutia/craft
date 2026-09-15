@@ -83,14 +83,14 @@ export default function GoatsPage() {
         Nothing here is original. These are the people whose writing, demos, and
         open-source work taught me most of what this site tries to pass on.
       </p>
-      <ul className="mt-8 flex flex-col gap-1">
+      <ul className="mt-8 flex flex-col">
         {GOATS.map((goat) => (
           <li key={goat.url}>
             <a
               href={goat.url}
               target="_blank"
               rel="noreferrer"
-              className="-mx-3 flex items-center gap-3 rounded-md px-3 py-2.5 hover:bg-muted text-pretty pr-4"
+              className="-mx-3 flex items-center gap-3 rounded-md px-3 py-3 hover:bg-muted text-pretty pr-4"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img

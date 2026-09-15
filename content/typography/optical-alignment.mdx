@@ -19,20 +19,27 @@ resources:
     description: What the optical size axis of Inter actually changes.
 ---
 
-Flexbox centers boxes. Your eye centers shapes. Most of the time those agree,
-but a play triangle, a star, and a download arrow all have their visual mass
-somewhere other than the middle of their bounding box, so a perfectly centered
-box looks slightly off.
+Aligning icons exactly by their edges doesn't always look right. A tiny shift is often needed because different shapes feel heavier or lighter to the eye.
 
 **Optical alignment** means nudging things until they look right, then keeping
-the nudge. Toggle the demo and watch the guides.
+the nudge.
 
 <OpticalAlignmentDemo />
 
-The play icon moves right by two pixels, because a triangle pointing right
-has most of its area on the left. The star and the arrow move up by one. The
-amounts are tiny and specific to each icon, so this is a per icon decision,
-not a global rule.
+The play icon moves left, because a triangle pointing right has most of its area on the
+left. The star and the download icon move up a bit. The amounts are tiny and
+specific to each icon, so this is a per icon decision, not a global rule.
+
+### How to align the icon
+
+A good test is to blur the icon. Add a heavy `filter: blur()` to it in
+the inspector, or squint at it, and the shape collapses into a soft blob of
+ink.
+
+The blob sits where the icon's visual weight is, not where its bounding
+box is, so if it lands off the center of the button the nudge you need is
+the distance back. Sharp edges hide this, because your eye reads the outline
+and trusts it. Blur removes the outline and leaves only the weight.
 
 ## Buttons with icons
 
@@ -48,14 +55,9 @@ or last child.
 
 ## Shape weight
 
-Different shapes carry different amounts of ink. A circle drawn in the same
-box as a square looks smaller, and a triangle smaller still.
+Different shapes have varying visual weight. For example, when a circle or triangle is drawn inside the same box as a square, it appears smaller to the eye.
 
 <OpticalWeightDemo />
-
-Icon designers compensate by drawing round and pointed shapes past the grid.
-If you draw your own icons or logos, the balanced sizes here are a fair
-starting point: circle a little over the square, triangle a little over that.
 
 ## Optical sizes
 
@@ -92,7 +94,7 @@ Safari supports `hanging-punctuation: first`. Elsewhere a small negative
     <PlayIcon class="size-5 translate-x-px" weight="fill" />
 </button>
 
-<blockquote class="[text-indent:-0.42em]">
+<blockquote class="indent-[-0.42em]">
     “Good design is as little design as possible.”
 </blockquote>`,
     },
@@ -105,18 +107,14 @@ Safari supports `hanging-punctuation: first`. Elsewhere a small negative
 }
 
 blockquote {
-    hanging-punctuation: first;
+hanging-punctuation: first;
 }
 
 @supports not (hanging-punctuation: first) {
-    blockquote {
-        text-indent: -0.42em;
-    }
+blockquote {
+text-indent: -0.42em;
+}
 }`,
-    },
-  ]}
+},
+]}
 />
-
-A good test is to squint. Blur your eyes at a row of icons or a button and
-the centering error becomes obvious in a way it never is when you stare at
-it.

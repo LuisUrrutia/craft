@@ -7,6 +7,8 @@ export type CodeTab = {
   language: BundledLanguage;
   code: string;
   icon?: "css" | "tailwind";
+  /** Header filename; derived from the language when omitted. */
+  filename?: string;
 };
 
 export async function CodeBlock({ tabs }: { tabs: CodeTab[] }) {
@@ -15,8 +17,10 @@ export async function CodeBlock({ tabs }: { tabs: CodeTab[] }) {
   const highlightedTabs = await Promise.all(
     tabs.map(async (tab) => ({
       label: tab.label,
+      language: tab.language,
       code: tab.code.trim(),
       icon: tab.icon,
+      filename: tab.filename,
       html: await codeToHtml(tab.code.trim(), {
         lang: tab.language,
         themes: { light: "github-light", dark: "vesper" },

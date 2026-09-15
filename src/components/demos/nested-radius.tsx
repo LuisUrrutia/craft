@@ -48,6 +48,54 @@ function getSliderValue(value: number | readonly number[]) {
   return Array.isArray(value) ? value[0] : value;
 }
 
+// A thin measurement line with end caps, like a dimension guide in a design
+// tool. `length` is a CSS length; the line animates with the shape it labels.
+function DimensionLine({
+  axis,
+  length,
+  className,
+}: {
+  axis: "x" | "y";
+  length: string;
+  className?: string;
+}) {
+  return (
+    <span
+      aria-hidden="true"
+      className={cn(
+        "pointer-events-none absolute bg-muted-foreground transition-[width,height] duration-200 ease-out motion-reduce:transition-none",
+        "before:absolute before:bg-muted-foreground after:absolute after:bg-muted-foreground",
+        axis === "y"
+          ? "h-(--len) w-px before:top-0 before:left-1/2 before:h-px before:w-1.5 before:-translate-x-1/2 after:bottom-0 after:left-1/2 after:h-px after:w-1.5 after:-translate-x-1/2"
+          : "h-px w-(--len) before:top-1/2 before:left-0 before:h-1.5 before:w-px before:-translate-y-1/2 after:top-1/2 after:right-0 after:h-1.5 after:w-px after:-translate-y-1/2",
+        className
+      )}
+      style={{ "--len": length } as React.CSSProperties}
+    />
+  );
+}
+
+function DimensionLabel({
+  name,
+  value,
+  className,
+}: {
+  name: string;
+  value: number;
+  className?: string;
+}) {
+  return (
+    <span
+      className={cn(
+        "pointer-events-none absolute whitespace-nowrap text-[10px] text-muted-foreground",
+        className
+      )}
+    >
+      {name} <span className="tabular-nums text-foreground">{value}px</span>
+    </span>
+  );
+}
+
 export function NestedRadiusDemo() {
   const innerRadius = 16;
   const inset = 12;
@@ -65,7 +113,7 @@ export function NestedRadiusDemo() {
   ] as const;
 
   return (
-    <Demo className="gap-7 px-4">
+    <Demo className="gap-12 px-4">
       <div className="grid w-full max-w-lg grid-cols-2 gap-3 sm:gap-10">
         {examples.map((example) => (
           <div
@@ -97,11 +145,11 @@ export function NestedRadiusDemo() {
             </div>
 
             <div
-              className="w-full bg-muted p-3 shadow-(--custom-shadow) dark:bg-muted/30"
+              className="w-full bg-muted p-3 shadow-(--custom-shadow) dark:bg-muted/60"
               style={{ borderRadius: example.outerRadius }}
             >
               <div
-                className="grid h-28 place-items-center bg-card dark:bg-muted/60 shadow-(--custom-shadow) sm:h-32"
+                className="grid h-28 place-items-center bg-card dark:bg-muted shadow-(--custom-shadow) sm:h-32"
                 style={{ borderRadius: innerRadius }}
               >
                 <div className="flex flex-col items-center gap-1.5 text-center">
@@ -141,7 +189,7 @@ export function RadiusCalculatorDemo() {
     <Demo className="gap-12 px-4 sm:px-8">
       <div className="flex flex-col items-center gap-3" aria-hidden="true">
         <div
-          className="bg-muted p-(--demo-inset) shadow-(--custom-shadow) transition-[border-radius,padding] duration-200 ease-out motion-reduce:transition-none dark:bg-muted/30"
+          className="relative bg-muted p-(--demo-inset) shadow-(--custom-shadow) transition-[border-radius,padding] duration-200 ease-out motion-reduce:transition-none dark:bg-muted/60"
           style={
             {
               "--demo-inset": `${inset}px`,
@@ -149,20 +197,47 @@ export function RadiusCalculatorDemo() {
             } as React.CSSProperties
           }
         >
+          {/* Inset: spans the padding gap at the top, label above the box. */}
+          <DimensionLine
+            axis="y"
+            length="var(--demo-inset)"
+            className="top-0 left-1/2 -translate-x-1/2"
+          />
+          <DimensionLabel
+            name="inset"
+            value={inset}
+            className="bottom-full left-1/2 mb-1.5 -translate-x-1/2"
+          />
+
+          {/* Outer radius: the straight run the corner replaces, drawn on the
+              bottom-left edge, label below the box. */}
+          <DimensionLine
+            axis="x"
+            length={`${outerRadius}px`}
+            className="bottom-0 left-0 translate-y-1/2"
+          />
+          <DimensionLabel
+            name="outer"
+            value={outerRadius}
+            className="top-full left-0 mt-1.5"
+          />
+
           <div
-            className="grid h-36 w-72 place-items-center bg-card shadow-(--custom-shadow) transition-[border-radius] duration-200 ease-out motion-reduce:transition-none dark:bg-muted/60"
+            className="relative h-36 w-72 bg-card shadow-(--custom-shadow) transition-[border-radius] duration-200 ease-out motion-reduce:transition-none dark:bg-muted"
             style={{ borderRadius: innerRadius }}
           >
-            <div className="flex flex-col items-center gap-1.5 text-center">
-              <span className="tabular-nums text-xs text-foreground">
-                {outerRadius}px{" "}
-                <span className="mx-2 text-muted-foreground">/</span>{" "}
-                {innerRadius}px
-              </span>
-              <span className="text-[10px] text-muted-foreground">
-                outer <span className="mx-3.5" /> inner
-              </span>
-            </div>
+            {/* Inner radius: same idea on the card's bottom-right edge, label
+                tucked inside the card above it. */}
+            <DimensionLine
+              axis="x"
+              length={`${innerRadius}px`}
+              className="right-0 bottom-0 translate-y-1/2"
+            />
+            <DimensionLabel
+              name="inner"
+              value={innerRadius}
+              className="right-3 bottom-2.5"
+            />
           </div>
         </div>
       </div>
@@ -178,7 +253,7 @@ export function RadiusCalculatorDemo() {
           <Slider
             aria-label="Outer radius"
             max={48}
-            min={12}
+            min={0}
             onValueChange={(value) => setOuterRadius(getSliderValue(value))}
             step={1}
             value={[outerRadius]}
@@ -236,7 +311,7 @@ export function NestedRadiusExamplesDemo() {
           style={{ borderRadius: 16 }}
         >
           <div
-            className="relative h-32 overflow-hidden bg-muted transition-[border-radius] duration-200 ease-out motion-reduce:transition-none"
+            className="relative h-32 overflow-hidden bg-muted transition-[border-radius] duration-200 ease-out motion-reduce:transition-none [--edge:0_0_0/0.1] dark:[--edge:255_255_255/0.1]"
             style={{ borderRadius: nested ? 8 : 16 }}
           >
             <Image
@@ -245,9 +320,16 @@ export function NestedRadiusExamplesDemo() {
               fill
               placeholder="blur"
               src={waterLiliesImage}
+            />
+            {/* Same inset 1px edge as the image outline article. Drawn on a
+                sibling so it follows the container's radius, not the image. */}
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 transition-[border-radius] duration-200 ease-out motion-reduce:transition-none"
               style={{
-                outline: "1px solid rgba(0, 0, 0, 0.05)",
-                outlineOffset: "-1px",
+                borderRadius: "inherit",
+                outline: "1px solid rgb(var(--edge))",
+                outlineOffset: -1,
               }}
             />
           </div>

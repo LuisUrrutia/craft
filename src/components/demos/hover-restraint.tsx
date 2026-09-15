@@ -53,12 +53,12 @@ export function HoverRestraintDemo() {
   ] as const;
 
   return (
-    <Demo className="gap-7 px-4 sm:px-8">
+    <Demo className="gap-12 px-4 sm:px-8">
       <div className="grid w-full max-w-lg grid-cols-2 gap-3 sm:gap-10">
         {examples.map((example) => (
           <div
             key={example.label}
-            className="flex min-w-0 flex-col items-center gap-4"
+            className="flex min-w-0 flex-col items-center gap-6"
           >
             <div
               className={cn(
@@ -88,7 +88,7 @@ export function HoverRestraintDemo() {
                   <li
                     key={item.label}
                     className={cn(
-                      "flex items-center gap-2 rounded-lg p-2 text-xs cursor-pointer text-muted-foreground hover:bg-muted hover:text-foreground",
+                      "flex items-center gap-2 rounded-lg p-2 select-none text-xs cursor-pointer text-muted-foreground hover:bg-muted hover:text-foreground",
                       example.animated && "transition-colors duration-300"
                     )}
                   >
@@ -102,7 +102,7 @@ export function HoverRestraintDemo() {
               </ul>
             </div>
 
-            <span className="text-[10px] text-muted-foreground">
+            <span className="text-xs text-muted-foreground">
               {example.detail}
             </span>
           </div>
@@ -125,7 +125,7 @@ function ToolbarButton({
         render={
           <Button
             aria-label={label}
-            className="transition-none"
+            className="transition-none hover:dark:bg-muted"
             size="icon-sm"
             variant="ghost"
           >
@@ -140,9 +140,9 @@ function ToolbarButton({
 
 export function HoverTooltipDemo() {
   return (
-    <Demo className="gap-7 px-4 sm:px-8">
+    <Demo className="gap-12 px-4 sm:px-8">
       <div className="grid w-full max-w-lg grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-10">
-        <div className="flex min-w-0 flex-col items-center gap-4">
+        <div className="flex min-w-0 flex-col items-center gap-6">
           <div className="flex items-center gap-0.5 rounded-full bg-card p-0.5 shadow-(--custom-shadow)">
             {TOOLBAR_ACTIONS.map((action) => (
               <TooltipProvider key={action.label} delay={600}>
@@ -150,12 +150,12 @@ export function HoverTooltipDemo() {
               </TooltipProvider>
             ))}
           </div>
-          <span className="text-[10px] text-muted-foreground">
+          <span className="text-xs text-muted-foreground">
             Every tooltip waits
           </span>
         </div>
 
-        <div className="flex min-w-0 flex-col items-center gap-4">
+        <div className="flex min-w-0 flex-col items-center gap-6">
           <TooltipProvider delay={600}>
             <div className="flex items-center gap-0.5 rounded-full bg-card p-0.5 shadow-(--custom-shadow)">
               {TOOLBAR_ACTIONS.map((action) => (
@@ -167,7 +167,7 @@ export function HoverTooltipDemo() {
               ))}
             </div>
           </TooltipProvider>
-          <span className="text-[10px] text-muted-foreground">
+          <span className="text-xs text-muted-foreground">
             Only the first waits
           </span>
         </div>
@@ -176,29 +176,35 @@ export function HoverTooltipDemo() {
   );
 }
 
-function SidebarWindow({ open, animated }: { open: boolean; animated: boolean }) {
+function SidebarWindow({
+  open,
+  animated,
+}: {
+  open: boolean;
+  animated: boolean;
+}) {
   return (
-    <div className="flex h-36 w-full overflow-hidden rounded-xl bg-card shadow-(--custom-shadow)">
+    <div className="flex w-full h-44 overflow-hidden rounded-lg bg-card shadow-(--custom-shadow)">
       <div
         className={cn(
-          "w-24 shrink-0 border-r border-[#E7E7E7] p-1.5 dark:border-[#1E1E1E]",
+          "w-28 shrink-0 border-r border-[#E7E7E7] p-1 dark:border-[#1E1E1E]",
           animated &&
             "transition-[margin,opacity] duration-250 ease-out motion-reduce:transition-none",
-          !open && "-ml-24 opacity-0"
+          !open && "-ml-28 opacity-0"
         )}
       >
-        <ul className="flex flex-col gap-0.5">
+        <ul className="flex flex-col">
           {NAV_ITEMS.map((item, index) => (
             <li
               key={item.label}
               className={cn(
-                "flex items-center gap-1.5 rounded-md px-1.5 py-1 text-[10px]",
+                "flex items-center gap-1.5 rounded-sm px-2 py-1.5 text-xs",
                 index === 0
                   ? "bg-muted text-foreground"
                   : "text-muted-foreground"
               )}
             >
-              <item.Icon aria-hidden="true" className="size-3" />
+              <item.Icon aria-hidden="true" className="size-3 shrink-0" />
               {item.label}
             </li>
           ))}
@@ -221,7 +227,10 @@ export function KeyboardActionDemo() {
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
-      if (!(event.metaKey || event.ctrlKey) || event.key.toLowerCase() !== "b") {
+      if (
+        !(event.metaKey || event.ctrlKey) ||
+        event.key.toLowerCase() !== "b"
+      ) {
         return;
       }
       const target = event.target as HTMLElement | null;
@@ -234,8 +243,8 @@ export function KeyboardActionDemo() {
   }, []);
 
   return (
-    <Demo className="gap-7 px-4 sm:px-8">
-      <Compare>
+    <Demo className="gap-12 px-0">
+      <Compare className="max-w-full">
         <CompareItem verdict="wrong" label="Animated">
           <SidebarWindow animated open={open} />
         </CompareItem>
@@ -245,9 +254,10 @@ export function KeyboardActionDemo() {
       </Compare>
 
       <Button onClick={() => setOpen((value) => !value)} variant="secondary">
-        <SidebarSimpleIcon aria-hidden="true" className="size-4" />
         Toggle sidebar
-        <Kbd className="ml-1">⌘B</Kbd>
+        <Kbd className="shadow-none bg-transparent dark:border-none dark:bg-transparent text-muted-foreground">
+          ⌘B
+        </Kbd>
       </Button>
     </Demo>
   );

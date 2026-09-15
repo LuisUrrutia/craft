@@ -3,6 +3,7 @@ import type { MDXComponents } from "mdx/types";
 
 import { CodeBlock } from "@/components/app/code-block";
 import { Demo } from "@/components/app/demo";
+import { LinkList } from "@/components/app/resources";
 import {
   ButtonPressDemo,
   PressAmountDemo,
@@ -137,6 +138,11 @@ import {
   SharedLayoutDetailDemo,
 } from "@/components/demos/shared-layout";
 import {
+  SquircleCompareDemo,
+  SquircleCurvatureDemo,
+  SquircleExamplesDemo,
+} from "@/components/demos/squircles";
+import {
   StaggerCapDemo,
   StaggerCompareDemo,
   StaggerDemo,
@@ -166,7 +172,9 @@ function getFaviconUrl(href?: string) {
 
     if (url.protocol !== "http:" && url.protocol !== "https:") return;
 
-    return `https://www.google.com/s2/favicons?domain=${encodeURIComponent(url.hostname)}&sz=32`;
+    return `https://www.google.com/s2/favicons?domain=${encodeURIComponent(
+      url.hostname
+    )}&sz=64`;
   } catch {
     return;
   }
@@ -186,7 +194,7 @@ const components: MDXComponents = {
     <p
       className={cn(
         "my-4 text-sm leading-[1.8] text-pretty text-muted-foreground",
-        className,
+        className
       )}
       {...props}
     />
@@ -197,8 +205,8 @@ const components: MDXComponents = {
     return (
       <a
         className={cn(
-          "text-foreground underline decoration-border underline-offset-4 transition-colors hover:decoration-foreground",
-          className,
+          "text-foreground underline decoration-border dark:decoration-muted-foreground/50 mx-0.5 ml-0.75 underline-offset-4 transition-colors hover:decoration-foreground",
+          className
         )}
         href={href}
         target={faviconUrl ? "_blank" : undefined}
@@ -210,7 +218,7 @@ const components: MDXComponents = {
           <img
             aria-hidden="true"
             alt=""
-            className="mr-1 inline-block size-3.5 rounded-[3px] align-[-2px]"
+            className="mr-1.5 inline-block size-3.25 rounded-[3px] align-[-1px]"
             decoding="async"
             height={14}
             loading="lazy"
@@ -226,7 +234,7 @@ const components: MDXComponents = {
     <ul
       className={cn(
         "my-4 list-disc space-y-2 pl-5 text-sm text-muted-foreground",
-        className,
+        className
       )}
       {...props}
     />
@@ -235,7 +243,7 @@ const components: MDXComponents = {
     <ol
       className={cn(
         "my-4 list-decimal space-y-2 pl-5 text-sm text-muted-foreground",
-        className,
+        className
       )}
       {...props}
     />
@@ -250,7 +258,7 @@ const components: MDXComponents = {
     <code
       className={cn(
         "rounded-[3px] bg-primary/7 shadow-(--custom-shadow) px-1 py-0.5 font-mono text-[0.8em] text-foreground mx-0.75",
-        className,
+        className
       )}
       {...props}
     />
@@ -258,8 +266,8 @@ const components: MDXComponents = {
   pre: ({ className, ...props }) => (
     <pre
       className={cn(
-        "my-6 overflow-x-auto rounded-xl shadow-(--custom-shadow) bg-card p-4 text-xs leading-relaxed [&>code]:bg-transparent [&>code]:p-0 [&>code]:shadow-none",
-        className,
+        "my-6 rounded-xl shadow-(--custom-shadow) bg-card p-4 text-xs leading-relaxed whitespace-pre-wrap wrap-anywhere [&>code]:bg-transparent [&>code]:p-0 [&>code]:shadow-none",
+        className
       )}
       {...props}
     />
@@ -268,7 +276,7 @@ const components: MDXComponents = {
     <blockquote
       className={cn(
         "my-6 border-l-2 pl-4 text-sm text-muted-foreground italic",
-        className,
+        className
       )}
       {...props}
     />
@@ -353,6 +361,9 @@ const components: MDXComponents = {
   SpinnerSpeedDemo,
   SpotTheDifferenceDemo,
   SpringVelocityDemo,
+  SquircleCompareDemo,
+  SquircleCurvatureDemo,
+  SquircleExamplesDemo,
   StaggerCapDemo,
   StaggerCompareDemo,
   StaggerDemo,
@@ -371,6 +382,7 @@ const components: MDXComponents = {
   TransformOriginDemo,
   UppercaseTrackingDemo,
   CodeBlock,
+  LinkList,
 };
 
 export function Mdx({ code }: { code: string }) {

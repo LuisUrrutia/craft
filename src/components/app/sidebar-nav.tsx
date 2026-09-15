@@ -37,9 +37,9 @@ const DOT_SPRING = { type: "spring", stiffness: 800, damping: 52 } as const;
 
 // How far (px) the dot bows out to the left while travelling between rows.
 // Scales with distance so adjacent hops barely bend and long jumps swing wide.
-const DOT_ARC_MIN = 6;
-const DOT_ARC_MAX = 24;
-const DOT_ARC_PER_ROW = 2;
+const DOT_ARC_MIN = 10;
+const DOT_ARC_MAX = 36;
+const DOT_ARC_PER_ROW = 3;
 
 // Where the dot sits (px) at the moment of impact: just left of the name's
 // edge, which is still at x=0 until the hit shoves it right. The dot then
@@ -179,10 +179,10 @@ export function SidebarNav({
       aria-label="Concepts"
       // py-12 matches the 3rem fade-mask-y stops, so at rest the list sits
       // fully inside the opaque zone and only overflow fades at the edges.
-      // overflow-y also clips horizontally, so pl-7/-ml-7 give the active dot
+      // overflow-y also clips horizontally, so pl-10/-ml-10 give the active dot
       // room for its widest arc without shifting anything visually.
       className={cn(
-        "fade-mask-y scrollbar-hidden -ml-7 overflow-y-auto py-12 pl-7",
+        "fade-mask-y scrollbar-hidden -ml-10 overflow-y-auto py-12 pl-10",
         className,
       )}
       // Shared with the CSS keyframes (dot-crossfade, name-hit) so every part

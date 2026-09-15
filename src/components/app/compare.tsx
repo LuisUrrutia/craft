@@ -67,13 +67,11 @@ export function CompareItem({
   className?: string;
 }) {
   return (
-    <div
-      className={cn("flex min-w-0 flex-col items-center gap-4", className)}
-    >
+    <div className={cn("flex min-w-0 flex-col items-center gap-6", className)}>
       {verdict ? <CompareLabel verdict={verdict}>{label}</CompareLabel> : null}
       {children}
       {caption ? (
-        <span className="text-[10px] text-muted-foreground">{caption}</span>
+        <span className="text-xs text-muted-foreground">{caption}</span>
       ) : null}
     </div>
   );

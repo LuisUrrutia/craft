@@ -10,7 +10,9 @@ import { useState } from "react";
 
 import { Compare, CompareItem } from "@/components/app/compare";
 import { Demo } from "@/components/app/demo";
+import { GuidesToggle } from "@/components/app/guides-toggle";
 import { SegmentedControl } from "@/components/app/segmented-control";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 type Alignment = "geometric" | "optical";
@@ -20,46 +22,83 @@ const ALIGNMENT_OPTIONS = [
   { value: "optical", label: "Optically centered" },
 ] as const;
 
+// Nudges are a fraction of the icon's own size so they hold up at any
+// scale: 2px right and 1px up on a 24px icon, 4px and 2px on a 48px one.
 const ICONS = [
-  { label: "Play", Icon: PlayIcon, weight: "fill", shift: "translateX(2px)" },
-  { label: "Favorite", Icon: StarIcon, weight: "fill", shift: "translateY(-1px)" },
+  {
+    label: "Play",
+    Icon: PlayIcon,
+    weight: "fill",
+    color: "dark:text-green-500 text-green-400",
+    shift: "translateX(-6%)",
+  },
+  {
+    label: "Favorite",
+    Icon: StarIcon,
+    weight: "fill",
+    color: "dark:text-yellow-500 text-amber-400",
+    shift: "translateY(-2.2%)",
+  },
   {
     label: "Download",
     Icon: DownloadSimpleIcon,
     weight: "bold",
-    shift: "translateY(-1px)",
+    color: "dark:text-sky-500 text-sky-400",
+    shift: "translateY(-2%)",
   },
 ] as const;
 
-function CenterGuides() {
+// Shared timing for every guide reveal in this file. Clip-path rather than
+// scale so dashed lines keep their dash spacing while they draw.
+const GUIDE_DRAW =
+  "transition-[clip-path,opacity] duration-500 ease-out motion-reduce:transition-none";
+
+// Dashed crosshair through the geometric center. Each line is clipped down
+// to nothing at the middle and the clip opens outward, so the crosshair
+// draws itself from the center when the guides come on.
+function CenterGuides({ visible }: { visible: boolean }) {
   return (
-    <span
-      aria-hidden="true"
-      className="pointer-events-none absolute inset-0 rounded-full"
-    >
-      <span className="absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-rose-500/40" />
-      <span className="absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-rose-500/40" />
+    <span aria-hidden="true" className="pointer-events-none absolute inset-0">
+      <span
+        className={cn(
+          "absolute inset-x-0 top-1/2 border-t border-dashed border-sky-300 dark:border-sky-900",
+          GUIDE_DRAW
+        )}
+        style={{ clipPath: visible ? "inset(0 0 0 0)" : "inset(0 50% 0 50%)" }}
+      />
+      <span
+        className={cn(
+          "absolute inset-y-0 left-1/2 border-l border-dashed border-sky-300 dark:border-sky-900",
+          GUIDE_DRAW
+        )}
+        style={{ clipPath: visible ? "inset(0 0 0 0)" : "inset(50% 0 50% 0)" }}
+      />
     </span>
   );
 }
 
 export function OpticalAlignmentDemo() {
   const [mode, setMode] = useState<Alignment>("geometric");
+  const [guides, setGuides] = useState(true);
 
   return (
     <Demo className="gap-8">
+      <GuidesToggle pressed={guides} onPressedChange={setGuides} />
       <div className="flex items-center gap-5 sm:gap-8">
-        {ICONS.map(({ label, Icon, weight, shift }) => (
+        {ICONS.map(({ label, Icon, weight, shift, color }) => (
           <span
             key={label}
             aria-label={label}
-            className="relative grid size-14 place-items-center rounded-full bg-card text-foreground shadow-(--custom-shadow)"
+            className="flex relative justify-center items-center size-20 rounded-3xl bg-card text-foreground shadow-(--custom-shadow)"
             role="img"
           >
-            <CenterGuides />
+            <CenterGuides visible={guides} />
             <Icon
               aria-hidden="true"
-              className="relative size-6 transition-transform duration-200 ease-out motion-reduce:transition-none"
+              className={cn(
+                "relative size-12 transition-transform duration-200 ease-out motion-reduce:transition-none",
+                color
+              )}
               style={{ transform: mode === "optical" ? shift : "none" }}
               weight={weight}
             />
@@ -76,45 +115,63 @@ export function OpticalAlignmentDemo() {
   );
 }
 
+// The site's real Button, with the padding forced so the two sides can be
+// compared. The guides are clipped by the button's own shape, so they always
+// follow its radius and sit exactly over the padding they measure.
 function PaddedButton({
   paddingLeft,
   paddingRight,
+  guides,
 }: {
   paddingLeft: number;
   paddingRight: number;
+  guides: boolean;
 }) {
+  const guide = cn(
+    "pointer-events-none absolute inset-y-0 -z-10 bg-sky-900 dark:bg-sky-300",
+    GUIDE_DRAW
+  );
+
   return (
-    <span className="relative inline-flex h-9 items-center gap-1.5 rounded-lg bg-foreground text-sm font-medium text-background">
+    <Button
+      className="relative isolate overflow-hidden"
+      style={{ paddingLeft, paddingRight }}
+      type="button"
+    >
       <span
         aria-hidden="true"
-        className="absolute inset-y-0 left-0 rounded-l-lg bg-rose-500/25"
-        style={{ width: paddingLeft }}
+        className={cn(guide, "left-0")}
+        style={{
+          width: paddingLeft,
+          clipPath: guides ? "inset(0 0 0 0)" : "inset(0 100% 0 0)",
+        }}
       />
       <span
         aria-hidden="true"
-        className="absolute inset-y-0 right-0 rounded-r-lg bg-rose-500/25"
-        style={{ width: paddingRight }}
+        className={cn(guide, "right-0")}
+        style={{
+          width: paddingRight,
+          clipPath: guides ? "inset(0 0 0 0)" : "inset(0 0 0 100%)",
+        }}
       />
-      <span
-        className="relative inline-flex items-center gap-1.5"
-        style={{ paddingLeft, paddingRight }}
-      >
-        Next
-        <ArrowRightIcon aria-hidden="true" className="size-4" weight="bold" />
-      </span>
-    </span>
+      Next
+      <ArrowRightIcon aria-hidden="true" weight="bold" />
+    </Button>
   );
 }
 
 export function OpticalButtonDemo() {
+  const [guides, setGuides] = useState(true);
+
   return (
     <Demo className="gap-7 px-4 sm:px-8">
-      <Compare>
+      <GuidesToggle pressed={guides} onPressedChange={setGuides} />
+      <Compare className="sm:gap-0">
         <CompareItem verdict="wrong">
-          <PaddedButton paddingLeft={14} paddingRight={14} />
+          <PaddedButton guides={guides} paddingLeft={12} paddingRight={12} />
         </CompareItem>
         <CompareItem verdict="right">
-          <PaddedButton paddingLeft={14} paddingRight={10} />
+          <PaddedButton guides={guides} paddingLeft={12} paddingRight={10} />
         </CompareItem>
       </Compare>
     </Demo>
@@ -131,7 +188,7 @@ const SIZING_OPTIONS = [
 const SHAPES = [
   { name: "square", equal: 26, balanced: 24 },
   { name: "circle", equal: 26, balanced: 27 },
-  { name: "triangle", equal: 26, balanced: 30 },
+  { name: "triangle", equal: 26, balanced: 25 },
 ] as const;
 
 export function OpticalWeightDemo() {
@@ -192,7 +249,7 @@ export function OpticalSizingDemo() {
     <Demo className="gap-8">
       <div className="grid w-full max-w-sm gap-3 rounded-xl bg-card px-6 py-6 shadow-(--custom-shadow)">
         <span
-          className="text-[40px] leading-none font-semibold tracking-tight text-foreground"
+          className="text-[40px] leading-none font-medium tracking-tight text-foreground"
           style={{
             fontOpticalSizing: "none",
             fontVariationSettings: mode === "text" ? '"opsz" 14' : '"opsz" 32',
@@ -201,7 +258,7 @@ export function OpticalSizingDemo() {
           Quarterly
         </span>
         <span
-          className="text-[40px] leading-none font-semibold tracking-tight text-foreground"
+          className="text-[40px] leading-none font-medium tracking-tight text-foreground"
           style={{
             fontOpticalSizing: "none",
             fontVariationSettings: mode === "text" ? '"opsz" 14' : '"opsz" 32',
@@ -229,20 +286,20 @@ const HANGING_OPTIONS = [
 
 export function HangingPunctuationDemo() {
   const [mode, setMode] = useState<Hanging>("box");
+  const [guides, setGuides] = useState(true);
 
   return (
     <Demo className="gap-8">
+      <GuidesToggle pressed={guides} onPressedChange={setGuides} />
       <div className="relative w-full max-w-sm rounded-xl bg-card px-8 py-6 shadow-(--custom-shadow)">
         <span
           aria-hidden="true"
-          className="pointer-events-none absolute inset-y-4 left-8 w-px bg-rose-500"
+          className={cn(
+            "pointer-events-none absolute inset-y-5 left-8 border-l border-dashed border-sky-300 dark:border-sky-900",
+            GUIDE_DRAW
+          )}
+          style={{ clipPath: guides ? "inset(0 0 0 0)" : "inset(0 0 100% 0)" }}
         />
-        <span
-          aria-hidden="true"
-          className="absolute top-1.5 left-8 -translate-x-1/2 text-[9px] text-rose-500"
-        >
-          Edge
-        </span>
         <p
           className="text-lg leading-snug font-medium text-foreground transition-[text-indent] duration-200 ease-out motion-reduce:transition-none"
           style={{ textIndent: mode === "glyph" ? "-0.42em" : "0" }}

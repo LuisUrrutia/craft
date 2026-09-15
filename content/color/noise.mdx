@@ -11,43 +11,22 @@ resources:
   - url: https://css-tricks.com/grainy-gradients/
     title: Grainy Gradients
     description: A thorough walkthrough of noise on gradients, with the color matrix tricks explained.
-  - url: https://grainy-gradients.vercel.app/
-    title: Grainy Gradients playground
-    description: Dial in frequency, octaves, and blend modes live, then copy the SVG.
   - url: https://developer.mozilla.org/en-US/docs/Web/CSS/mix-blend-mode
     title: mix-blend-mode
     description: How the grain layer combines with the color underneath it.
 ---
 
-Screens are too clean. A gradient rendered in 8 bits per channel has visible steps where one shade turns into the next, and a large block of one color looks like a plastic sheet. **Noise** is a layer of random light and dark pixels laid over the surface. It breaks the steps up and gives the color some texture. Drag the slider to add grain to this card.
+When the UI feels too flat, sometimes I like to add noise to some components to give them some texture.
+
+**Noise** is a layer of random light and dark pixels laid over the surface. It breaks the steps up and gives the color some texture. Drag the slider to add grain to this card.
 
 <NoiseDemo />
 
-Around 6% to 10% is where it usually lands. You should have to lean in to notice the grain. Any more and the card starts to look dirty.
-
-## Banding
-
-This is the problem noise was made for. Both boxes below use the exact same radial gradient, from a light center into near black. The left one shows rings where the browser runs out of shades. The right one has grain on top.
-
-<NoiseBandingDemo />
-
-The grain does not add shades. It scatters the boundary between each pair of shades so your eye cannot find the line. Dark gradients band the most because there are fewer distinct dark values to work with, so they benefit the most.
-
 ## Grain size
 
-The `baseFrequency` attribute controls how fine the noise is. Low values give big soft blobs. High values give the tight speckle of film grain. This demo runs the grain at a high opacity so you can see the shape change.
+The `baseFrequency` attribute controls how fine the noise is. Low values give big soft blobs, whle high values give the tight speckle of film grain.
 
 <NoiseFrequencyDemo />
-
-For UI, stay between `0.6` and `1`. Below that the noise looks like clouds and starts to compete with the content. Above `1` it turns into a flat gray haze and the texture is gone.
-
-## On real surfaces
-
-Grain reads best on dark and saturated surfaces, where the light and dark specks both have room to show. Switch this card between flat and grain.
-
-<NoiseSurfaceDemo />
-
-On a white card the same grain does almost nothing, because half the specks are lighter than white and get clipped. If you want texture on a light surface, use a lower opacity and a slightly tinted background so the grain has something to push against.
 
 ## Usage
 
@@ -67,7 +46,7 @@ Put the filter in one SVG anywhere on the page, then reference it from an overla
 </svg>
 
 <div class="relative isolate overflow-hidden rounded-2xl bg-violet-600">
-  <div class="pointer-events-none absolute inset-0 opacity-[0.08] mix-blend-overlay [filter:url(#grain)]" aria-hidden="true"></div>
+  <div class="pointer-events-none absolute inset-0 opacity-[0.08] mix-blend-overlay filter-[url(#grain)]" aria-hidden="true"></div>
   <!-- content -->
 </div>`,
     },
@@ -82,16 +61,16 @@ Put the filter in one SVG anywhere on the page, then reference it from an overla
 }
 
 .surface::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  filter: url(#grain);
-  opacity: 0.08;
-  mix-blend-mode: overlay;
-  pointer-events: none;
+content: "";
+position: absolute;
+inset: 0;
+filter: url(#grain);
+opacity: 0.08;
+mix-blend-mode: overlay;
+pointer-events: none;
 }`,
-    },
-  ]}
+},
+]}
 />
 
 The `isolate` on the container matters. Without it, `mix-blend-mode` blends the grain with everything behind the card, including the page background, and the effect changes depending on where the card sits. With it, the grain only ever blends with the surface it belongs to.

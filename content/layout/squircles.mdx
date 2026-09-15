@@ -1,0 +1,109 @@
+---
+title: Squircles
+description: Rounded corners that curve into the edge instead of stopping at it.
+section: Layout
+order: 6
+publishedAt: "2026-09-14"
+resources:
+  - url: https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/corner-shape
+    title: corner-shape
+    description: MDN's reference for the property, its keywords and the superellipse() function.
+  - url: https://developer.chrome.com/blog/corner-shape
+    title: Shape your corners with corner-shape
+    description: The Chrome team's introduction to the property, with examples of every keyword.
+  - url: https://www.figma.com/blog/desperately-seeking-squircles/
+    title: Desperately seeking squircles
+    description: Figma's story of reverse-engineering Apple's icon curve, and why it feels smoother.
+  - url: https://drafts.csswg.org/css-borders-4/#corner-shaping
+    title: CSS Borders 4, corner shaping
+    description: The specification for corner-shape and how the curve is defined.
+  - url: https://github.com/phamfoo/figma-squircle
+    title: figma-squircle
+    description: Generates squircle SVG paths for masks and clip-paths where the CSS property is missing.
+---
+
+A normal rounded corner is a quarter circle. The straight edge runs along,
+then the arc starts, and there is a point where one becomes the other. You
+can feel that point even when you cannot see it.
+
+A squircle removes it. The curve starts earlier and eases into the edge, so
+the corner has no beginning and no end. It is the shape of an iOS app icon,
+and it is why those icons look softer than a box with the same radius.
+
+<SquircleCompareDemo />
+
+Both tiles use the same `28px` radius. Only the corner shape changes.
+
+## One property
+
+Corner shape is now a CSS property. The radius still sets how big the corner
+is, and `corner-shape` sets what curve fills it.
+
+**Keep the radius, change the shape.** Because it is part of the box itself,
+the background, border, shadow and `overflow: hidden` all follow the new
+curve. No mask, no SVG path, no extra element.
+
+<CodeBlock
+  tabs={[
+    {
+      label: "Tailwind",
+      language: "html",
+      icon: "tailwind",
+      code: `<div class="rounded-[28px] corner-squircle">`,
+    },
+    {
+      label: "CSS",
+      language: "css",
+      icon: "css",
+      code: `.icon {
+    border-radius: 28px;
+    corner-shape: squircle;
+}`,
+    },
+  ]}
+/>
+
+The Tailwind utilities come from the
+[corner-shape plugin](https://github.com/toolwind/corner-shape).
+
+## How much curve
+
+The keywords are named points on one scale, `superellipse()`. Drag the slider
+to move along it.
+
+<SquircleCurvatureDemo />
+
+`1` is a circle, so it matches `round`. `2` is `squircle`. `0` is a flat
+`bevel`, and negative values scoop inwards. Apple's icon curve sits a little
+past `2`, around `superellipse(2.3)`.
+
+Anything from `1.5` to `2.5` reads as a squircle. Go higher and the corner
+starts to look square again.
+
+## Where it shows
+
+The effect scales with the radius. A big radius on a small box, like an
+avatar or an app icon, changes character completely. A small radius on a
+button barely moves, and that is fine, it just feels a touch softer.
+
+<SquircleExamplesDemo />
+
+Two things to keep from the nested corners page. Set the shape on both the
+outer and the inner box, since it is not inherited, and keep the outer radius
+equal to the inner radius plus the inset. A squircle outside a round corner
+looks worse than two round corners.
+
+## A slightly bigger radius
+
+At the same radius, a squircle looks tighter than a round corner, because the
+curve spends less of its length near the edge. If you swap the shape on an
+existing component and the corner looks smaller, it is. Nudge the radius up
+by roughly a quarter and compare again.
+
+## Support
+
+Browsers that do not know `corner-shape` ignore it and draw a round corner.
+That is the right fallback, so there is nothing to feature-detect for most
+UI. If the shape is part of the brand, generate the path with a tool like
+`figma-squircle` and apply it with `clip-path` or a mask where the property
+is missing.

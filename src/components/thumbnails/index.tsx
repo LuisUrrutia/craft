@@ -54,6 +54,12 @@ function NestedRadiusThumbnail() {
   );
 }
 
+function SquirclesThumbnail() {
+  return (
+    <div className="size-16 rounded-[22px] border bg-card corner-round transition-[corner-shape] duration-300 group-hover:corner-squircle" />
+  );
+}
+
 function IconMorphThumbnail() {
   return (
     <span className="relative inline-flex">
@@ -426,6 +432,7 @@ const thumbnails: Record<string, () => React.ReactNode> = {
   "text-wrapping": TextWrappingThumbnail,
   oklch: OklchThumbnail,
   "nested-border-radius": NestedRadiusThumbnail,
+  squircles: SquirclesThumbnail,
   "icon-morph": IconMorphThumbnail,
   "interface-sfx": InterfaceSfxThumbnail,
   "tabular-numbers": TabularNumsThumbnail,

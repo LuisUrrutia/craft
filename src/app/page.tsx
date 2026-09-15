@@ -19,7 +19,11 @@ export default function IndexPage() {
   return (
     <article>
       <h1 className="text-base font-medium">Index</h1>
-      <p className="mt-3 text-sm text-muted-foreground">{SITE_DESCRIPTION}</p>
+      <p className="mt-3 text-sm text-muted-foreground">
+        {SITE_DESCRIPTION} These essays are short and simple, meant as a
+        collection of useful ideas and tricks rather than an exhaustive
+        resource.
+      </p>
       <div className="mt-8 flex flex-col gap-12">
         {sections.map(({ section, concepts }) => (
           <section key={section}>

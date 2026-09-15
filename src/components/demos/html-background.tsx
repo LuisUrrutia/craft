@@ -65,7 +65,7 @@ export function HtmlBackgroundDemo() {
               {example.label}
             </div>
 
-            <div className="w-full overflow-hidden rounded-xl bg-card shadow-(--custom-shadow)">
+            <div className="w-full overflow-hidden rounded-xl bg-card ">
               <div
                 aria-hidden="true"
                 className="grid grid-cols-[1fr_auto_1fr] items-center bg-[#ececec] px-2 py-2 dark:bg-[#292929] sm:px-3"
@@ -84,12 +84,16 @@ export function HtmlBackgroundDemo() {
 
               {/* The area behind the page is what Safari paints from the
                   document canvas during overscroll. */}
-              <div
-                className="relative h-40 overflow-hidden"
-                style={{
-                  background: example.rootBackgroundSet ? "#1c1c1c" : "#ffffff",
-                }}
-              >
+              <div className="relative h-40 overflow-hidden bg-[#1c1c1c]">
+                {/* Only the strip the page reveals is painted; keeping the
+                    white off the clipped edges avoids Safari's anti-aliased
+                    hairline at the rounded corners. */}
+                {!example.rootBackgroundSet && (
+                  <div
+                    aria-hidden="true"
+                    className="absolute inset-x-0 top-0 h-16 bg-white"
+                  />
+                )}
                 <span
                   aria-hidden="true"
                   className={cn(
