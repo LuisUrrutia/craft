@@ -33,11 +33,11 @@ export default function IndexPage() {
       </p>
       <div className="mt-4">
         <CodeBlock
+          hideHeader
           tabs={[
             {
               label: "Terminal",
               language: "bash",
-              filename: "Terminal",
               code: `npx skills add ${GITHUB_REPO}`,
             },
           ]}

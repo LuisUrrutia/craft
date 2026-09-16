@@ -88,7 +88,14 @@ const TAB_ICONS = {
   tailwind: { src: "/logos/tailwindcss.svg", width: 18, height: 11 },
 };
 
-export function CodeBlockClient({ tabs }: { tabs: HighlightedCodeTab[] }) {
+export function CodeBlockClient({
+  tabs,
+  hideHeader = false,
+}: {
+  tabs: HighlightedCodeTab[];
+  /** Drops the filename/tab bar; for one-liners like a terminal command. */
+  hideHeader?: boolean;
+}) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [copied, setCopied] = useState(false);
   const copiedTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
@@ -117,7 +124,7 @@ export function CodeBlockClient({ tabs }: { tabs: HighlightedCodeTab[] }) {
     () => () => {
       if (copiedTimer.current) clearTimeout(copiedTimer.current);
     },
-    []
+    [],
   );
 
   function selectTab(index: number) {
@@ -144,86 +151,88 @@ export function CodeBlockClient({ tabs }: { tabs: HighlightedCodeTab[] }) {
 
   return (
     <div className="my-6 overflow-hidden rounded-xl bg-card shadow-(--custom-shadow)">
-      <div className="flex items-center justify-between gap-3 border-b border-[#E7E7E7] dark:border-[#1E1E1E] py-2 pr-2 pl-4">
-        {/* One label per tab, stacked and crossfaded on the same 200ms
+      {!hideHeader && (
+        <div className="flex items-center justify-between gap-3 border-b border-[#E7E7E7] dark:border-[#1E1E1E] py-2 pr-2 pl-4">
+          {/* One label per tab, stacked and crossfaded on the same 200ms
             curve as the code panels below. */}
-        <div className="grid min-w-0 font-mono text-[11px] text-muted-foreground">
-          {tabs.map((tab, index) => {
-            const active = index === activeIndex;
-            const file = getFile(tab);
-            return (
-              <span
-                key={tab.label}
-                aria-hidden={!active}
-                className={cn(
-                  "col-start-1 row-start-1 flex min-w-0 items-center gap-2 transition-opacity duration-200",
-                  active ? "opacity-100" : "opacity-0"
-                )}
+          <div className="grid min-w-0 font-mono text-[11px] text-muted-foreground">
+            {tabs.map((tab, index) => {
+              const active = index === activeIndex;
+              const file = getFile(tab);
+              return (
+                <span
+                  key={tab.label}
+                  aria-hidden={!active}
+                  className={cn(
+                    "col-start-1 row-start-1 flex min-w-0 items-center gap-2 transition-opacity duration-200",
+                    active ? "opacity-100" : "opacity-0",
+                  )}
+                >
+                  <FileIcon kind={file.kind} />
+                  <span className="truncate">{file.name}</span>
+                </span>
+              );
+            })}
+          </div>
+          <div className="flex shrink-0 items-center gap-1">
+            {tabs.length > 1 && (
+              <div
+                role="tablist"
+                aria-label="Code examples"
+                className="inline-flex h-8 items-center rounded-full bg-card p-0.5"
               >
-                <FileIcon kind={file.kind} />
-                <span className="truncate">{file.name}</span>
-              </span>
-            );
-          })}
-        </div>
-        <div className="flex shrink-0 items-center gap-1">
-          {tabs.length > 1 && (
-            <div
-              role="tablist"
-              aria-label="Code examples"
-              className="inline-flex h-8 items-center rounded-full bg-card p-0.5"
-            >
-              {tabs.map((tab, index) => {
-                const active = index === activeIndex;
-                const tabIcon = tab.icon ? TAB_ICONS[tab.icon] : undefined;
-                const isCssIcon = tabIcon?.src === "/logos/css.svg";
-                return (
-                  <button
-                    key={tab.label}
-                    id={`${tabId}-tab-${index}`}
-                    type="button"
-                    role="tab"
-                    aria-selected={active}
-                    aria-controls={`${tabId}-panel-${index}`}
-                    tabIndex={active ? 0 : -1}
-                    onClick={() => selectTab(index)}
-                    onKeyDown={(event) => handleTabKeyDown(event, index)}
-                    className={cn(
-                      "relative flex h-7 cursor-pointer items-center rounded-full px-2.5 text-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
-                      active
-                        ? "text-foreground"
-                        : "text-muted-foreground hover:text-foreground",
-                      tabIcon && isCssIcon ? "pl-2.75" : "pl-2.25"
-                    )}
-                  >
-                    {active && (
-                      <motion.span
-                        layoutId={pillId}
-                        transition={TAB_MORPH}
-                        className="absolute inset-0 rounded-full bg-muted dark:bg-input/50"
-                      />
-                    )}
-                    <span className="relative z-10 flex items-center gap-1.5">
-                      {tabIcon && (
-                        <Image
-                          aria-hidden="true"
-                          alt=""
-                          src={tabIcon.src}
-                          width={tabIcon.width}
-                          height={tabIcon.height}
-                          className="shrink-0 size-3 mb-px"
-                          unoptimized
+                {tabs.map((tab, index) => {
+                  const active = index === activeIndex;
+                  const tabIcon = tab.icon ? TAB_ICONS[tab.icon] : undefined;
+                  const isCssIcon = tabIcon?.src === "/logos/css.svg";
+                  return (
+                    <button
+                      key={tab.label}
+                      id={`${tabId}-tab-${index}`}
+                      type="button"
+                      role="tab"
+                      aria-selected={active}
+                      aria-controls={`${tabId}-panel-${index}`}
+                      tabIndex={active ? 0 : -1}
+                      onClick={() => selectTab(index)}
+                      onKeyDown={(event) => handleTabKeyDown(event, index)}
+                      className={cn(
+                        "relative flex h-7 cursor-pointer items-center rounded-full px-2.5 text-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
+                        active
+                          ? "text-foreground"
+                          : "text-muted-foreground hover:text-foreground",
+                        tabIcon && isCssIcon ? "pl-2.75" : "pl-2.25",
+                      )}
+                    >
+                      {active && (
+                        <motion.span
+                          layoutId={pillId}
+                          transition={TAB_MORPH}
+                          className="absolute inset-0 rounded-full bg-muted dark:bg-input/50"
                         />
                       )}
-                      {tab.label}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          )}
+                      <span className="relative z-10 flex items-center gap-1.5">
+                        {tabIcon && (
+                          <Image
+                            aria-hidden="true"
+                            alt=""
+                            src={tabIcon.src}
+                            width={tabIcon.width}
+                            height={tabIcon.height}
+                            className="shrink-0 size-3 mb-px"
+                            unoptimized
+                          />
+                        )}
+                        {tab.label}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
       <motion.div
         className="relative overflow-hidden"
@@ -259,7 +268,7 @@ export function CodeBlockClient({ tabs }: { tabs: HighlightedCodeTab[] }) {
                 "code-block-panel min-w-0 transition-opacity duration-200",
                 active
                   ? "relative opacity-100"
-                  : "pointer-events-none absolute inset-x-0 top-0 opacity-0"
+                  : "pointer-events-none absolute inset-x-0 top-0 opacity-0",
               )}
               dangerouslySetInnerHTML={{ __html: tab.html }}
             />

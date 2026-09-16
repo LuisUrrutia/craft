@@ -11,7 +11,13 @@ export type CodeTab = {
   filename?: string;
 };
 
-export async function CodeBlock({ tabs }: { tabs: CodeTab[] }) {
+export async function CodeBlock({
+  tabs,
+  hideHeader,
+}: {
+  tabs: CodeTab[];
+  hideHeader?: boolean;
+}) {
   if (tabs.length === 0) return null;
 
   const highlightedTabs = await Promise.all(
@@ -29,5 +35,5 @@ export async function CodeBlock({ tabs }: { tabs: CodeTab[] }) {
     })),
   );
 
-  return <CodeBlockClient tabs={highlightedTabs} />;
+  return <CodeBlockClient tabs={highlightedTabs} hideHeader={hideHeader} />;
 }
