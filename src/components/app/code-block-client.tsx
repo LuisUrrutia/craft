@@ -124,7 +124,7 @@ export function CodeBlockClient({
     () => () => {
       if (copiedTimer.current) clearTimeout(copiedTimer.current);
     },
-    [],
+    []
   );
 
   function selectTab(index: number) {
@@ -165,7 +165,7 @@ export function CodeBlockClient({
                   aria-hidden={!active}
                   className={cn(
                     "col-start-1 row-start-1 flex min-w-0 items-center gap-2 transition-opacity duration-200",
-                    active ? "opacity-100" : "opacity-0",
+                    active ? "opacity-100" : "opacity-0"
                   )}
                 >
                   <FileIcon kind={file.kind} />
@@ -201,7 +201,7 @@ export function CodeBlockClient({
                         active
                           ? "text-foreground"
                           : "text-muted-foreground hover:text-foreground",
-                        tabIcon && isCssIcon ? "pl-2.75" : "pl-2.25",
+                        tabIcon && isCssIcon ? "pl-2.75" : "pl-2.25"
                       )}
                     >
                       {active && (
@@ -268,7 +268,7 @@ export function CodeBlockClient({
                 "code-block-panel min-w-0 transition-opacity duration-200",
                 active
                   ? "relative opacity-100"
-                  : "pointer-events-none absolute inset-x-0 top-0 opacity-0",
+                  : "pointer-events-none absolute inset-x-0 top-0 opacity-0"
               )}
               dangerouslySetInnerHTML={{ __html: tab.html }}
             />
