@@ -1,6 +1,6 @@
 ---
 title: Image Outlines
-description: A faint line inside the edge of every image keeps it from bleeding into the page.
+description: A faint inner edge that frames images.
 section: Color
 order: 4
 publishedAt: "2026-07-15"
@@ -74,9 +74,9 @@ Set the outline color per theme. Black at 10% on light, white at 10% on dark.
       language: "html",
       icon: "tailwind",
       code: `<img
-    class="rounded-lg outline-1 -outline-offset-1 outline-black/10 dark:outline-white/10"
-    src="/cover.jpg"
-    alt="Album cover"
+  class="rounded-lg outline-1 -outline-offset-1 outline-black/10 dark:outline-white/10"
+  src="/cover.jpg"
+  alt="Album cover"
 />`,
     },
     {
@@ -84,16 +84,16 @@ Set the outline color per theme. Black at 10% on light, white at 10% on dark.
       language: "css",
       icon: "css",
       code: `img {
-    border-radius: 8px;
-    outline: 1px solid rgb(0 0 0 / 0.1);
-    outline-offset: -1px;
+  border-radius: 8px;
+  outline: 1px solid rgb(0 0 0 / 0.1);
+  outline-offset: -1px;
 }
 
 .dark img {
-outline-color: rgb(255 255 255 / 0.1);
+  outline-color: rgb(255 255 255 / 0.1);
 }`,
-},
-]}
+    },
+  ]}
 />
 
 Keep it off images that already have a hard edge, like icons drawn on a

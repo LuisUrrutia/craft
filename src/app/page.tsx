@@ -1,6 +1,7 @@
 import { allConcepts } from "content-collections";
 import Link from "next/link";
 
+import { ProseLink } from "@/components/app/prose-link";
 import { ConceptThumbnail } from "@/components/thumbnails";
 import { isConceptAvailable } from "@/lib/concepts";
 import { groupBySection } from "@/lib/sections";
@@ -24,6 +25,16 @@ export default function IndexPage() {
         collection of useful ideas and tricks rather than an exhaustive
         resource.
       </p>
+      <p className="mt-3 text-sm text-muted-foreground">
+        This project is brought to you by{" "}
+        <ProseLink href="https://gustavofior.com">Gustavo</ProseLink>, a guy
+        who likes computers and beautiful things. If you want to contribute,
+        you can do so in the{" "}
+        <ProseLink href="https://github.com/gustavo-fior/craft">
+          GitHub repo
+        </ProseLink>
+        .
+      </p>
       <div className="mt-8 flex flex-col gap-12">
         {sections.map(({ section, concepts }) => (
           <section key={section}>
@@ -38,21 +49,31 @@ export default function IndexPage() {
                       <ConceptThumbnail slug={concept.slug} section={section} />
                     </div>
                     <div className="p-4">
-                      <h3 className="text-[13px] font-medium text-foreground">
-                        {concept.title}
-                      </h3>
-                      <p className="mt-1 text-xs text-muted-foreground text-pretty">
+                      <div className="flex items-center justify-between gap-3">
+                        <h3 className="truncate text-[13px] font-medium text-foreground">
+                          {concept.title}
+                        </h3>
+                        {!available && (
+                          <span className="shrink-0 rounded-full border border-dashed border-sky-300 bg-sky-500/10 px-1.5 py-px text-[10px] leading-4 font-medium text-sky-600 dark:border-sky-900 dark:bg-sky-400/10 dark:text-sky-400">
+                            Soon
+                          </span>
+                        )}
+                      </div>
+                      <p className="mt-1 truncate text-xs text-muted-foreground">
                         {full?.description}
                       </p>
                     </div>
                   </>
                 );
 
+                const cardClassName =
+                  "group overflow-hidden rounded-2xl bg-card shadow-(--custom-shadow) hover:bg-muted/5 dark:hover:bg-card/80";
+
                 return available ? (
                   <Link
                     key={concept.slug}
                     href={`/${concept.slug}`}
-                    className="group overflow-hidden rounded-2xl bg-card shadow-(--custom-shadow) hover:bg-muted/5 dark:hover:bg-card/80"
+                    className={cardClassName}
                   >
                     {content}
                   </Link>
@@ -61,7 +82,7 @@ export default function IndexPage() {
                     key={concept.slug}
                     aria-disabled="true"
                     title="Coming soon"
-                    className="cursor-not-allowed overflow-hidden rounded-2xl bg-card opacity-40 grayscale shadow-(--custom-shadow) select-none"
+                    className={`${cardClassName} cursor-not-allowed select-none`}
                   >
                     {content}
                   </div>

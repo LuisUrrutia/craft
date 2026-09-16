@@ -232,7 +232,7 @@ export function CodeBlockClient({ tabs }: { tabs: HighlightedCodeTab[] }) {
         transition={reduceMotion ? { duration: 0 } : TAB_MORPH}
       >
         {/* Floats over the code's top-right corner; the backdrop keeps it
-            readable when a wrapped line runs underneath. */}
+            readable when a long line scrolls underneath. */}
         <Button
           type="button"
           size="icon-sm"

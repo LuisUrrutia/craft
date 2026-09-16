@@ -3,6 +3,7 @@ import type { MDXComponents } from "mdx/types";
 
 import { CodeBlock } from "@/components/app/code-block";
 import { Demo } from "@/components/app/demo";
+import { ProseLink } from "@/components/app/prose-link";
 import { LinkList } from "@/components/app/resources";
 import {
   ButtonPressDemo,
@@ -164,22 +165,6 @@ import {
 import { SurfaceErasDemo } from "@/components/demos/timelessness";
 import { cn } from "@/lib/utils";
 
-function getFaviconUrl(href?: string) {
-  if (!href) return;
-
-  try {
-    const url = new URL(href);
-
-    if (url.protocol !== "http:" && url.protocol !== "https:") return;
-
-    return `https://www.google.com/s2/favicons?domain=${encodeURIComponent(
-      url.hostname
-    )}&sz=64`;
-  } catch {
-    return;
-  }
-}
-
 const components: MDXComponents = {
   h2: ({ className, ...props }) => (
     <h2
@@ -199,37 +184,7 @@ const components: MDXComponents = {
       {...props}
     />
   ),
-  a: ({ className, children, href, ...props }) => {
-    const faviconUrl = getFaviconUrl(href);
-
-    return (
-      <a
-        className={cn(
-          "text-foreground underline  hover:dark:bg-neutral-800 hover:bg-neutral-200 px-0.75 py-0.75 rounded-sm hover:decoration-neutral-200 hover:dark:decoration-neutral-800 decoration-neutral-300 dark:decoration-neutral-700 underline-offset-4 transition-all [transition-property:color,background-color,border-color,text-decoration-color,fill,stroke,text-decoration-thickness,text-underline-offset,text-decoration-style]",
-          className
-        )}
-        href={href}
-        target={faviconUrl ? "_blank" : undefined}
-        rel={faviconUrl ? "noreferrer" : undefined}
-        {...props}
-      >
-        {faviconUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            aria-hidden="true"
-            alt=""
-            className="mr-1.25 inline-block size-3 rounded-[3px] align-[-1px]"
-            decoding="async"
-            height={14}
-            loading="lazy"
-            src={faviconUrl}
-            width={14}
-          />
-        ) : null}
-        {children}
-      </a>
-    );
-  },
+  a: ProseLink,
   ul: ({ className, ...props }) => (
     <ul
       className={cn(
@@ -266,7 +221,7 @@ const components: MDXComponents = {
   pre: ({ className, ...props }) => (
     <pre
       className={cn(
-        "my-6 rounded-xl shadow-(--custom-shadow) bg-card p-4 text-xs leading-relaxed whitespace-pre-wrap wrap-anywhere [&>code]:bg-transparent [&>code]:p-0 [&>code]:shadow-none",
+        "my-6 rounded-xl shadow-(--custom-shadow) bg-card p-4 text-xs leading-relaxed overflow-x-auto whitespace-pre [&>code]:bg-transparent [&>code]:p-0 [&>code]:shadow-none",
         className
       )}
       {...props}

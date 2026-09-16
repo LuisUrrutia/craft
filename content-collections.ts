@@ -47,6 +47,18 @@ function extractMeta(html: string, property: string) {
   return undefined;
 }
 
+// MDX strips leading whitespace from lines inside flow JSX, which dedents the
+// `code` template literals passed to <CodeBlock>. Escaping those spaces as
+// `\x20` hides them from the markdown parser while JS still reads spaces.
+function preserveCodeIndentation<T extends { content: string }>(document: T): T {
+  const content = document.content.replace(
+    /(\bcode:\s*`)((?:\\[\s\S]|[^`\\])*)`/g,
+    (_, open: string, body: string) =>
+      `${open}${body.replace(/\n( +)/g, (_m, spaces: string) => `\n${"\\x20".repeat(spaces.length)}`)}\``,
+  );
+  return { ...document, content };
+}
+
 // Fetches a resource's title/description at build time. Manual frontmatter
 // values always win; network failures fall back to the bare domain, so an
 // offline build or dead link never breaks anything.
@@ -118,7 +130,7 @@ const concepts = defineCollection({
       .default([]),
   }),
   transform: async (document, context) => {
-    const mdx = await compileMDX(context, document, {
+    const mdx = await compileMDX(context, preserveCodeIndentation(document), {
       rehypePlugins: [rehypeSyntaxHighlight],
     });
     const slug = document._meta.fileName.replace(/\.mdx$/, "");

@@ -1,6 +1,6 @@
 ---
 title: Noise
-description: A little grain hides gradient banding and makes flat color feel like a surface.
+description: Grain hides banding and adds texture.
 section: Color
 order: 2
 publishedAt: "2026-07-15"
@@ -61,16 +61,16 @@ Put the filter in one SVG anywhere on the page, then reference it from an overla
 }
 
 .surface::after {
-content: "";
-position: absolute;
-inset: 0;
-filter: url(#grain);
-opacity: 0.08;
-mix-blend-mode: overlay;
-pointer-events: none;
+  content: "";
+  position: absolute;
+  inset: 0;
+  filter: url(#grain);
+  opacity: 0.08;
+  mix-blend-mode: overlay;
+  pointer-events: none;
 }`,
-},
-]}
+    },
+  ]}
 />
 
 The `isolate` on the container matters. Without it, `mix-blend-mode` blends the grain with everything behind the card, including the page background, and the effect changes depending on where the card sits. With it, the grain only ever blends with the surface it belongs to.
