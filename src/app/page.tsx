@@ -1,10 +1,11 @@
 import { allConcepts } from "content-collections";
 
+import { CodeBlock } from "@/components/app/code-block";
 import { ConceptCard } from "@/components/app/concept-card";
 import { ProseLink } from "@/components/app/prose-link";
 import { LinkList } from "@/components/app/resources";
 import { groupBySection } from "@/lib/sections";
-import { GITHUB_URL, SITE_DESCRIPTION } from "@/lib/site";
+import { GITHUB_REPO, GITHUB_URL, SITE_DESCRIPTION } from "@/lib/site";
 
 export default function IndexPage() {
   const sections = groupBySection(
@@ -30,15 +31,18 @@ export default function IndexPage() {
         who likes computers and beautiful things. I also created a skill
         based on these guides:
       </p>
-      <LinkList
-        links={[
-          {
-            url: `${GITHUB_URL}/tree/main/skills/craft-design-engineering`,
-            title: "Craft skill",
-            description: "Install with npx skills add gustavo-fior/craft",
-          },
-        ]}
-      />
+      <div className="mt-4">
+        <CodeBlock
+          tabs={[
+            {
+              label: "Terminal",
+              language: "bash",
+              filename: "Terminal",
+              code: `npx skills add ${GITHUB_REPO}`,
+            },
+          ]}
+        />
+      </div>
       <p className="mt-3 text-sm text-muted-foreground">
         Also, if you want to contribute, here&apos;s the repo:
       </p>
