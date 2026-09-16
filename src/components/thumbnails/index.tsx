@@ -47,7 +47,7 @@ function LetterSpacingThumbnail() {
   // so you see the line close in with it.
   return (
     <span
-      className={`inline-block border-x px-3 text-3xl font-semibold [letter-spacing:0.12em] transition-[letter-spacing,border-color] duration-700 ease-snappy group-hover:[letter-spacing:-0.04em] ${GUIDE}`}
+      className={`inline-block border-x px-3 text-3xl font-medium [letter-spacing:0.12em] transition-[letter-spacing,border-color] duration-700 ease-snappy group-hover:[letter-spacing:-0.04em] ${GUIDE}`}
     >
       Tracking
     </span>
@@ -65,12 +65,16 @@ function TextWrappingThumbnail() {
 }
 
 function TabularNumsThumbnail() {
-  // Same digit count, different widths: proportional 1s are narrow, so the
-  // rows disagree. Tabular digits give every row the same width.
+  // The same number twice: proportional on top, tabular below. Hover moves
+  // the emphasis from the narrow one to the one that would line up.
   return (
-    <div className="flex flex-col items-start text-4xl leading-none font-medium [font-variant-numeric:normal] group-hover:tabular-nums">
-      <span>1,111</span>
-      <span className="text-muted-foreground">8,888</span>
+    <div className="flex flex-col items-end text-4xl leading-none font-medium">
+      <span className="[font-variant-numeric:normal] transition-colors duration-300 group-hover:text-muted-foreground">
+        1,111
+      </span>
+      <span className="text-muted-foreground tabular-nums transition-colors duration-300 group-hover:text-foreground">
+        1,111
+      </span>
     </div>
   );
 }
@@ -161,7 +165,7 @@ function FontSmoothingThumbnail() {
       </span>
       {/* Visible only while travelling: it fades in as it sets off and, on
           the way back, fades out once it has arrived. */}
-      <span className="absolute -inset-y-2 left-0 border-l border-dashed border-sky-500 opacity-0 [transition:left_700ms_var(--ease-snappy),opacity_150ms_700ms] group-hover:left-full group-hover:opacity-100 group-hover:[transition:left_700ms_var(--ease-snappy),opacity_150ms]" />
+      <span className="absolute -inset-y-2 -left-2 border-l border-dashed border-sky-500 opacity-0 [transition:left_700ms_var(--ease-snappy),opacity_150ms_700ms] group-hover:left-[calc(100%+0.5rem)] group-hover:opacity-100 group-hover:[transition:left_700ms_var(--ease-snappy),opacity_150ms]" />
     </span>
   );
 }
@@ -266,12 +270,14 @@ function MiniPage({ canvasShows }: { canvasShows: boolean }) {
           <span key={i} className="size-1 rounded-full bg-muted-foreground/40" />
         ))}
       </div>
-      <div className="relative h-[calc(100%-0.875rem)] overflow-hidden bg-neutral-900">
-        {canvasShows && <div className="absolute inset-x-0 top-0 h-5 bg-white" />}
-        <div className="absolute inset-0 bg-neutral-900 p-2 transition-transform duration-500 ease-snappy group-hover:translate-y-3">
-          <div className="h-1.5 w-8 rounded-full bg-white/50" />
-          <div className="mt-2 h-1 w-10 rounded-full bg-white/20" />
-          <div className="mt-1 h-1 w-7 rounded-full bg-white/20" />
+      <div className="relative h-[calc(100%-0.875rem)] overflow-hidden bg-white dark:bg-neutral-900">
+        {canvasShows && (
+          <div className="absolute inset-x-0 top-0 h-5 bg-neutral-900 dark:bg-white" />
+        )}
+        <div className="absolute inset-0 bg-white p-2 transition-transform duration-500 ease-snappy group-hover:translate-y-3 dark:bg-neutral-900">
+          <div className="h-1.5 w-8 rounded-full bg-neutral-900/35 dark:bg-white/35" />
+          <div className="mt-2 h-1 w-10 rounded-full bg-neutral-900/20 dark:bg-white/20" />
+          <div className="mt-1 h-1 w-7 rounded-full bg-neutral-900/20 dark:bg-white/20" />
         </div>
       </div>
     </div>
@@ -326,7 +332,7 @@ function ScrollFadesThumbnail() {
 
 function IconMorphThumbnail() {
   return (
-    <span className="relative flex size-12 items-center justify-center rounded-xl ring-1 ring-border bg-cardshadow-xs">
+    <span className="relative flex size-12 items-center justify-center rounded-xl bg-card shadow-xs ring-1 ring-border">
       <CopyIcon className="size-5 transition-all duration-500 ease-snappy group-hover:scale-25 group-hover:opacity-0 group-hover:blur-[2px]" />
       <CheckCircleIcon
         weight="fill"
@@ -339,7 +345,7 @@ function IconMorphThumbnail() {
 function ButtonPressThumbnail() {
   return (
     <span className="relative">
-      <span className="block rounded-full ring-1 ring-border bg-cardpx-5 py-2.5 text-sm font-medium shadow-xs group-hover:animate-[thumb-press_600ms_ease-out_150ms]">
+      <span className="block rounded-full bg-card px-5 py-2.5 text-sm font-medium shadow-xs ring-1 ring-border group-hover:animate-[thumb-press_600ms_ease-out_150ms]">
         Continue
       </span>
       <Cursor className="absolute top-3/5 left-3/5 translate-x-3 translate-y-3 opacity-0 transition-all duration-300 ease-snappy group-hover:translate-0 group-hover:opacity-100" />
@@ -422,20 +428,24 @@ function HoverRestraintThumbnail() {
 }
 
 function ScaleEntrancesThumbnail() {
-  // A dialog over a page: the page dims and the dialog settles in from 95%,
-  // not from nothing.
+  // A menu grows out of the button that opened it: the origin sits on the
+  // trigger's corner, and it starts at 95%, not from nothing.
   return (
-    <div
-      className={`relative flex h-20 w-28 flex-col gap-2 overflow-hidden rounded-xl bg-card p-3 ${EDGE}`}
-    >
-      <div className="h-1.5 w-16 rounded-full bg-muted-foreground/40" />
-      <div className="h-1.5 w-10 rounded-full bg-muted-foreground/20" />
-      <div className="mt-1 h-6 rounded-md bg-muted" />
-      <div className="absolute inset-0 bg-foreground/0 transition-colors duration-300 group-hover:bg-foreground/10" />
-      <div className="absolute inset-x-4 top-1/2 h-10 -translate-y-1/2 scale-95 rounded-lg bg-card p-2.5 opacity-0 shadow-md ring-1 ring-border transition-[scale,opacity] duration-300 ease-snappy group-hover:scale-100 group-hover:opacity-100">
-        <div className="h-1.5 w-12 rounded-full bg-muted-foreground/40" />
-        <div className="mt-1.5 h-1.5 w-8 rounded-full bg-muted-foreground/20" />
+    <div className="relative h-24 w-28">
+      <span
+        className={`absolute top-0 left-0 flex h-7 items-center gap-1.5 rounded-lg bg-card px-2.5 shadow-xs ${EDGE}`}
+      >
+        <span className="h-1.5 w-8 rounded-full bg-muted-foreground/50" />
+        <span className="size-1.5 rounded-[2px] bg-muted-foreground/50" />
+      </span>
+      <div
+        className={`absolute top-9 left-0 flex w-20 origin-top-left scale-95 flex-col gap-2 rounded-lg bg-card p-2.5 opacity-0 shadow-md transition-[scale,opacity] duration-300 ease-spring group-hover:scale-100 group-hover:opacity-100 group-hover:duration-500 ${EDGE}`}
+      >
+        <div className="h-1.5 w-11 rounded-full bg-muted-foreground/40" />
+        <div className="h-1.5 w-8 rounded-full bg-muted-foreground/20" />
+        <div className="h-1.5 w-12 rounded-full bg-muted-foreground/20" />
       </div>
+      <Cursor className="absolute top-2 left-10 translate-x-3 translate-y-3 opacity-0 transition-all duration-300 ease-snappy group-hover:translate-0 group-hover:opacity-100" />
     </div>
   );
 }
@@ -462,7 +472,7 @@ function ExitAnimationsThumbnail() {
       {[0, 1, 2].map((i) => (
         <div
           key={i}
-          className={`mb-1.5 flex h-7 items-center rounded-lg ring-1 ring-border bg-cardpx-2.5 shadow-xs transition-[height,opacity,margin,scale] duration-300 ease-snappy ${
+          className={`mb-1.5 flex h-7 items-center rounded-lg bg-card px-2.5 shadow-xs ring-1 ring-border transition-[height,opacity,margin,scale] duration-300 ease-snappy ${
             i === 1
               ? "group-hover:mb-0 group-hover:h-0 group-hover:scale-[0.98] group-hover:opacity-0 group-hover:duration-200"
               : ""
@@ -509,24 +519,42 @@ function InterfaceSfxThumbnail() {
   );
 }
 
+// Three sources at different pitches: a slow swell, a mid tone and a fast
+// tick. Apart they are three sounds; on hover they land on one baseline and
+// read as a single, richer cue.
+const SOUND_LAYERS = [
+  {
+    d: "M0 24 Q12 10 24 24 T48 24 T72 24 T96 24",
+    rest: "-translate-y-4",
+    tone: "stroke-neutral-500 dark:stroke-neutral-400",
+  },
+  {
+    d: "M0 24 Q6 16 12 24 T24 24 T36 24 T48 24 T60 24 T72 24 T84 24 T96 24",
+    rest: "translate-y-0",
+    tone: "stroke-neutral-400 dark:stroke-neutral-500",
+  },
+  {
+    d: "M0 24 Q3 20 6 24 T12 24 T18 24 T24 24 T30 24 T36 24 T42 24 T48 24 T54 24 T60 24 T66 24 T72 24 T78 24 T84 24 T90 24 T96 24",
+    rest: "translate-y-4",
+    tone: "stroke-neutral-300 dark:stroke-neutral-600",
+  },
+];
+
 function LayeringSoundsThumbnail() {
-  // Four sources start together, then each one is pushed a little later
-  // than the last: the stack becomes a waterfall.
   return (
-    <div className="flex w-28 flex-col gap-1.5">
-      {[0, 1, 2, 3].map((i) => (
-        <span
+    <svg viewBox="0 0 96 48" className="h-12 w-24 overflow-visible">
+      {SOUND_LAYERS.map(({ d, rest, tone }, i) => (
+        <path
           key={i}
-          className="h-3 w-16 rounded-full bg-muted-foreground transition-transform duration-500 ease-snappy group-hover:translate-x-(--x)"
-          style={
-            {
-              "--x": `${i * 14}px`,
-              transitionDelay: `${i * 60}ms`,
-            } as React.CSSProperties
-          }
+          d={d}
+          fill="none"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          className={`${tone} ${rest} transition-transform duration-500 ease-snappy group-hover:translate-y-0`}
+          style={{ transitionDelay: `${i * 40}ms` }}
         />
       ))}
-    </div>
+    </svg>
   );
 }
 
@@ -584,22 +612,13 @@ const OVERSHOOT =
 function CurveSmoothingThumbnail() {
   return (
     <svg viewBox="-4 0 104 44" className="h-14 w-32 overflow-visible">
-      {/* The invented territory: where the spline leaves the data. */}
-      <path
-        d="M0 32 C5.3 32 10.7 37 16 32 L16 32 L0 32 Z"
-        className="fill-sky-500/0 transition-colors duration-500 group-hover:fill-sky-500/20"
-      />
-      <path
-        d="M48 30 C53.3 34 58.7 34 64 30 L64 30 L48 30 Z"
-        className="fill-sky-500/0 transition-colors duration-500 group-hover:fill-sky-500/20"
-      />
       <path
         d={MONOTONE}
         fill="none"
         stroke="currentColor"
         strokeWidth="2"
         strokeLinecap="round"
-        className="text-foreground transition-opacity duration-500 group-hover:opacity-0"
+        className="text-neutral-300 transition-opacity duration-500 group-hover:opacity-0 dark:text-neutral-600"
       />
       <path
         d={OVERSHOOT}
@@ -607,7 +626,7 @@ function CurveSmoothingThumbnail() {
         stroke="currentColor"
         strokeWidth="2"
         strokeLinecap="round"
-        className="text-sky-500 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+        className="text-neutral-400 opacity-0 transition-opacity duration-500 group-hover:opacity-100 dark:text-neutral-500"
       />
       {CURVE_POINTS.map(([cx, cy], i) => (
         <circle
@@ -615,7 +634,7 @@ function CurveSmoothingThumbnail() {
           cx={cx}
           cy={cy}
           r="2.5"
-          className="fill-card stroke-foreground"
+          className="fill-card stroke-neutral-400 dark:stroke-neutral-500"
           strokeWidth="1.5"
         />
       ))}
@@ -645,15 +664,17 @@ const REFERENCE_CARDS = [
 ];
 
 function ReferencesThumbnail() {
+  // Cards use the shared edge, and the image inside is nested for real:
+  // outer radius 8px minus 6px of padding leaves 2px.
   return (
     <div className="relative h-20 w-16">
       {REFERENCE_CARDS.map((classes, i) => (
         <div
           key={i}
-          className={`absolute inset-0 flex flex-col gap-1.5 rounded-lg border border-neutral-200 bg-card p-1.5 shadow-sm transition-transform duration-500 ease-snappy dark:border-neutral-800 ${classes}`}
+          className={`absolute inset-0 flex flex-col gap-1.5 rounded-lg bg-card p-1.5 shadow-sm ring-1 ring-neutral-200 transition-transform duration-500 ease-snappy dark:ring-neutral-800 ${classes}`}
           style={{ transitionDelay: `${i * 30}ms` }}
         >
-          <div className="h-10 rounded-md bg-muted" />
+          <div className="h-10 rounded-[2px] bg-muted" />
           <div className="h-1 w-9 rounded-full bg-muted-foreground/30" />
           <div className="h-1 w-6 rounded-full bg-muted-foreground/20" />
         </div>
@@ -669,12 +690,12 @@ function TasteThumbnail() {
     "pointer-events-none absolute rounded-full border border-dashed border-sky-500/0 bg-sky-500/0 transition-colors duration-300 group-hover:border-sky-500/60 group-hover:bg-sky-500/5";
   return (
     <div className="flex gap-3">
-      <div className="relative flex h-16 w-20 flex-col gap-1.5 rounded-xl ring-1 ring-border bg-cardp-2.5 shadow-xs">
+      <div className="relative flex h-16 w-20 flex-col gap-1.5 rounded-xl bg-card p-2.5 shadow-xs ring-1 ring-border">
         <div className="size-3 rounded-[4px] bg-muted-foreground/40" />
         <div className="h-1.5 w-11 rounded-full bg-muted-foreground/40" />
         <div className="h-1.5 w-8 rounded-full bg-muted-foreground/20" />
       </div>
-      <div className="relative flex h-16 w-20 flex-col gap-1.5 rounded-lg ring-1 ring-border bg-cardp-2.5 shadow-xs">
+      <div className="relative flex h-16 w-20 flex-col gap-1.5 rounded-lg bg-card p-2.5 shadow-xs ring-1 ring-border">
         <span className={`${flaw} -top-2 -right-2 size-6`} />
         <div className="relative ml-0.5 size-3 rounded-[4px] bg-muted-foreground/40">
           <span
@@ -699,7 +720,7 @@ function TimelessnessThumbnail() {
   return (
     <div className="relative h-20 w-28">
       <div className="absolute inset-0 rounded-xl border border-neutral-300 bg-linear-to-b from-white via-neutral-200 to-neutral-300 p-3 shadow-[inset_0_1px_0_white,0_1px_2px_rgba(0,0,0,0.1)] transition-opacity duration-500 group-hover:opacity-0 dark:border-neutral-900 dark:from-neutral-500 dark:via-neutral-700 dark:to-neutral-800 dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_1px_2px_rgba(0,0,0,0.3)]">
-        <div className="size-6 rounded-md bg-linear-to-b from-neutral-400 to-neutral-500 shadow-[inset_0_1px_0_rgba(255,255,255,0.5)] dark:from-neutral-600 dark:to-neutral-800" />
+        <div className="size-6 rounded-md bg-linear-to-b from-neutral-400 to-neutral-500 shadow-[inset_0_1px_0_rgba(255,255,255,0.25)] dark:from-neutral-600 dark:to-neutral-800 dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]" />
         <div className="mt-2.5 h-1.5 w-16 rounded-full bg-neutral-400/80 dark:bg-neutral-500" />
         <div className="mt-1.5 h-1.5 w-10 rounded-full bg-neutral-400/50 dark:bg-neutral-600" />
       </div>
@@ -720,7 +741,7 @@ function NoveltyBudgetThumbnail() {
         i === 7 ? (
           <div
             key={i}
-            className="h-2.5 w-2.5 rounded-full bg-muted-foreground/25 group-hover:h-10 group-hover:bg-sky-500"
+            className="h-2.5 w-2.5 rounded-full bg-muted-foreground/25 transition-[height,background-color] duration-500 ease-snappy group-hover:h-10 group-hover:bg-sky-500"
           />
         ) : (
           <div
