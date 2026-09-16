@@ -4,6 +4,7 @@ import {
   DesktopIcon,
   GithubLogoIcon,
   LinkIcon,
+  MarkdownLogoIcon,
   MoonIcon,
   SpeakerHighIcon,
   SpeakerSlashIcon,
@@ -23,10 +24,13 @@ import { isMuted, playSound, setMuted } from "@/lib/sounds";
 function Action({
   label,
   onClick,
+  onPrefetch,
   children,
 }: {
   label: string;
   onClick: () => void;
+  /** Fired on hover/focus so a click can complete without waiting on the network. */
+  onPrefetch?: () => void;
   children: React.ReactNode;
 }) {
   return (
@@ -38,6 +42,8 @@ function Action({
             size="icon-sm"
             aria-label={label}
             onClick={onClick}
+            onPointerEnter={onPrefetch}
+            onFocus={onPrefetch}
           >
             {children}
           </Button>
@@ -65,6 +71,50 @@ export function CopyLinkButton() {
       <CopyIcon
         copied={copied}
         icon={<LinkIcon className="size-4" />}
+        className="size-4"
+      />
+    </Action>
+  );
+}
+
+// Copies the agent-friendly Markdown version of the current concept. The text
+// is fetched on hover so the clipboard write still happens inside the click's
+// user activation, which Safari requires.
+export function CopyMarkdownButton({ href }: { href: string }) {
+  const [copied, setCopied] = useState(false);
+  const timeout = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const markdown = useRef<Promise<string> | undefined>(undefined);
+
+  useEffect(() => {
+    markdown.current = undefined;
+  }, [href]);
+
+  const load = () => {
+    markdown.current ??= fetch(href).then((res) => {
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.text();
+    });
+    return markdown.current;
+  };
+
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(await load());
+    } catch {
+      markdown.current = undefined;
+      return;
+    }
+    playSound("success", { volume: 0.35 });
+    setCopied(true);
+    clearTimeout(timeout.current);
+    timeout.current = setTimeout(() => setCopied(false), 1500);
+  };
+
+  return (
+    <Action label="Copy as Markdown" onClick={copy} onPrefetch={load}>
+      <CopyIcon
+        copied={copied}
+        icon={<MarkdownLogoIcon className="size-4" />}
         className="size-4"
       />
     </Action>

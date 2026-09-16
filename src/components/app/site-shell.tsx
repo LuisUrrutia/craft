@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { CommandMenu } from "@/components/app/command-menu";
 import {
   CopyLinkButton,
+  CopyMarkdownButton,
   SoundToggle,
   ThemeSwitcher,
   ViewInRepoButton,
@@ -37,6 +38,7 @@ export function SiteShell({
 }) {
   const pathname = usePathname();
   const slug = pathname.slice(1);
+  const isConcept = slug in sourcePaths;
   const repoUrl = githubSourceUrl(sourcePaths[slug]);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -77,6 +79,7 @@ export function SiteShell({
         <TooltipProvider timeout={500}>
           <div className="flex items-center gap-1">
             <CopyLinkButton />
+            {isConcept && <CopyMarkdownButton href={`/${slug}.md`} />}
             <ViewInRepoButton href={repoUrl} />
             <ThemeSwitcher />
             <SoundToggle />

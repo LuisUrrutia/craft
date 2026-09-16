@@ -40,7 +40,10 @@ export async function generateMetadata({
   return {
     title: concept.title,
     description: concept.description,
-    alternates: { canonical: `/${concept.slug}` },
+    alternates: {
+      canonical: `/${concept.slug}`,
+      types: { "text/markdown": `/${concept.slug}.md` },
+    },
     openGraph: {
       type: "article",
       title: concept.title,
