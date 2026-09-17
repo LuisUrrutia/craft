@@ -33,10 +33,10 @@ export function ResourceList({
               loading="lazy"
               className="size-4 shrink-0 rounded-[3px]"
             />
-            <span className="min-w-0 truncate text-sm">
+            <span className="min-w-0 truncate text-sm text-muted-foreground">
               <span className="text-foreground">{resource.title}</span>
               {resource.description && (
-                <span className="text-muted-foreground">
+                <span>
                   {" - "}
                   {resource.description}
                 </span>

@@ -240,13 +240,15 @@ export function CodeBlockClient({
         animate={{ height: panelHeight }}
         transition={reduceMotion ? { duration: 0 } : TAB_MORPH}
       >
-        {/* Floats over the code's top-right corner; the backdrop keeps it
-            readable when a long line scrolls underneath. */}
+        {/* Floats over the code's top-right corner, centered on the first
+            line (1rem padding + half a 19.5px line, minus half the 32px
+            button). The backdrop keeps it readable when a long line scrolls
+            underneath. */}
         <Button
           type="button"
           size="icon-sm"
           variant="ghost"
-          className="absolute top-2 right-2 z-10 backdrop-blur-sm hover:bg-muted dark:hover:bg-input/50"
+          className="absolute top-2.5 right-2.5 z-10 backdrop-blur-sm hover:bg-muted dark:hover:bg-input/50"
           aria-label={copied ? "Code copied" : `Copy ${activeTab.label} code`}
           onClick={() => void copyCode()}
         >

@@ -3,9 +3,9 @@ import { allConcepts } from "content-collections";
 import { CodeBlock } from "@/components/app/code-block";
 import { ConceptCard } from "@/components/app/concept-card";
 import { ProseLink } from "@/components/app/prose-link";
-import { LinkList } from "@/components/app/resources";
+import { RepoCard } from "@/components/app/repo-card";
 import { groupBySection } from "@/lib/sections";
-import { GITHUB_REPO, GITHUB_URL, SITE_DESCRIPTION } from "@/lib/site";
+import { GITHUB_REPO, SITE_DESCRIPTION } from "@/lib/site";
 
 export default function IndexPage() {
   const sections = groupBySection(
@@ -31,30 +31,20 @@ export default function IndexPage() {
         who likes computers and beautiful things. I also created a skill
         based on these guides:
       </p>
-      <div className="mt-4">
-        <CodeBlock
-          hideHeader
-          tabs={[
-            {
-              label: "Terminal",
-              language: "bash",
-              code: `npx skills add ${GITHUB_REPO}`,
-            },
-          ]}
-        />
-      </div>
-      <p className="mt-3 text-sm text-muted-foreground">
-        Also, if you want to contribute, here&apos;s the repo:
-      </p>
-      <LinkList
-        links={[
+      <CodeBlock
+        hideHeader
+        tabs={[
           {
-            url: GITHUB_URL,
-            title: "gustavo-fior/craft",
-            description: "The source for every concept, demo, and the skill",
+            label: "Terminal",
+            language: "bash",
+            code: `npx skills add ${GITHUB_REPO}`,
           },
         ]}
       />
+      <p className="mt-3 text-sm text-muted-foreground">
+        Also, if you want to contribute, here&apos;s the repo:
+      </p>
+      <RepoCard description="The source for every concept, demo, and the skill" />
       <div className="mt-8 flex flex-col gap-12">
         {sections.map(({ section, concepts }) => (
           <section key={section}>

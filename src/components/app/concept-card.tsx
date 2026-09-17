@@ -50,7 +50,7 @@ export function ConceptCard({
     <div
       aria-disabled="true"
       title="Coming soon"
-      className={`${CARD} cursor-not-allowed select-none`}
+      className={`${CARD} opacity-60 cursor-not-allowed select-none`}
     >
       {content}
     </div>
