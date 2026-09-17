@@ -114,7 +114,7 @@ export function CopyMarkdownButton({ href }: { href: string }) {
     <Action label="Copy as Markdown" onClick={copy} onPrefetch={load}>
       <CopyIcon
         copied={copied}
-        icon={<MarkdownLogoIcon className="size-4" />}
+        icon={<MarkdownLogoIcon weight="duotone" className="size-4" />}
         className="size-4"
       />
     </Action>
