@@ -17,6 +17,8 @@ export type Waypoint = {
   flight?: number;
   /** How far the path bows out sideways, in stage px. Auto from distance. */
   bow?: number;
+  /** Skip the site's tiny dip against the target just before landing. */
+  noTouch?: boolean;
   /** Dot diameter in stage px while resting here. */
   size?: number;
   /** Cue to play on arrival. */
@@ -126,10 +128,11 @@ export function dotState(
     ny = -ny;
   }
   const bow = next.bow ?? autoBow(distance);
+  const touch = next.noTouch ? 0 : -DOT_TOUCH_OFFSET;
   const arc = interpolate(
     t,
     [0, 0.3, DOT_IMPACT, 1],
-    [0, bow, -DOT_TOUCH_OFFSET, 0],
+    [0, bow, touch, 0],
     { easing: (v) => 1 - (1 - v) * (1 - v) }
   );
 
@@ -165,7 +168,7 @@ export function impactsByTarget(waypoints: Waypoint[]) {
 
 // The name starts moving a little before the site's impact point, so the
 // shove reads as anticipation rather than a late reaction.
-export const NAME_IMPACT = 0.6;
+export const NAME_IMPACT = 0.45;
 
 /** Frame the name the dot is heading for starts to give way. */
 export const impactOf = (w: Waypoint) =>

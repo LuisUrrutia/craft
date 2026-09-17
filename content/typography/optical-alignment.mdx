@@ -49,9 +49,7 @@ looking heavier on the icon side.
 
 <OpticalButtonDemo />
 
-Shave a few pixels off the padding on the side that holds the icon. On this
-site the button component does it automatically whenever an icon is the first
-or last child.
+Shave a few pixels off the padding on the side that holds the icon.
 
 ## Shape weight
 
@@ -107,14 +105,14 @@ Safari supports `hanging-punctuation: first`. Elsewhere a small negative
 }
 
 blockquote {
-    hanging-punctuation: first;
+hanging-punctuation: first;
 }
 
 @supports not (hanging-punctuation: first) {
-    blockquote {
-        text-indent: -0.42em;
-    }
+blockquote {
+text-indent: -0.42em;
+}
 }`,
-    },
-  ]}
+},
+]}
 />

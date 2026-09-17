@@ -118,19 +118,21 @@ export function Sidebar({
   const listHeight = listRef.current
     ? listRef.current.getBoundingClientRect().height * scale()
     : 0;
+  // The list scrolls so the row the dot is on sits at the vertical centre,
+  // even for the first rows (the list may start below the top of the view),
+  // so the dot meets Index dead centre. It only stops short at the end.
   const scrollFor = (w: Waypoint | undefined) => {
     if (!w) return 0;
     const centre = offsets.get(w.target as string) ?? 0;
-    return Math.max(
-      0,
-      Math.min(listHeight - VIEW_HEIGHT, centre - VIEW_HEIGHT / 2)
-    );
+    return Math.min(listHeight - VIEW_HEIGHT, centre - VIEW_HEIGHT / 2);
   };
   let scroll = 0;
   if (current >= 0) {
     const next = navWaypoints[current];
-    const from = scrollFor(navWaypoints[current - 1]);
     const to = scrollFor(next);
+    // The list enters already scrolled for its first row, so the dot's
+    // first landing is on a row that is not moving.
+    const from = current > 0 ? scrollFor(navWaypoints[current - 1]) : to;
     const p = spring({
       frame: frame - departureOf(next),
       fps: FPS,

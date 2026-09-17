@@ -10,6 +10,7 @@
     "build:skill": "bun scripts/build-skill.ts",
     "video": "remotion studio --config video/remotion.config.ts",
     "video:render": "remotion render --config video/remotion.config.ts Craft video/out/craft.mp4",
+    "video:render:direct": "remotion render --config video/remotion.config.ts CraftDirect --frames=80-914 video/out/craft-direct.mp4",
     "video:still": "remotion still --config video/remotion.config.ts Craft",
     "video:sounds": "bun video/scripts/render-sounds.ts"
   },
