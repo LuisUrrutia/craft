@@ -6,7 +6,7 @@ import { Demo } from "@/components/app/demo";
 import { SegmentedControl } from "@/components/app/segmented-control";
 import { cn } from "@/lib/utils";
 
-type FigureStyle = "proportional" | "tabular";
+export type FigureStyle = "proportional" | "tabular";
 
 const numericStyles: Record<FigureStyle, React.CSSProperties> = {
   proportional: { fontVariantNumeric: "proportional-nums" },
@@ -61,16 +61,16 @@ export function TabularNumsDemo() {
   );
 }
 
-export function TabularTimerDemo() {
-  const [mode, setMode] = useState<FigureStyle>("proportional");
-  const [elapsed, setElapsed] = useState(0);
-
-  useEffect(() => {
-    const start = Date.now() - 8_750;
-    const id = window.setInterval(() => setElapsed(Date.now() - start), 50);
-    return () => window.clearInterval(id);
-  }, []);
-
+/** Timer readout; `elapsed` is in ms so the video can drive it per frame. */
+export function TabularTimerView({
+  mode,
+  elapsed,
+  onModeChange,
+}: {
+  mode: FigureStyle;
+  elapsed: number;
+  onModeChange?: (mode: FigureStyle) => void;
+}) {
   const seconds = (elapsed / 1000).toFixed(2).padStart(5, "0");
 
   return (
@@ -94,9 +94,22 @@ export function TabularTimerDemo() {
           Edge
         </span>
       </div>
-      <FigureStyleControl value={mode} onChange={setMode} />
+      <FigureStyleControl value={mode} onChange={onModeChange ?? (() => {})} />
     </Demo>
   );
+}
+
+export function TabularTimerDemo() {
+  const [mode, setMode] = useState<FigureStyle>("proportional");
+  const [elapsed, setElapsed] = useState(0);
+
+  useEffect(() => {
+    const start = Date.now() - 8_750;
+    const id = window.setInterval(() => setElapsed(Date.now() - start), 50);
+    return () => window.clearInterval(id);
+  }, []);
+
+  return <TabularTimerView mode={mode} elapsed={elapsed} onModeChange={setMode} />;
 }
 
 const activity = [

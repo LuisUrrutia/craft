@@ -4,22 +4,25 @@ import { ConceptThumbnail } from "@/components/thumbnails";
 import { isConceptAvailable } from "@/lib/concepts";
 import type { Section } from "@/lib/sections";
 
-const CARD =
+export const CONCEPT_CARD_CLASS =
   "group block overflow-hidden rounded-2xl bg-card shadow-(--custom-shadow) hover:bg-muted/5 dark:hover:bg-card/80";
+const CARD = CONCEPT_CARD_CLASS;
 
-export function ConceptCard({
+/** Thumbnail + title + description, without the link wrapper. */
+export function ConceptCardBody({
   slug,
   title,
   description,
   section,
+  available = true,
 }: {
   slug: string;
   title: string;
   description?: string;
   section: Section;
+  available?: boolean;
 }) {
-  const available = isConceptAvailable(slug);
-  const content = (
+  return (
     <>
       <div className="flex h-36 items-center justify-center">
         <ConceptThumbnail slug={slug} section={section} />
@@ -40,6 +43,29 @@ export function ConceptCard({
         </p>
       </div>
     </>
+  );
+}
+
+export function ConceptCard({
+  slug,
+  title,
+  description,
+  section,
+}: {
+  slug: string;
+  title: string;
+  description?: string;
+  section: Section;
+}) {
+  const available = isConceptAvailable(slug);
+  const content = (
+    <ConceptCardBody
+      slug={slug}
+      title={title}
+      description={description}
+      section={section}
+      available={available}
+    />
   );
 
   return available ? (

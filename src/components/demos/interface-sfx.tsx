@@ -31,22 +31,25 @@ const ROW =
 
 /* Real controls, each with its own cue from the site's Minimal patch */
 
-export function SoundCuesDemo() {
-  const [synced, setSynced] = useState(true);
-  const [done, setDone] = useState(false);
-  const [sent, setSent] = useState(false);
-  const [attached, setAttached] = useState(true);
-  const sentTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
+export type SoundCuesState = {
+  synced: boolean;
+  done: boolean;
+  sent: boolean;
+  attached: boolean;
+};
+
+/** The cues card, fully controlled so the video can pose it per frame. */
+export function SoundCuesView({
+  state,
+  onChange,
+  onSend,
+}: {
+  state: SoundCuesState;
+  onChange?: (next: Partial<SoundCuesState>) => void;
+  onSend?: () => void;
+}) {
+  const { synced, done, sent, attached } = state;
   const reduced = useReducedMotion();
-
-  useEffect(() => () => clearTimeout(sentTimer.current), []);
-
-  const send = () => {
-    if (sent) return;
-    playSoundAlways("success");
-    setSent(true);
-    sentTimer.current = setTimeout(() => setSent(false), 1600);
-  };
 
   return (
     <Demo>
@@ -63,7 +66,7 @@ export function SoundCuesDemo() {
             checked={synced}
             onCheckedChange={(next) => {
               playSoundAlways("toggle");
-              setSynced(next);
+              onChange?.({ synced: next });
             }}
           />
         </div>
@@ -74,7 +77,7 @@ export function SoundCuesDemo() {
             checked={done}
             onCheckedChange={(next) => {
               playSoundAlways("tick");
-              setDone(next);
+              onChange?.({ done: next });
             }}
           />
           <span
@@ -94,7 +97,7 @@ export function SoundCuesDemo() {
             size="sm"
             aria-live="polite"
             className="min-w-[4.75rem]"
-            onClick={send}
+            onClick={onSend}
           >
             {sent ? (
               <>
@@ -129,7 +132,7 @@ export function SoundCuesDemo() {
                   className="size-5 rounded-sm"
                   onClick={() => {
                     playSoundAlways("pop");
-                    setAttached(false);
+                    onChange?.({ attached: false });
                   }}
                 >
                   <XIcon aria-hidden="true" className="size-3" />
@@ -147,7 +150,7 @@ export function SoundCuesDemo() {
                   size="xs"
                   onClick={() => {
                     playSoundAlways("tick");
-                    setAttached(true);
+                    onChange?.({ attached: true });
                   }}
                 >
                   Undo
@@ -158,6 +161,36 @@ export function SoundCuesDemo() {
         </div>
       </div>
     </Demo>
+  );
+}
+
+export function SoundCuesDemo() {
+  const [state, setState] = useState<SoundCuesState>({
+    synced: true,
+    done: false,
+    sent: false,
+    attached: true,
+  });
+  const sentTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
+
+  useEffect(() => () => clearTimeout(sentTimer.current), []);
+
+  const send = () => {
+    if (state.sent) return;
+    playSoundAlways("success");
+    setState((s) => ({ ...s, sent: true }));
+    sentTimer.current = setTimeout(
+      () => setState((s) => ({ ...s, sent: false })),
+      1600
+    );
+  };
+
+  return (
+    <SoundCuesView
+      state={state}
+      onChange={(next) => setState((s) => ({ ...s, ...next }))}
+      onSend={send}
+    />
   );
 }
 

@@ -41,9 +41,23 @@ export function ButtonPressDemo() {
   );
 }
 
-export function PressAmountDemo() {
-  const [amount, setAmount] = useState(3);
-  const [duration, setDuration] = useState(100);
+/**
+ * Press-scale playground. `pressScale` forces the button's transform (the
+ * video has no real pointer), otherwise the CSS `active:` state handles it.
+ */
+export function PressAmountView({
+  amount,
+  duration,
+  pressScale,
+  onAmountChange,
+  onDurationChange,
+}: {
+  amount: number;
+  duration: number;
+  pressScale?: number;
+  onAmountChange?: (amount: number) => void;
+  onDurationChange?: (duration: number) => void;
+}) {
   const scale = 1 - amount / 100;
 
   return (
@@ -55,6 +69,9 @@ export function PressAmountDemo() {
             {
               "--press": String(scale),
               "--press-ms": `${duration}ms`,
+              ...(pressScale !== undefined && {
+                transform: `scale(${pressScale})`,
+              }),
             } as React.CSSProperties
           }
         >
@@ -74,7 +91,7 @@ export function PressAmountDemo() {
             aria-label="Press scale"
             max={12}
             min={0}
-            onValueChange={(value) => setAmount(getSliderValue(value))}
+            onValueChange={(value) => onAmountChange?.(getSliderValue(value))}
             step={1}
             value={[amount]}
           />
@@ -88,13 +105,29 @@ export function PressAmountDemo() {
             aria-label="Press duration"
             max={400}
             min={0}
-            onValueChange={(value) => setDuration(getSliderValue(value))}
+            onValueChange={(value) =>
+              onDurationChange?.(getSliderValue(value))
+            }
             step={20}
             value={[duration]}
           />
         </label>
       </div>
     </Demo>
+  );
+}
+
+export function PressAmountDemo() {
+  const [amount, setAmount] = useState(3);
+  const [duration, setDuration] = useState(100);
+
+  return (
+    <PressAmountView
+      amount={amount}
+      duration={duration}
+      onAmountChange={setAmount}
+      onDurationChange={setDuration}
+    />
   );
 }
 

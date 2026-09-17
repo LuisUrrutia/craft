@@ -23,7 +23,7 @@ const icons = {
 
 // Muted enough to sit in a grayscale UI; the duotone fill layer
 // (currentColor at reduced opacity) softens them further.
-const colors: Record<Section, string> = {
+export const sectionTextColor: Record<Section, string> = {
   Typography: "text-blue-600 dark:text-blue-400",
   Color: "text-rose-600 dark:text-rose-400",
   Layout: "text-amber-600 dark:text-amber-400",
@@ -82,7 +82,7 @@ export function SectionIcon({
   return (
     <Icon
       weight="duotone"
-      className={cn(colors[section], className)}
+      className={cn(sectionTextColor[section], className)}
       {...props}
     />
   );

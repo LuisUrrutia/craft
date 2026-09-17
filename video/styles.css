@@ -1,0 +1,20 @@
+@import "../src/app/globals.css";
+
+/* next/font injects these on the site; the video loads the same files with
+   @remotion/fonts (see fonts.ts) under these family names. */
+.stage {
+  --font-inter: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-redaction-35: "Redaction35", serif;
+  --font-redaction-50: "Redaction50", serif;
+  --font-redaction-70: "Redaction70", serif;
+  --font-jetbrains-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+/* Remotion renders one frame at a time, so anything timed by the clock would
+   desync. Every movement in the video is derived from the frame instead. */
+.stage *,
+.stage *::before,
+.stage *::after {
+  transition: none !important;
+  animation: none !important;
+}

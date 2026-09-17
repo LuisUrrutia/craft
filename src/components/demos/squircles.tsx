@@ -86,8 +86,14 @@ const CURVATURE_NAMES: Record<string, string> = {
   "2": "squircle",
 };
 
-export function SquircleCurvatureDemo() {
-  const [curvature, setCurvature] = useState(2);
+/** Curvature tile and slider; controlled so the video can drag it per frame. */
+export function SquircleCurvatureView({
+  curvature,
+  onCurvatureChange,
+}: {
+  curvature: number;
+  onCurvatureChange?: (curvature: number) => void;
+}) {
   const name = CURVATURE_NAMES[String(curvature)];
 
   return (
@@ -120,13 +126,23 @@ export function SquircleCurvatureDemo() {
           aria-label="Curvature"
           max={4}
           min={-1}
-          onValueChange={(value) => setCurvature(getSliderValue(value))}
+          onValueChange={(value) => onCurvatureChange?.(getSliderValue(value))}
           step={0.1}
           value={[curvature]}
         />
       </label>
       <UnsupportedNote />
     </Demo>
+  );
+}
+
+export function SquircleCurvatureDemo() {
+  const [curvature, setCurvature] = useState(2);
+  return (
+    <SquircleCurvatureView
+      curvature={curvature}
+      onCurvatureChange={setCurvature}
+    />
   );
 }
 
