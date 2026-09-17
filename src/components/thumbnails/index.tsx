@@ -145,8 +145,7 @@ function IconsThumbnail() {
 // Both copies share one weight so the glyphs line up exactly; a hairline
 // stroke stands in for the heavier default rendering. The clips are
 // complementary, so only one copy ever shows at any x.
-const SMOOTH_SWEEP =
-  "transition-[clip-path] duration-700 ease-snappy";
+const SMOOTH_SWEEP = "transition-[clip-path] duration-700 ease-snappy";
 
 function FontSmoothingThumbnail() {
   // The dashed line sweeps across and leaves the antialiased, lighter
@@ -267,7 +266,10 @@ function MiniPage({ canvasShows }: { canvasShows: boolean }) {
     <div className="h-20 w-16 overflow-hidden rounded-lg bg-muted ring-1 ring-border">
       <div className="flex h-3.5 items-center gap-0.5 px-1.5">
         {[0, 1, 2].map((i) => (
-          <span key={i} className="size-1 rounded-full bg-muted-foreground/40" />
+          <span
+            key={i}
+            className="size-1 rounded-full bg-muted-foreground/40"
+          />
         ))}
       </div>
       <div className="relative h-[calc(100%-0.875rem)] overflow-hidden bg-white dark:bg-neutral-900">
@@ -801,5 +803,5 @@ export function ConceptThumbnail({
   const Thumbnail = thumbnails[slug];
   if (Thumbnail) return <Thumbnail />;
   // Fallback for concepts without a bespoke thumbnail yet.
-  return <SectionIcon section={section} className="size-8 opacity-60" />;
+  return <SectionIcon section={section} className="size-8 opacity-40" />;
 }
