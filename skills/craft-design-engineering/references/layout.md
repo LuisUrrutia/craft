@@ -78,8 +78,7 @@ share the same center.
 Pull past the top of a dark page in Safari and a white strip can appear behind
 it. The app is dark, but the document canvas is still white.
 
-The canvas is the surface the browser paints behind the page. Use the Scroll
-button below to reveal both versions at once.
+The canvas is the surface the browser paints behind the page.
 
 > **Interactive demo: Html Background.** Open https://craft.gustavofior.com/html-background to try it.
 

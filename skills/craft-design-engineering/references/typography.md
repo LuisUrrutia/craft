@@ -12,8 +12,7 @@
 Digits can have two kinds of widths.
 
 **Proportional figures** use the natural width of each shape: `1` is narrow,
-while `8` is wide. **Tabular figures** give every digit the same width. Toggle
-the demo to see the glyph boxes change.
+while `8` is wide. **Tabular figures** give every digit the same width.
 
 > **Interactive demo: Tabular Nums.** Open https://craft.gustavofior.com/tabular-numbers to try it.
 
@@ -24,7 +23,7 @@ align vertically.
 ### Changing values
 
 A timer made with proportional figures changes width as it runs. Everything
-beside it moves too. Watch the red edge in the demo below.
+beside it moves too. Watch the blue edge:
 
 > **Interactive demo: Tabular Timer.** Open https://craft.gustavofior.com/tabular-numbers to try it.
 
@@ -113,9 +112,7 @@ looking heavier on the icon side.
 
 > **Interactive demo: Optical Button.** Open https://craft.gustavofior.com/optical-alignment to try it.
 
-Shave a few pixels off the padding on the side that holds the icon. On this
-site the button component does it automatically whenever an icon is the first
-or last child.
+Shave a few pixels off the padding on the side that holds the icon.
 
 ### Shape weight
 
@@ -168,13 +165,13 @@ Safari supports `hanging-punctuation: first`. Elsewhere a small negative
 }
 
 blockquote {
-    hanging-punctuation: first;
+hanging-punctuation: first;
 }
 
 @supports not (hanging-punctuation: first) {
-    blockquote {
-        text-indent: -0.42em;
-    }
+blockquote {
+text-indent: -0.42em;
+}
 }
 ```
 
