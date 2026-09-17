@@ -63,6 +63,53 @@ pointer-events: none;
 
 The `isolate` on the container matters. Without it, `mix-blend-mode` blends the grain with everything behind the card, including the page background, and the effect changes depending on where the card sits. With it, the grain only ever blends with the surface it belongs to.
 
+### Performance
+
+The filter is not free. `feTurbulence` is generated per pixel and re-rendered whenever the element repaints. On a card that is a few hundred pixels wide you will never notice. Stretched across a full-screen hero, especially one that scrolls or animates, it can drop a page to a handful of frames per second on a phone or a low-end laptop.
+
+The fix is to render the noise once and tile it. With `stitchTiles="stitch"` and the filter region pinned to the tile, a small tile repeats seamlessly, and a tiled image costs the browser almost nothing after the first paint. The result looks the same for static grain. The only thing you give up is tuning `baseFrequency` live, since the frequency is baked into the tile.
+
+You do not even need an image file. Put the filter inside an SVG data URI and let the browser rasterize it once per tile:
+
+**Tailwind**
+
+```html
+<div class="relative isolate min-h-screen overflow-hidden bg-violet-600">
+  <div
+    class="pointer-events-none absolute inset-0 opacity-[0.08] mix-blend-overlay bg-size-[200px_200px] bg-repeat"
+    style="background-image: url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='g' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E&quot;)"
+    aria-hidden="true"
+  ></div>
+  <!-- content -->
+</div>
+```
+
+**CSS**
+
+```css
+.hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='g' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+  background-repeat: repeat;
+  opacity: 0.08;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+```
+
+A 200px tile is small enough to be cheap and large enough that the repeat is invisible under the blend. If you can see the seams, export the tile as a PNG at 2x instead and use that as the `background-image`.
+
+As a rule: use the live filter on small surfaces and in demos where you want to tweak the grain. Use a tiled image anywhere the overlay is large or the page is expected to move.
+
 ### Resources
 
 - [feTurbulence](https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feTurbulence): The SVG filter primitive that generates the noise. Everything here is built on it.
