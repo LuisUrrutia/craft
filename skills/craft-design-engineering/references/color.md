@@ -11,7 +11,7 @@
 
 When the UI feels too flat, sometimes I like to add noise to some components to give them some texture.
 
-**Noise** is a layer of random light and dark pixels laid over the surface. It breaks the steps up and gives the color some texture. Drag the slider to add grain to this card.
+**Noise** is a layer of random light and dark pixels laid over the surface. It breaks the steps up and gives the color some texture.
 
 > **Interactive demo: Noise.** Open https://craft.gustavofior.com/noise to try it.
 
@@ -51,13 +51,13 @@ Put the filter in one SVG anywhere on the page, then reference it from an overla
 }
 
 .surface::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  filter: url(#grain);
-  opacity: 0.08;
-  mix-blend-mode: overlay;
-  pointer-events: none;
+content: "";
+position: absolute;
+inset: 0;
+filter: url(#grain);
+opacity: 0.08;
+mix-blend-mode: overlay;
+pointer-events: none;
 }
 ```
 
@@ -147,12 +147,9 @@ img {
 }
 
 .dark img {
-  outline-color: rgb(255 255 255 / 0.1);
+outline-color: rgb(255 255 255 / 0.1);
 }
 ```
-
-Keep it off images that already have a hard edge, like icons drawn on a
-transparent background. The outline only helps when the image fills its box.
 
 ### Resources
 
