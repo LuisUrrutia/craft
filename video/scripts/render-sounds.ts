@@ -44,14 +44,6 @@ const SOUNDS: Record<string, Layer[]> = {
     { type: "square", frequency: 784, envelope: { attack: 0, decay: 0.06, sustain: 0, release: 0.02 }, gain: 0.045, delay: 0.12 },
     { type: "square", frequency: 1047, envelope: { attack: 0, decay: 0.08, sustain: 0, release: 0.025 }, gain: 0.04, delay: 0.18 },
   ],
-  // A stutter of low square blips under the wordmark's Redaction glitch.
-  glitch: [
-    { type: "square", frequency: 220, envelope: { attack: 0, decay: 0.012, sustain: 0, release: 0.004 }, gain: 0.05 },
-    { type: "square", frequency: 165, envelope: { attack: 0, decay: 0.01, sustain: 0, release: 0.004 }, gain: 0.04, delay: 0.035 },
-    { type: "square", frequency: 260, envelope: { attack: 0, decay: 0.008, sustain: 0, release: 0.004 }, gain: 0.035, delay: 0.07 },
-    { type: "square", frequency: 140, envelope: { attack: 0, decay: 0.014, sustain: 0, release: 0.005 }, gain: 0.04, delay: 0.11 },
-    { type: "square", frequency: 196, envelope: { attack: 0, decay: 0.008, sustain: 0, release: 0.004 }, gain: 0.03, delay: 0.16 },
-  ],
   toggle: [
     { type: "sine", frequency: 880, envelope: { attack: 0, decay: 0.02, sustain: 0, release: 0.006 }, gain: 0.08 },
     { type: "sine", frequency: 1320, envelope: { attack: 0, decay: 0.02, sustain: 0, release: 0.006 }, gain: 0.07, delay: 0.03 },
@@ -132,35 +124,9 @@ function toWav(samples: Float32Array) {
   return buffer;
 }
 
-// Room tone: a few seconds of low, filtered noise that loops cleanly. Its
-// level is set in Remotion; here it is only shaped.
-function renderRoom(seconds: number) {
-  const samples = new Float32Array(seconds * RATE);
-  let brown = 0;
-  let seed = 1;
-  const random = () => {
-    seed = (seed * 1664525 + 1013904223) >>> 0;
-    return seed / 4294967296 - 0.5;
-  };
-  for (let i = 0; i < samples.length; i++) {
-    brown = (brown + 0.02 * random()) / 1.02;
-    samples[i] = brown;
-  }
-  // Fade the ends so the loop point is silent.
-  const edge = Math.round(0.05 * RATE);
-  for (let i = 0; i < edge; i++) {
-    const k = i / edge;
-    samples[i] *= k;
-    samples[samples.length - 1 - i] *= k;
-  }
-  return samples;
-}
-
 const out = join(process.cwd(), "public", "sounds");
 mkdirSync(out, { recursive: true });
 for (const [name, layers] of Object.entries(SOUNDS)) {
   writeFileSync(join(out, `${name}.wav`), toWav(normalise(render(layers))));
   console.log(`wrote ${name}.wav`);
 }
-writeFileSync(join(out, "room.wav"), toWav(normalise(renderRoom(8))));
-console.log("wrote room.wav");

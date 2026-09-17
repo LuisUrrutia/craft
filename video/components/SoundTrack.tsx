@@ -17,12 +17,7 @@ const LEVEL: Record<SoundName, number> = {
   pop: 0.5,
   success: 0.6,
   toggle: 0.5,
-  glitch: 0.16,
 };
-
-// A near-silent bed under everything, so the cues never sit on digital
-// silence. Rendered by the same script as the cues.
-const ROOM_LEVEL = 0.05;
 
 export function cuesFromWaypoints(waypoints: Waypoint[]): Cue[] {
   return waypoints
@@ -35,19 +30,9 @@ export function cuesFromWaypoints(waypoints: Waypoint[]): Cue[] {
     }));
 }
 
-export function SoundTrack({
-  cues,
-  frames,
-}: {
-  cues: Cue[];
-  /** Length of the room-tone bed. */
-  frames: number;
-}) {
+export function SoundTrack({ cues }: { cues: Cue[] }) {
   return (
     <>
-      <Sequence from={0} durationInFrames={frames} layout="none">
-        <Audio src={staticFile("sounds/room.wav")} volume={ROOM_LEVEL} loop />
-      </Sequence>
       {cues.map((cue, i) => (
         <Sequence key={i} from={cue.at} durationInFrames={60} layout="none">
           <Audio

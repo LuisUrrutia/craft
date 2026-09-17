@@ -4,6 +4,7 @@ import { CodeBlock } from "@/components/app/code-block";
 import { ConceptCard } from "@/components/app/concept-card";
 import { ProseLink } from "@/components/app/prose-link";
 import { RepoCard } from "@/components/app/repo-card";
+import { SectionIcon } from "@/components/app/section-icon";
 import { groupBySection } from "@/lib/sections";
 import { GITHUB_REPO, SITE_DESCRIPTION } from "@/lib/site";
 
@@ -45,10 +46,18 @@ export default function IndexPage() {
         Also, if you want to contribute, here&apos;s the repo:
       </p>
       <RepoCard />
+      <p className="mt-3 text-sm text-muted-foreground">
+        Sorry in advance: the repo still has AI-written placeholders for the
+        articles that are not ready yet. They are drafts I am rewriting one by
+        one, and only the finished ones are published here.
+      </p>
       <div className="mt-8 flex flex-col gap-12">
         {sections.map(({ section, concepts }) => (
           <section key={section}>
-            <h2 className="text-sm font-medium">{section}</h2>
+            <h2 className="flex items-center gap-1.5 text-sm font-medium">
+              <SectionIcon section={section} size={14} className="mb-px" />
+              {section}
+            </h2>
             <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
               {concepts.map((concept) => (
                 <ConceptCard

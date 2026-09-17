@@ -5,10 +5,16 @@ import { SectionIcon } from "@/components/app/section-icon";
 import { cn } from "@/lib/utils";
 
 import { useAnchor, useAnchorRegistry } from "../lib/anchors";
-import { departureOf, nameShift, restOn, type Waypoint } from "../lib/dot";
+import {
+  departureOf,
+  DOT_SPRING,
+  flightOf,
+  nameShift,
+  restOn,
+  type Waypoint,
+} from "../lib/dot";
 import { NAV, navId } from "../lib/content";
 import { FPS, PAN, STAGE_HEIGHT, STAGE_WIDTH } from "../timeline";
-import { enter } from "../lib/ease";
 
 const PAGES = [
   { id: navId.page("index"), label: "Index" },
@@ -24,28 +30,15 @@ const VIEW_HEIGHT = STAGE_HEIGHT - PAD * 2;
 
 const linkClass = "inline-block rounded-[3px] py-1";
 
-// The list scrolls on a softer spring than the dot, so the text stays calm
-// under it on the long hops.
-const SCROLL_SPRING = { stiffness: 200, damping: 30, mass: 1 };
-
-// Rows come in one after another from the top, the way the dot will read
-// them; a couple of frames apart, over a short fade and rise.
-const ROW_STAGGER = 1.4;
-const ROW_STAGGER_MAX = 22;
-const ROW_FADE = 14;
-
 function Row({
   id,
   shift,
-  reveal,
   className,
   children,
   onOffset,
 }: {
   id: string;
   shift: number;
-  /** 0..1 progress of this row's entrance. */
-  reveal: number;
   className?: string;
   children: React.ReactNode;
   onOffset: (id: string, el: HTMLElement) => void;
@@ -65,15 +58,11 @@ function Row({
     },
     [anchor]
   );
-  const entrance = enter(reveal, 4);
   return (
     <li ref={setRef} className={cn("relative", className)}>
       <span
         className="inline-block"
-        style={{
-          opacity: entrance.opacity,
-          transform: `translateX(${shift}px) ${entrance.transform}`,
-        }}
+        style={{ transform: `translateX(${shift}px)` }}
       >
         {children}
       </span>
@@ -88,20 +77,12 @@ function Row({
  */
 export function Sidebar({
   waypoints,
-  entry,
   style,
 }: {
   waypoints: Waypoint[];
-  /** Frame the first row starts to appear. */
-  entry: number;
   style?: React.CSSProperties;
 }) {
   const frame = useCurrentFrame();
-  let rowIndex = 0;
-  const revealFor = () => {
-    const delay = Math.min(rowIndex++, ROW_STAGGER_MAX) * ROW_STAGGER;
-    return Math.max(0, Math.min(1, (frame - entry - delay) / ROW_FADE));
-  };
   const listRef = useRef<HTMLDivElement>(null);
   const offsets = useRef(new Map<string, number>()).current;
   const [, setVersion] = useState(0);
@@ -153,7 +134,9 @@ export function Sidebar({
     const p = spring({
       frame: frame - departureOf(next),
       fps: FPS,
-      config: SCROLL_SPRING,
+      config: DOT_SPRING,
+      durationInFrames: flightOf(next),
+      durationRestThreshold: 0.001,
     });
     scroll = from + (to - from) * p;
   }
@@ -186,7 +169,6 @@ export function Sidebar({
                 key={page.id}
                 id={page.id}
                 shift={shiftFor(page.id, 10)}
-                reveal={revealFor()}
                 onOffset={onOffset}
               >
                 <span
@@ -209,7 +191,6 @@ export function Sidebar({
                     <Row
                       id={sectionId}
                       shift={shiftFor(sectionId, 12)}
-                      reveal={revealFor()}
                       onOffset={onOffset}
                     >
                       <span className="flex items-center gap-1.5 py-1 text-foreground">
@@ -230,7 +211,6 @@ export function Sidebar({
                           key={c.slug}
                           id={id}
                           shift={shiftFor(id, 12)}
-                          reveal={revealFor()}
                           onOffset={onOffset}
                         >
                           <span

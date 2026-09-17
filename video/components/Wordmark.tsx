@@ -23,13 +23,10 @@ export function glitchClass(sinceImpact: number) {
 /** The big closing wordmark; the dot lands as its full stop. */
 export function Wordmark({
   sinceImpact,
-  stopOpacity = 0,
   className,
   style,
 }: {
   sinceImpact: number;
-  /** The full stop is drawn once the dot has become it. */
-  stopOpacity?: number;
   className?: string;
   style?: React.CSSProperties;
 }) {
@@ -42,12 +39,8 @@ export function Wordmark({
       style={style}
     >
       <span>Craft</span>
-      {/* The full stop reserves the dot's place, then takes over from it. */}
-      <span
-        ref={stop}
-        className="ml-[0.06em] inline-block size-[0.14em] rounded-full bg-foreground"
-        style={{ opacity: stopOpacity }}
-      />
+      {/* An invisible full stop reserves the dot's place after the word. */}
+      <span ref={stop} className="ml-[0.06em] inline-block size-[0.16em] rounded-full opacity-0" />
     </div>
   );
 }

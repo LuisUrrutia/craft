@@ -5,13 +5,7 @@ import type { DotColor } from "@/components/app/section-icon";
 import { DOT_SIZE, FPS, ms } from "../timeline";
 import type { Point } from "./anchors";
 
-export type SoundName =
-  | "tick"
-  | "hover"
-  | "pop"
-  | "success"
-  | "toggle"
-  | "glitch";
+export type SoundName = "tick" | "hover" | "pop" | "success" | "toggle";
 
 export type Waypoint = {
   /** Frame the dot arrives (and "hits" whatever it lands on). */
@@ -30,8 +24,6 @@ export type Waypoint = {
   /** Cents, as in the site's progressionDetune. */
   detune?: number;
   volume?: number;
-  /** Leave a short motion trail behind the dot on this flight. */
-  trail?: boolean;
 };
 
 // Same numbers as src/components/app/sidebar-nav.tsx.
@@ -76,10 +68,6 @@ export type DotState = {
   index: number;
   /** True while in flight. */
   travelling: boolean;
-  /** Which way the dot was mostly moving on its last flight. */
-  axis: "x" | "y";
-  /** Frame the dot arrived at its current target. */
-  arrived: number;
 };
 
 export function dotState(
@@ -98,11 +86,7 @@ export function dotState(
   if (!to) return null;
   const size = next.size ?? DOT_SIZE;
 
-  const prev = index > 0 ? waypoints[index - 1] : null;
-  const from = (prev && resolveTarget(prev.target, anchors)) ?? to;
-  const axis = Math.abs(to.x - from.x) > Math.abs(to.y - from.y) ? "x" : "y";
-
-  if (!prev || frame >= next.at + flightOf(next)) {
+  if (index === 0 || frame >= next.at + flightOf(next)) {
     return {
       ...to,
       size,
@@ -111,11 +95,11 @@ export function dotState(
       blend: 1,
       index,
       travelling: false,
-      axis,
-      arrived: next.at,
     };
   }
 
+  const prev = waypoints[index - 1];
+  const from = resolveTarget(prev.target, anchors) ?? to;
   const flight = flightOf(next);
   const elapsed = frame - departureOf(next);
   const t = Math.min(1, elapsed / flight);
@@ -166,8 +150,6 @@ export function dotState(
     blend,
     index,
     travelling: true,
-    axis,
-    arrived: next.at,
   };
 }
 
