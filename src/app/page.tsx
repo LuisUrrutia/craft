@@ -47,9 +47,7 @@ export default function IndexPage() {
       </p>
       <RepoCard />
       <p className="mt-3 text-sm text-muted-foreground">
-        Sorry in advance: the repo still has AI-written placeholders for the
-        articles that are not ready yet. They are drafts I am rewriting one by
-        one, and only the finished ones are published here.
+        Obs: the articles in the repo that are not out yet are AI placeholders.
       </p>
       <div className="mt-8 flex flex-col gap-12">
         {sections.map(({ section, concepts }) => (
