@@ -16,7 +16,7 @@ import {
 } from "@/components/app/section-icon";
 
 // Flip back on to restore the "New" badge next to launched concepts.
-const SHOW_NEW_BADGE = true;
+const SHOW_NEW_BADGE = false;
 
 const PAGES = [
   { href: "/", label: "Index" },
@@ -266,8 +266,8 @@ export function SidebarNav({
                           >
                             {concept.title}
                           </span>
-                          {/* "New" badge temporarily hidden while the
-                              landing animation is being tuned. */}
+                          {/* "New" badge hidden; flip SHOW_NEW_BADGE to
+                              restore it next to launched concepts. */}
                           {SHOW_NEW_BADGE &&
                             isConceptLaunched(concept.slug) && (
                               <span className="new-badge inline-flex items-center rounded-full ml-0.5 bg-green-100 px-1.5 py-px text-[8px] text-green-600 dark:bg-green-950 dark:text-green-400 shadow-(--custom-shadow-green)">
