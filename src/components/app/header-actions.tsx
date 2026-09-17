@@ -114,7 +114,7 @@ export function CopyMarkdownButton({ href }: { href: string }) {
     <Action label="Copy as Markdown" onClick={copy} onPrefetch={load}>
       <CopyIcon
         copied={copied}
-        icon={<MarkdownLogoIcon weight="duotone" className="size-4" />}
+        icon={<MarkdownLogoIcon className="size-4" />}
         className="size-4"
       />
     </Action>
@@ -156,7 +156,7 @@ export function ThemeSwitcher() {
       }}
     >
       {!mounted || current === "system" ? (
-        <DesktopIcon weight="duotone" className="size-4" />
+        <DesktopIcon className="size-4" />
       ) : current === "light" ? (
         <SunIcon className="size-4" />
       ) : (
@@ -181,9 +181,9 @@ export function SoundToggle() {
       }}
     >
       {muted ? (
-        <SpeakerSlashIcon weight="duotone" className="size-4" />
+        <SpeakerSlashIcon className="size-4" />
       ) : (
-        <SpeakerHighIcon weight="duotone" className="size-4" />
+        <SpeakerHighIcon className="size-4" />
       )}
     </Action>
   );
