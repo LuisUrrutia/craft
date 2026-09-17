@@ -1,32 +1,13 @@
-import { ArrowUpRightIcon, StarIcon } from "@phosphor-icons/react/dist/ssr";
+import { ArrowUpRightIcon } from "@phosphor-icons/react/dist/ssr";
 import Image from "next/image";
 
 import { GITHUB_REPO, GITHUB_URL } from "@/lib/site";
-
-// Star count is fetched at build and refreshed daily. Any failure (rate
-// limit, offline build) just hides the count; the card never breaks.
-async function fetchStars() {
-  try {
-    const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}`, {
-      headers: { accept: "application/vnd.github+json" },
-      signal: AbortSignal.timeout(5000),
-      next: { revalidate: 86400 },
-    });
-    if (!res.ok) return undefined;
-    const data = (await res.json()) as { stargazers_count?: number };
-    return data.stargazers_count;
-  } catch {
-    return undefined;
-  }
-}
 
 // A link preview for the repository, sized and surfaced like a code block so
 // the two sit together on the index page. The height equals a headerless
 // one-line code block: 1rem padding on each side plus one 0.75rem line at
 // 1.625 line-height (see `.code-block-panel .shiki` in globals.css).
-export async function RepoCard({ description }: { description: string }) {
-  const stars = await fetchStars();
-
+export function RepoCard() {
   return (
     <a
       href={GITHUB_URL}

@@ -44,7 +44,7 @@ export default function IndexPage() {
       <p className="mt-3 text-sm text-muted-foreground">
         Also, if you want to contribute, here&apos;s the repo:
       </p>
-      <RepoCard description="The source for every concept, demo, and the skill" />
+      <RepoCard />
       <div className="mt-8 flex flex-col gap-12">
         {sections.map(({ section, concepts }) => (
           <section key={section}>
