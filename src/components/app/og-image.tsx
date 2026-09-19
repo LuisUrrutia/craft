@@ -13,11 +13,11 @@ import type { PageCopyKey } from "@/i18n/messages/en-pages";
 const PAGES: Record<string, { title: string; description: PageCopyKey }> = {
   goats: {
     title: "GOATs",
-    description: "The design engineers whose writing and work shaped this site.",
+    description: "goats.description",
   },
   resources: {
     title: "Resources",
-    description: "Tools, references, and reading for design engineering.",
+    description: "resources.description",
   },
 };
 

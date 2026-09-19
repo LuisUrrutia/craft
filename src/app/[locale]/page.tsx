@@ -43,11 +43,11 @@ export default async function IndexPage({ params }: Props) {
     <article>
       <h1 className="text-base font-medium">{messages.index}</h1>
       <p className="mt-3 text-sm text-muted-foreground">
-        {messages.siteDescription}{" "}{pageCopy(locale, "These essays are short and simple, meant as a collection of useful ideas and tricks rather than an exhaustive resource.")}
+        {messages.siteDescription}{" "}{pageCopy(locale, "home.introduction")}
       </p>
       <p className="mt-3 text-sm text-muted-foreground">
-        {pageCopy(locale, "This project is brought to you by")}{" "}
-        <ProseLink href="https://gustavofior.com">Gustavo</ProseLink>{pageCopy(locale, ", a guy who likes computers and beautiful things. I also created a skill based on these guides:")}
+        {pageCopy(locale, "home.authorPrefix")}{" "}
+        <ProseLink href="https://gustavofior.com">Gustavo</ProseLink>{pageCopy(locale, "home.authorDescription")}
       </p>
       <CodeBlock
         hideHeader
@@ -60,11 +60,11 @@ export default async function IndexPage({ params }: Props) {
         ]}
       />
       <p className="mt-3 text-sm text-muted-foreground">
-        {pageCopy(locale, "Also, if you want to contribute, here's the repo:")}
+        {pageCopy(locale, "home.contribute")}
       </p>
       <RepoCard />
       <p className="mt-3 text-sm text-muted-foreground">
-        {pageCopy(locale, "Obs: the articles in the repo that are not out yet are AI placeholders.")}
+        {pageCopy(locale, "home.draftNotice")}
       </p>
       <div className="mt-8 flex flex-col gap-12">
         {sections.map(({ section, concepts }) => (

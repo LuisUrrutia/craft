@@ -65,6 +65,6 @@ export function getUiMessages(locale: Locale): UiMessages {
   return catalogs[locale].ui;
 }
 
-export function pageCopy(locale: Locale, source: PageCopyKey) {
-  return catalogs[locale].pages[source];
+export function pageCopy(locale: Locale, key: PageCopyKey) {
+  return catalogs[locale].pages[key];
 }

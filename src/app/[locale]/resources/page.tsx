@@ -5,14 +5,12 @@ import { getUiMessages, pageCopy } from "@/i18n/ui.server";
 import { pageMetadata } from "@/i18n/metadata";
 import type { PageCopyKey } from "@/i18n/messages/en-pages";
 
-const DESCRIPTION = "Tools, references, and reading for design engineering.";
-
 type Props = { params: Promise<{ locale: string }> };
 
 export async function generateMetadata({ params }: Props) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
-  return pageMetadata({ locale, pathname: "/resources", title: getUiMessages(locale).resources, description: pageCopy(locale, DESCRIPTION), imageSlug: "resources" });
+  return pageMetadata({ locale, pathname: "/resources", title: getUiMessages(locale).resources, description: pageCopy(locale, "resources.description"), imageSlug: "resources" });
 }
 
 type Resource = {
@@ -29,173 +27,166 @@ type Group = {
 
 const GROUPS: Group[] = [
   {
-    heading: "My Vaults",
+    heading: "resources.groups.vaults",
     resources: [
       {
         url: "https://vayo.me/bookmarks/019ce8a2-931e-7308-8bc7-a3f10b2bd9ff",
         domain: "vayo.me",
-        title: "UI",
-        description: "Interface references and patterns collected on Vayo.",
+        title: "resources.ui.title",
+        description: "resources.ui.description",
       },
       {
         url: "https://vayo.me/bookmarks/clublk9rh000113g5qf4tj038",
         domain: "vayo.me",
-        title: "Cool Stuff",
-        description:
-          "Interesting products, ideas, and details collected on Vayo.",
+        title: "resources.coolStuff.title",
+        description: "resources.coolStuff.description",
       },
       {
         url: "https://vayo.me/bookmarks/cltpx1nq70001jw1tc90e4ht6",
         domain: "vayo.me",
-        title: "Articles",
-        description: "Writing worth returning to, collected on Vayo.",
+        title: "resources.articles.title",
+        description: "resources.articles.description",
       },
     ],
   },
   {
-    heading: "Learning",
+    heading: "resources.groups.learning",
     resources: [
       {
         url: "https://devouringdetails.com",
         domain: "devouringdetails.com",
-        title: "Devouring Details",
-        description: "Rauno Freiberg's interaction design course.",
+        title: "resources.devouringDetails.title",
+        description: "resources.devouringDetails.description",
       },
       {
         url: "https://animations.dev",
         domain: "animations.dev",
-        title: "animations.dev",
-        description: "Emil Kowalski's course on web animations.",
+        title: "resources.animations.title",
+        description: "resources.animations.description",
       },
       {
         url: "https://invisibledetails.com/",
         domain: "invisibledetails.com",
-        title: "Invisible Details",
-        description: "A course on the small decisions behind great interfaces.",
+        title: "resources.invisibleDetails.title",
+        description: "resources.invisibleDetails.description",
       },
       {
         url: "https://interfaces.dev/",
         domain: "interfaces.dev",
-        title: "Interfaces",
-        description: "Jakub Krehel's design engineering magazine.",
+        title: "resources.interfaces.title",
+        description: "resources.interfaces.description",
       },
       {
         url: "https://www.interfacecraft.dev/",
         domain: "interfacecraft.dev",
-        title: "Interface Craft",
-        description: "A working library for designing with uncommon care.",
+        title: "resources.interfaceCraft.title",
+        description: "resources.interfaceCraft.description",
       },
     ],
   },
   {
-    heading: "Icons",
+    heading: "resources.groups.icons",
     resources: [
       {
         url: "https://lucide.dev/",
         domain: "lucide.dev",
-        title: "Lucide",
-        description: "Clean, customizable SVG icons made by the community.",
+        title: "resources.lucide.title",
+        description: "resources.lucide.description",
       },
       {
         url: "https://phosphoricons.com/",
         domain: "phosphoricons.com",
-        title: "Phosphor Icons",
-        description: "The icon family used on this site - six weights.",
+        title: "resources.phosphor.title",
+        description: "resources.phosphor.description",
       },
       {
         url: "https://tabler.io/icons",
         domain: "tabler.io",
-        title: "Tabler Icons",
-        description:
-          "6,000+ open-source icons built on a consistent 24px grid.",
+        title: "resources.tabler.title",
+        description: "resources.tabler.description",
       },
       {
         url: "https://nucleoapp.com/",
         domain: "nucleoapp.com",
-        title: "Nucleo",
-        description: "40,000+ premium SVG icons with an app to manage them.",
+        title: "resources.nucleo.title",
+        description: "resources.nucleo.description",
       },
       {
         url: "https://www.radix-ui.com/icons",
         domain: "radix-ui.com",
-        title: "Radix Icons",
-        description:
-          "A crisp set of 15×15 icons available as React components.",
+        title: "resources.radix.title",
+        description: "resources.radix.description",
       },
       {
         url: "https://hugeicons.com/",
         domain: "hugeicons.com",
-        title: "Hugeicons",
-        description: "A large free and premium library across multiple styles.",
+        title: "resources.hugeicons.title",
+        description: "resources.hugeicons.description",
       },
       {
         url: "https://centralicons.com/",
         domain: "centralicons.com",
-        title: "Central Icons",
-        description:
-          "A beautifully consistent, lovingly crafted icon collection.",
+        title: "resources.centralIcons.title",
+        description: "resources.centralIcons.description",
       },
 
       {
         url: "https://svgl.app/",
         domain: "svgl.app",
-        title: "SVGL",
-        description: "A searchable library of brand and product SVG logos.",
+        title: "resources.svgl.title",
+        description: "resources.svgl.description",
       },
     ],
   },
   {
-    heading: "Sound",
+    heading: "resources.groups.sound",
     resources: [
       {
         url: "https://audio.raphaelsalaja.com",
         domain: "audio.raphaelsalaja.com",
-        title: "@web-kits/audio",
-        description: "Synthesized interface sounds; powers this site's SFX.",
+        title: "resources.webKitsAudio.title",
+        description: "resources.webKitsAudio.description",
       },
       {
         url: "https://cuelume-site.pages.dev/",
         domain: "cuelume-site.pages.dev",
-        title: "Cuelume",
-        description:
-          "A tiny library of interaction sounds synthesized with Web Audio.",
+        title: "resources.cuelume.title",
+        description: "resources.cuelume.description",
       },
     ],
   },
   {
-    heading: "Inspiration",
+    heading: "resources.groups.inspiration",
     resources: [
       {
         url: "https://www.are.na",
         domain: "are.na",
-        title: "Are.na",
-        description: "The best place to collect and connect references.",
+        title: "resources.arena.title",
+        description: "resources.arena.description",
       },
       {
         url: "https://recent.design/",
         domain: "recent.design",
-        title: "Recent",
-        description:
-          "A daily curation of exceptional design, websites, and tools.",
+        title: "resources.recent.title",
+        description: "resources.recent.description",
       },
       {
         url: "https://www.cosmos.so",
         domain: "cosmos.so",
-        title: "Cosmos",
-        description: "A calmer, curated alternative to Pinterest.",
+        title: "resources.cosmos.title",
+        description: "resources.cosmos.description",
       },
       {
         url: "https://mobbin.com/",
         domain: "mobbin.com",
-        title: "Mobbin",
-        description: "A searchable library of mobile and web app screenshots.",
+        title: "resources.mobbin.title",
+        description: "resources.mobbin.description",
       },
       {
         url: "https://x.com/",
         domain: "x.com",
-        title: "X",
-        description:
-          "Design work, ideas, and conversations from people I follow.",
+        title: "resources.x.title",
+        description: "resources.x.description",
       },
     ],
   },
@@ -209,7 +200,7 @@ export default async function ResourcesPage({ params }: Props) {
     <article>
       <h1 className="text-base font-medium">{getUiMessages(locale).resources}</h1>
       <p className="mt-3 text-sm text-muted-foreground text-pretty">
-        {pageCopy(locale, "Tools and references I keep coming back to. Each concept page also lists the specific posts it draws from.")}
+        {pageCopy(locale, "resources.introduction")}
       </p>
       <div className="mt-8 flex flex-col gap-10">
         {GROUPS.map((group) => (
